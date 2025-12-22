@@ -3,7 +3,8 @@ package com.mamiyaotaru.voxelmap.gui.overridden;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-public class GuiOptionButtonMinimap extends Button.Plain {
+// TODO: 1.20.1 Port - Button.Plain doesn't exist, extending Button directly
+public class GuiOptionButtonMinimap extends Button {
     private final EnumOptionsMinimap enumOptions;
 
     public GuiOptionButtonMinimap(int x, int y, EnumOptionsMinimap par4EnumOptions, Component message, OnPress onPress) {
