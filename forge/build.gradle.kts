@@ -39,10 +39,6 @@ configurations {
     }
 }
 
-dependencies {
-    jarJar(project(":forge", "serviceConfig"))
-}
-
 tasks.jar {
     val main = project.project(":common").sourceSets.getByName("main")
     from(main.output.classesDirs) {
