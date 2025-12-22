@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPacketListener.class)
 public abstract class APIMixinNetHandlerPlayClient {
-    // 1.20.1: Using sendCommand(String) method
-    @Inject(method = "sendCommand(Ljava/lang/String;)V", at = @At("HEAD"), cancellable = true, require = 0)
+    // TODO: 1.20.1 Port - Let Mixin auto-detect method signature with official mappings
+    @Inject(method = "sendCommand", at = @At("HEAD"), cancellable = true, require = 0)
     public void onSendCommand(String string, CallbackInfo cir) {
         if (voxelmap$parseCommand(string)) {
             cir.cancel();

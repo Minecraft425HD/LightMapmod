@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Minecraft.class)
 public class APIMixinMinecraftClient {
 
-    // 1.20.1: tick method
-    @Inject(method = "tick()V", at = @At("RETURN"), require = 0)
+    // TODO: 1.20.1 Port - Let Mixin auto-detect method signature with official mappings
+    @Inject(method = "tick", at = @At("RETURN"), require = 0)
     private void onTick(CallbackInfo ci) {
         VoxelConstants.clientTick();
     }

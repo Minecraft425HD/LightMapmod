@@ -194,7 +194,8 @@ public class EntityMapImageManager {
         if (renderer instanceof LivingEntityRenderer renderer2) {
             return renderer2.getModel();
         } else if (renderer instanceof EnderDragonRenderer renderer2) {
-            return ((AccessorEnderDragonRenderer) renderer2).getModel();
+            // TODO: 1.20.1 Port - AccessorEnderDragonRenderer is disabled, need to find alternative way to get model
+            return null;  // Temporarily return null since EnderDragonModel accessor is not working in 1.20.1
         }
         return null;
     }

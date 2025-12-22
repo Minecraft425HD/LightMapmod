@@ -19,8 +19,8 @@ public abstract class MixinWorldRenderer {
 
     @Unique private final PoseStack voxelmap_poseStack = new PoseStack();
 
-    // 1.20.1: renderLevel method signature
-    @Inject(method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;)V", at = @At("RETURN"), require = 0)
+    // TODO: 1.20.1 Port - Let Mixin auto-detect method signature with official mappings
+    @Inject(method = "renderLevel", at = @At("RETURN"), require = 0)
     private void renderLevel(PoseStack poseStack, float partialTick, long finishNanoTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projectionMatrix, CallbackInfo ci) {
         voxelmap_poseStack.pushPose();
         voxelmap_poseStack.last().pose().set(projectionMatrix);
@@ -30,8 +30,8 @@ public abstract class MixinWorldRenderer {
         voxelmap_poseStack.popPose();
     }
 
-    // 1.20.1: setSectionDirty method
-    @Inject(method = "setSectionDirty(IIIZ)V", at = @At("RETURN"), require = 0)
+    // TODO: 1.20.1 Port - Let Mixin auto-detect method signature with official mappings
+    @Inject(method = "setSectionDirty", at = @At("RETURN"), require = 0)
     public void postScheduleChunkRender(int x, int y, int z, boolean important, CallbackInfo ci) {
         if (VoxelConstants.getVoxelMapInstance().getWorldUpdateListener() != null) {
             VoxelConstants.getVoxelMapInstance().getWorldUpdateListener().notifyObservers(x, z);
