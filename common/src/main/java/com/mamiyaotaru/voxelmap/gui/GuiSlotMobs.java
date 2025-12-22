@@ -4,13 +4,15 @@ import com.mamiyaotaru.voxelmap.VoxelConstants;
 import com.mamiyaotaru.voxelmap.VoxelMap;
 import com.mamiyaotaru.voxelmap.textures.Sprite;
 import com.mamiyaotaru.voxelmap.util.MobCategory;
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
+// TODO: 1.20.1 Port - CursorTypes package changed or doesn't exist
+// import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - MouseButtonEvent doesn't exist, using primitive parameters instead
+// import net.minecraft.client.input.MouseButtonEvent;
 // import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -129,7 +131,8 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
             if (mouseX >= getX() - padding && mouseY >= getY() && mouseX <= getX() + 215 + padding && mouseY <= getY() + GuiSlotMobs.this.defaultEntryHeight) {
                 Component tooltip;
                 if (mouseX >= getX() + 215 - 16 - padding && mouseX <= getX() + 215 + padding) {
-                    drawContext.requestCursor(CursorTypes.POINTING_HAND);
+                    // TODO: 1.20.1 Port - CursorTypes.POINTING_HAND doesn't exist or has different API
+                    // drawContext.requestCursor(CursorTypes.POINTING_HAND);
                     tooltip = isEnabled ? GuiSlotMobs.TOOLTIP_DISABLE : GuiSlotMobs.TOOLTIP_ENABLE;
                 } else {
                     tooltip = isEnabled ? GuiSlotMobs.ENABLED : GuiSlotMobs.DISABLED;
@@ -146,10 +149,9 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
             drawContext.blit(null, isEnabled ? GuiSlotMobs.this.visibleIconIdentifier : GuiSlotMobs.this.invisibleIconIdentifier, getX() + 198, getY(), 0.0F, 0.0F, 18, 18, 18, 18);
         }
 
+        // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
-        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
-            double mouseX = mouseButtonEvent.x();
-            double mouseY = mouseButtonEvent.y();
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (mouseY < GuiSlotMobs.this.getY() || mouseY > GuiSlotMobs.this.getBottom()) {
                 return false;
             }
