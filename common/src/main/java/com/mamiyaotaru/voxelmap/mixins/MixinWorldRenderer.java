@@ -8,19 +8,20 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import org.joml.Matrix4f;
-import org.spongepowered.asm.mixin.Mixin;
+// import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+// import org.spongepowered.asm.mixin.injection.At;
+// import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(LevelRenderer.class)
+// TODO: 1.20.1 Port - Mixin disabled due to refmap generation incompatibility with official mappings
+// @Mixin(LevelRenderer.class)
 public abstract class MixinWorldRenderer {
 
     @Unique private final PoseStack voxelmap_poseStack = new PoseStack();
 
     // TODO: 1.20.1 Port - Explicit descriptor required for official mappings
-    @Inject(method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;)V", at = @At("RETURN"), require = 0)
+    // @Inject(method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;)V", at = @At("RETURN"), require = 0)
     private void renderLevel(PoseStack poseStack, float partialTick, long finishNanoTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projectionMatrix, CallbackInfo ci) {
         voxelmap_poseStack.pushPose();
         voxelmap_poseStack.last().pose().set(projectionMatrix);
@@ -31,7 +32,7 @@ public abstract class MixinWorldRenderer {
     }
 
     // TODO: 1.20.1 Port - Targeting private 4-parameter version of setSectionDirty
-    @Inject(method = "setSectionDirty(IIIZ)V", at = @At("RETURN"), require = 0)
+    // @Inject(method = "setSectionDirty(IIIZ)V", at = @At("RETURN"), require = 0)
     public void postScheduleChunkRender(int x, int y, int z, boolean important, CallbackInfo ci) {
         if (VoxelConstants.getVoxelMapInstance().getWorldUpdateListener() != null) {
             VoxelConstants.getVoxelMapInstance().getWorldUpdateListener().notifyObservers(x, z);
