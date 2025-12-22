@@ -28,21 +28,21 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import com.mojang.math.Axis;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.model.animal.camel.CamelModel;
-import net.minecraft.client.model.animal.fish.CodModel;
+import net.minecraft.client.model.CamelModel;
+import net.minecraft.client.model.CodModel;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.animal.ghast.HappyGhastModel;
-import net.minecraft.client.model.monster.slime.MagmaCubeModel;
-import net.minecraft.client.model.animal.llama.LlamaModel;
-import net.minecraft.client.model.animal.fish.SalmonModel;
-import net.minecraft.client.model.monster.slime.SlimeModel;
-import net.minecraft.client.model.animal.fish.TropicalFishSmallModel;
-import net.minecraft.client.model.animal.fish.TropicalFishLargeModel;
-import net.minecraft.client.model.monster.wither.WitherBossModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.LlamaModel;
+import net.minecraft.client.model.SalmonModel;
+import net.minecraft.client.model.SlimeModel;
+import net.minecraft.client.model.TropicalFishModelA;
+import net.minecraft.client.model.TropicalFishModelB;
+import net.minecraft.client.model.WitherBossModel;
+import net.minecraft.client.model.MagmaCubeModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
@@ -56,7 +56,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+// EntitySpawnReason doesn't exist in 1.20.1
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -92,7 +92,7 @@ public class EntityMapImageManager {
     private GpuTextureView fboDepthTextureView;
     private VoxelMapCachedOrthoProjectionMatrixBuffer projection;
     private final HashMap<String, Properties> mobPropertiesMap = new HashMap<>();
-    private final Class<?>[] fullRenderModels = new Class[] { CodModel.class, MagmaCubeModel.class, SalmonModel.class, SlimeModel.class, TropicalFishSmallModel.class, TropicalFishLargeModel.class };
+    private final Class<?>[] fullRenderModels = new Class[] { CodModel.class, MagmaCubeModel.class, SalmonModel.class, SlimeModel.class, TropicalFishModelA.class, TropicalFishModelB.class };
 
     public EntityMapImageManager() {
         this.textureAtlas = new TextureAtlas("mobsmap", resourceTextureAtlasMarker);
@@ -147,7 +147,7 @@ public class EntityMapImageManager {
     }
 
     public Sprite requestImageForMobType(EntityType<?> type, int size, boolean addBorder) {
-        if (minecraft.level != null && type.create(minecraft.level, EntitySpawnReason.LOAD) instanceof LivingEntity le) {
+        if (minecraft.level != null && type.create(minecraft.level) instanceof LivingEntity le) {
             return requestImageForMob(le, size, addBorder);
         }
         return null;
@@ -380,7 +380,8 @@ public class EntityMapImageManager {
                 g.setComposite(AlphaComposite.Clear);
                 g.fillRect(0, 248, image.getWidth(), image.getHeight());
             }
-            if (model instanceof HappyGhastModel) {
+            // HappyGhastModel doesn't exist in 1.20.1 - using generic check
+            if (false) { // Disabled ghast-specific model check for 1.20.1
                 Graphics2D g = image.createGraphics();
                 g.setComposite(AlphaComposite.Clear);
                 g.fillRect(0,  352, image.getWidth(), image.getHeight());

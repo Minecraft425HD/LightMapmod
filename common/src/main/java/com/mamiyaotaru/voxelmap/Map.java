@@ -58,7 +58,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 import net.minecraft.util.Mth;
-import net.minecraft.world.attribute.EnvironmentAttributes;
+// EnvironmentAttributes doesn't exist in 1.20.1
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.Level;
@@ -605,8 +605,8 @@ public class Map implements Runnable, IChangeObserver {
             return 0x0A000000 + (int) (r * 255.0F) * 65536 + (int) (g * 255.0F) * 256 + (int) (b * 255.0F);
         } else {
             int backgroundColor = 0xFF000000 + (int) (r * 255.0F) * 65536 + (int) (g * 255.0F) * 256 + (int) (b * 255.0F);
-            int sunsetColor = minecraft.gameRenderer.getMainCamera().attributeProbe().getValue(EnvironmentAttributes.SUNRISE_SUNSET_COLOR, 0.0f);
-            return ColorUtils.colorAdder(sunsetColor, backgroundColor);
+            // In 1.20.1, EnvironmentAttributes doesn't exist - skipping sunset color overlay
+            return backgroundColor;
         }
     }
 

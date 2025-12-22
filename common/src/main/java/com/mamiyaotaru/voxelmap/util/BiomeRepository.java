@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;

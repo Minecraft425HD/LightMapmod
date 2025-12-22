@@ -15,7 +15,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntitySpawnReason;
+// EntitySpawnReason doesn't exist in 1.20.1
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -41,7 +41,7 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
         this.mobs = new ArrayList<>();
 
         BuiltInRegistries.ENTITY_TYPE.entrySet().forEach(entry -> {
-            if (entry.getValue().create(Minecraft.getInstance().level, EntitySpawnReason.LOAD) instanceof LivingEntity) {
+            if (entry.getValue().create(Minecraft.getInstance().level) instanceof LivingEntity) {
                 this.mobs.add(new MobItem(this.parentGui, entry.getValue(), entry.getKey().location()));
             }
         });
