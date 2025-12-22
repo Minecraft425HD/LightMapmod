@@ -23,7 +23,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 // import com.mojang.blaze3d.textures.GpuTextureView;
 // import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
+// TODO: 1.20.1 Port - MeshData doesn't exist in 1.20.1
+// import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -43,8 +44,8 @@ import net.minecraft.client.model.SlimeModel;
 import net.minecraft.client.model.TropicalFishModelA;
 import net.minecraft.client.model.TropicalFishModelB;
 import net.minecraft.client.model.WitherBossModel;
-import net.minecraft.client.model.MagmaCubeModel;
-import net.minecraft.client.model.geom.ModelPart;
+// 1.20.1: MagmaCubeModel renamed to LavaSlimeModel
+import net.minecraft.client.model.LavaSlimeModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -95,7 +96,8 @@ public class EntityMapImageManager {
     // private GpuTextureView fboDepthTextureView;
     private VoxelMapCachedOrthoProjectionMatrixBuffer projection;
     private final HashMap<String, Properties> mobPropertiesMap = new HashMap<>();
-    private final Class<?>[] fullRenderModels = new Class[] { CodModel.class, MagmaCubeModel.class, SalmonModel.class, SlimeModel.class, TropicalFishModelA.class, TropicalFishModelB.class };
+    // 1.20.1: MagmaCubeModel renamed to LavaSlimeModel
+    private final Class<?>[] fullRenderModels = new Class[] { CodModel.class, LavaSlimeModel.class, SalmonModel.class, SlimeModel.class, TropicalFishModelA.class, TropicalFishModelB.class };
 
     public EntityMapImageManager() {
         this.textureAtlas = new TextureAtlas("mobsmap", resourceTextureAtlasMarker);

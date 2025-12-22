@@ -34,10 +34,12 @@ import com.mamiyaotaru.voxelmap.util.Waypoint;
 // import com.mojang.blaze3d.pipeline.RenderPipeline;
 // import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.TextureFormat;
+// TODO: 1.20.1 Port - These texture classes don't exist in 1.20.1
+// import com.mojang.blaze3d.textures.FilterMode;
+// import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
+// TODO: 1.20.1 Port - MeshData doesn't exist in 1.20.1
+// import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;

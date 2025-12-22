@@ -10,22 +10,24 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.equine.Horse;
-import net.minecraft.world.entity.animal.equine.Markings;
+// 1.20.1: Horse moved from animal.equine to animal.horse package
+import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.animal.horse.Variant;
 
 public class HorseVariantDataFactory extends DefaultEntityVariantDataFactory {
     private static final ResourceLocation INVISIBLE_TEXTURE = new ResourceLocation("minecraft", "invisible");
-    private static final Map<Markings, ResourceLocation> LOCATION_BY_MARKINGS = Maps.newEnumMap(
+    // 1.20.1: Markings renamed to Variant in 1.20.1
+    private static final Map<Variant, ResourceLocation> LOCATION_BY_VARIANT = Maps.newEnumMap(
             Map.of(
-                    Markings.NONE,
+                    Variant.NONE,
                     INVISIBLE_TEXTURE,
-                    Markings.WHITE,
+                    Variant.WHITE,
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_white.png"),
-                    Markings.WHITE_FIELD,
+                    Variant.WHITE_FIELD,
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_whitefield.png"),
-                    Markings.WHITE_DOTS,
+                    Variant.WHITE_DOTS,
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_whitedots.png"),
-                    Markings.BLACK_DOTS,
+                    Variant.BLACK_DOTS,
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_blackdots.png")));
 
     public HorseVariantDataFactory(EntityType<?> type) {
@@ -36,8 +38,9 @@ public class HorseVariantDataFactory extends DefaultEntityVariantDataFactory {
     @Override
     public EntityVariantData createVariantData(Entity entity, EntityRenderer renderer, int size, boolean addBorder) {
         Horse horse = (Horse) entity;
-        Markings markings = horse.getMarkings();
-        ResourceLocation secondaryTexture = LOCATION_BY_MARKINGS.get(markings);
+        // 1.20.1: getMarkings() renamed to getVariant()
+        Variant variant = horse.getVariant();
+        ResourceLocation secondaryTexture = LOCATION_BY_VARIANT.get(variant);
         // 1.20.1: getTextureLocation() takes Entity, not LivingEntityRenderState
         return new DefaultEntityVariantData(getType(), ((LivingEntityRenderer) renderer).getTextureLocation(entity), secondaryTexture == INVISIBLE_TEXTURE ? null : secondaryTexture, size, addBorder);
     }

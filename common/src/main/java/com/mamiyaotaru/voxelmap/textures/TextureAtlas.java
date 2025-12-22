@@ -5,9 +5,10 @@ import com.mamiyaotaru.voxelmap.VoxelConstants;
 import com.mamiyaotaru.voxelmap.util.ImageUtils;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.AddressMode;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.TextureFormat;
+// TODO: 1.20.1 Port - These texture classes don't exist in 1.20.1
+// import com.mojang.blaze3d.textures.AddressMode;
+// import com.mojang.blaze3d.textures.FilterMode;
+// import com.mojang.blaze3d.textures.TextureFormat;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
