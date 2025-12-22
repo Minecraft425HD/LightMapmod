@@ -13,9 +13,7 @@ import com.mamiyaotaru.voxelmap.util.DimensionContainer;
 import com.mamiyaotaru.voxelmap.util.Waypoint;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+// 1.20.1: Input event system changed
 // import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -143,11 +141,11 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
     }
 
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
-        int keyCode = keyEvent.key();
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // 1.20.1: Input event system changed
         boolean OK = false;
         if (!this.popupOpen()) {
-            OK = super.keyPressed(keyEvent);
+            OK = super.keyPressed(keyCode, scanCode, modifiers);
             boolean acceptable = !this.waypointName.getValue().isEmpty();
 
             try {
@@ -168,10 +166,11 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
     }
 
     @Override
-    public boolean charTyped(CharacterEvent characterEvent) {
+    public boolean charTyped(char codePoint, int modifiers) {
+        // 1.20.1: Input event system changed
         boolean OK = false;
         if (!this.popupOpen()) {
-            OK = super.charTyped(characterEvent);
+            OK = super.charTyped(codePoint, modifiers);
             boolean acceptable = !this.waypointName.getValue().isEmpty();
 
             try {
@@ -190,13 +189,10 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
 
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
-        double mouseX = mouseButtonEvent.x();
-        double mouseY = mouseButtonEvent.y();
-        int button = mouseButtonEvent.button();
-
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // 1.20.1: Input event system changed
         if (!this.popupOpen()) {
-            return super.mouseClicked(mouseButtonEvent, doubleClick);
+            return super.mouseClicked(mouseX, mouseY, button);
         }
 
         if (this.choosingColor && button == 0) {
@@ -225,13 +221,15 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
-        return !this.popupOpen() && super.mouseReleased(mouseButtonEvent);
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        // 1.20.1: Input event system changed
+        return !this.popupOpen() && super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double deltaX, double deltaY) {
-        return !this.popupOpen() && super.mouseDragged(mouseButtonEvent, deltaX, deltaY);
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        // 1.20.1: Input event system changed
+        return !this.popupOpen() && super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override

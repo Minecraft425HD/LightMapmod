@@ -5,7 +5,7 @@ import com.mamiyaotaru.voxelmap.gui.overridden.GuiScreenMinimap;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
+// 1.20.1: Input event system changed
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
@@ -28,11 +28,12 @@ public class GuiMinimapControls extends GuiScreenMinimap {
     }
 
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // 1.20.1: Input event system changed
         if (this.keymapList.keyEditing()) {
-            return this.keymapList.keyPressed(keyEvent);
+            return this.keymapList.keyPressed(keyCode, scanCode, modifiers);
         } else {
-            return super.keyPressed(keyEvent);
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
     }
 
