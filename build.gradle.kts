@@ -2,8 +2,8 @@ plugins {
     id("java")
 }
 
-val MINECRAFT_VERSION by extra { "1.20.1" }
-val FORGE_VERSION by extra { "47.4.0" }
+val MINECRAFT_VERSION by extra { "1.21.1" }
+val FORGE_VERSION by extra { "52.1.0" }
 val VOXELMAP_VERSION by extra { "1.15.11" }
 
 val MOD_VERSION by extra { "$MINECRAFT_VERSION-$VOXELMAP_VERSION" }
