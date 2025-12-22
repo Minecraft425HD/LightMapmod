@@ -4,7 +4,7 @@ package com.mamiyaotaru.voxelmap.util;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 // import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.gui.render.state.GuiElementRenderState;
+// GuiElementRenderState doesn't exist in 1.20.1
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
@@ -24,7 +24,7 @@ public record FourColoredRectangleRenderState(
         int color01,
         int color11,
         @Nullable ScreenRectangle scissorArea,
-        @Nullable ScreenRectangle bounds) implements GuiElementRenderState {
+        @Nullable ScreenRectangle bounds) { // GuiElementRenderState doesn't exist in 1.20.1
     public FourColoredRectangleRenderState(
             RenderPipeline renderPipeline,
             TextureSetup textureSetup,
@@ -41,7 +41,7 @@ public record FourColoredRectangleRenderState(
         this(renderPipeline, textureSetup, matrix3x2f, x0, y0, x1, y1, color00, color10, color01, color11, screenRectangle, getBounds(x0, y0, x1, y1, matrix3x2f, screenRectangle));
     }
 
-    @Override
+    // @Override // Commented for 1.20.1 compatibility
     public void buildVertices(VertexConsumer vertexConsumer) {
         // TODO: 1.20.1 Port - addVertexWith2DPose() doesn't exist in 1.20.1
         // Using 1.20.1 compatible vertex API: .vertex(matrix, x, y, z).uv(u, v).color(r, g, b, a).endVertex()

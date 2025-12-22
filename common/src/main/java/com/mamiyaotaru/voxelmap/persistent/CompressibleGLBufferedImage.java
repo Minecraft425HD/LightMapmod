@@ -2,12 +2,11 @@ package com.mamiyaotaru.voxelmap.persistent;
 
 import com.mamiyaotaru.voxelmap.VoxelConstants;
 import com.mamiyaotaru.voxelmap.util.CompressionUtils;
-import com.mojang.blaze3d.opengl.GlTexture;
+// GlTexture doesn't exist in 1.20.1
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.NativeImage.Format;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.AddressMode;
-import com.mojang.blaze3d.textures.FilterMode;
+// AddressMode and FilterMode don't exist in 1.20.1 - using GL constants directly when needed
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;

@@ -1,6 +1,6 @@
 package com.mamiyaotaru.voxelmap.util;
 
-import com.mojang.blaze3d.opengl.GlTexture;
+// GlTexture doesn't exist in 1.20.1
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.system.MemoryUtil;
 

@@ -20,7 +20,7 @@ import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.ReloadableTexture;
+// ReloadableTexture doesn't exist in 1.20.1
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.system.MemoryUtil;
 
