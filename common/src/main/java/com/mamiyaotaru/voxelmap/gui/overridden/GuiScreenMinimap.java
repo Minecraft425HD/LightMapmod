@@ -7,7 +7,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
+// TODO: 1.20.1 Port - KeyEvent doesn't exist, using primitive parameters instead
+// import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
@@ -53,14 +54,15 @@ public class GuiScreenMinimap extends Screen {
         }
     }
 
+    // 1.20.1: Input event system changed - keyPressed takes primitive parameters instead of KeyEvent
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
-        if (keyEvent.key() == GLFW.GLFW_KEY_ESCAPE && parentScreen != null) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE && parentScreen != null) {
             VoxelConstants.getMinecraft().setScreen(parentScreen);
 
             return false;
         }
 
-        return super.keyPressed(keyEvent);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 }
