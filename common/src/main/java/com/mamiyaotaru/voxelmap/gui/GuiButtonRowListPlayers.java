@@ -18,7 +18,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
-import net.minecraft.world.entity.player.PlayerSkin;
+// TODO: 1.20.1 Port - PlayerSkin doesn't exist, getSkinManager().getInsecureSkin() returns ResourceLocation directly
+// import net.minecraft.world.entity.player.PlayerSkin;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -166,8 +167,8 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
             PlayerInfo networkPlayerInfo = GuiButtonRowListPlayers.this.playersFiltered.get(id);
             GameProfile gameProfile = networkPlayerInfo.getProfile();
             Player entityPlayer = VoxelConstants.getPlayer().level().getPlayerByUUID(gameProfile.getId());
-            PlayerSkin playerSkin = VoxelConstants.getMinecraft().getSkinManager().getInsecureSkin(gameProfile);
-            ResourceLocation skinIdentifier = playerSkin.texture();
+            // 1.20.1: getSkinManager().getInsecureSkin() returns ResourceLocation directly, not PlayerSkin
+            ResourceLocation skinIdentifier = VoxelConstants.getMinecraft().getSkinManager().getInsecureSkin(gameProfile);
            
             drawContext.blit(null, skinIdentifier, button.getX() + 6, button.getY() + 6, 8.0F, 8.0F, 8, 8, 8, 8, 64, 64);
             if (entityPlayer != null && entityPlayer.isModelPartShown(PlayerModelPart.HAT)) {
