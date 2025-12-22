@@ -10,8 +10,9 @@ import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - Input event classes don't exist, using primitive parameters instead
+// import net.minecraft.client.input.KeyEvent;
+// import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.lwjgl.glfw.GLFW;
@@ -55,36 +56,39 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
         KeyMapping.resetMapping();
     }
 
+    // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
     @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.keyEditing()) {
-            this.options.setKeyBinding(this.keyForEdit, InputConstants.Type.MOUSE.getOrCreate(mouseButtonEvent.button()));
+            this.options.setKeyBinding(this.keyForEdit, InputConstants.Type.MOUSE.getOrCreate(button));
             this.keyForEdit = null;
             this.checkDuplicateKeys();
             KeyMapping.resetMapping();
             return true;
         } else {
-            return super.mouseClicked(mouseButtonEvent, doubleClick);
+            return super.mouseClicked(mouseX, mouseY, button);
         }
     }
 
+    // 1.20.1: Input event system changed - keyPressed uses primitive parameters
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.keyEditing()) {
-            if (keyEvent.key() == GLFW.GLFW_KEY_ESCAPE) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 boolean isMenuKey = this.keyForEdit.same(this.options.keyBindMenu);
                 if (!isMenuKey) {
                     this.options.setKeyBinding(this.keyForEdit, InputConstants.UNKNOWN);
                 }
             } else {
-                this.options.setKeyBinding(this.keyForEdit, InputConstants.getKey(keyEvent));
+                // 1.20.1: InputConstants.getKey takes keyCode and scanCode
+                this.options.setKeyBinding(this.keyForEdit, InputConstants.getKey(keyCode, scanCode));
             }
             this.keyForEdit = null;
             this.checkDuplicateKeys();
             KeyMapping.resetMapping();
             return true;
         } else {
-            return super.keyPressed(keyEvent);
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
     }
 
@@ -171,13 +175,14 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
             }
         }
 
+        // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
-        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
             GuiButtonRowListKeys.this.setSelected(this);
             boolean clicked = false;
-            if (this.button != null && this.button.mouseClicked(mouseButtonEvent, doubleClick)) {
+            if (this.button != null && this.button.mouseClicked(mouseX, mouseY, button)) {
                 clicked = true;
-            } else if (this.buttonReset != null && this.buttonReset.mouseClicked(mouseButtonEvent, doubleClick)) {
+            } else if (this.buttonReset != null && this.buttonReset.mouseClicked(mouseX, mouseY, button)) {
                 clicked = true;
             }
             return clicked;

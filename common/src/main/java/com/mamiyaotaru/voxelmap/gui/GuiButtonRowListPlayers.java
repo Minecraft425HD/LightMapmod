@@ -8,8 +8,9 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.ConfirmScreen;
-import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - Input event classes don't exist, using primitive parameters instead
+// import net.minecraft.client.input.InputWithModifiers;
+// import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 // import net.minecraft.client.renderer.RenderPipelines;
@@ -40,11 +41,10 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
         ClientPacketListener netHandlerPlayClient = VoxelConstants.getPlayer().connection;
         this.players = new ArrayList<>(netHandlerPlayClient.getOnlinePlayers());
         this.sort();
-        Button everyoneButton = new Button.Plain(this.parentGui.getWidth() / 2 - 75, 0, 150, 20, EVERYONE, null, null) {
-            @Override
-            public void onPress(InputWithModifiers inputWithModifiers) {
-            }
-        };
+        // TODO: 1.20.1 Port - Button.Plain doesn't exist, using Button.Builder instead
+        Button everyoneButton = new Button.Builder(EVERYONE, button -> {
+            // Button click is handled in buttonClicked method
+        }).bounds(this.parentGui.getWidth() / 2 - 75, 0, 150, 20).build();
         everyoneButton.setTooltip(Tooltip.create(Component.translatable("minimap.waypointShare.shareWithName", EVERYONE)));
         this.everyoneRow = new Row(everyoneButton, -1);
         this.updateFilter("");
@@ -176,15 +176,16 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
             }
         }
 
+        // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
-        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
-            if (this.button != null && this.button.mouseClicked(mouseButtonEvent, doubleClick)) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (this.button != null && this.button.mouseClicked(mouseX, mouseY, button)) {
                 GuiButtonRowListPlayers.this.buttonClicked(this.id);
                 return true;
-            } else if (this.button1 != null && this.button1.mouseClicked(mouseButtonEvent, doubleClick)) {
+            } else if (this.button1 != null && this.button1.mouseClicked(mouseX, mouseY, button)) {
                 GuiButtonRowListPlayers.this.buttonClicked(this.id1);
                 return true;
-            } else if (this.button2 != null && this.button2.mouseClicked(mouseButtonEvent, doubleClick)) {
+            } else if (this.button2 != null && this.button2.mouseClicked(mouseX, mouseY, button)) {
                 GuiButtonRowListPlayers.this.buttonClicked(this.id2);
                 return true;
             } else {
@@ -192,16 +193,17 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
             }
         }
 
+        // 1.20.1: Input event system changed - mouseReleased uses primitive parameters
         @Override
-        public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
+        public boolean mouseReleased(double mouseX, double mouseY, int button) {
             if (this.button != null) {
-                this.button.mouseReleased(mouseButtonEvent);
+                this.button.mouseReleased(mouseX, mouseY, button);
                 return true;
             } else if (this.button1 != null) {
-                this.button1.mouseReleased(mouseButtonEvent);
+                this.button1.mouseReleased(mouseX, mouseY, button);
                 return true;
             } else if (this.button2 != null) {
-                this.button2.mouseReleased(mouseButtonEvent);
+                this.button2.mouseReleased(mouseX, mouseY, button);
                 return true;
             } else {
                 return false;

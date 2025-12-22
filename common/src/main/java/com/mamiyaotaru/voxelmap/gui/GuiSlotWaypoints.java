@@ -5,14 +5,17 @@ import com.mamiyaotaru.voxelmap.textures.TextureAtlas;
 import com.mamiyaotaru.voxelmap.util.TextUtils;
 import com.mamiyaotaru.voxelmap.util.Waypoint;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
+// TODO: 1.20.1 Port - CursorTypes package changed or doesn't exist
+// import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
+// TODO: 1.20.1 Port - FilterMode doesn't exist in 1.20.1
+// import com.mojang.blaze3d.textures.FilterMode;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - MouseButtonEvent doesn't exist, using primitive parameters instead
+// import net.minecraft.client.input.MouseButtonEvent;
 // import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
@@ -130,11 +133,12 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
 
     }
 
+    // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
     @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         this.doubleClicked = System.currentTimeMillis() - this.lastClicked < 250L;
         this.lastClicked = System.currentTimeMillis();
-        return super.mouseClicked(mouseButtonEvent, doubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     public class WaypointItem extends AbstractSelectionList.Entry<WaypointItem> implements Comparable<WaypointItem> {
@@ -157,10 +161,12 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
             if (mouseX >= x - padding && mouseY >= y && mouseX <= x + 215 + padding && mouseY <= y + entryHeight) {
                 Component tooltip;
                 if (mouseX >= x + 215 - iconWidth - padding && mouseX <= x + 215 + padding) {
-                    drawContext.requestCursor(CursorTypes.POINTING_HAND);
+                    // TODO: 1.20.1 Port - CursorTypes.POINTING_HAND doesn't exist or has different API
+                    // drawContext.requestCursor(CursorTypes.POINTING_HAND);
                     tooltip = this.waypoint.enabled ? GuiSlotWaypoints.TOOLTIP_DISABLE : GuiSlotWaypoints.TOOLTIP_ENABLE;
                 } else if (mouseX >= x + padding && mouseX <= x + iconWidth + padding) {
-                    drawContext.requestCursor(CursorTypes.POINTING_HAND);
+                    // TODO: 1.20.1 Port - CursorTypes.POINTING_HAND doesn't exist or has different API
+                    // drawContext.requestCursor(CursorTypes.POINTING_HAND);
                     tooltip = this.waypoint == this.parentGui.highlightedWaypoint ? TOOLTIP_UNHIGHLIGHT : TOOLTIP_HIGHLIGHT;
                 } else {
                     String tooltipText = "X: " + this.waypoint.getX() + ", Y: " + this.waypoint.getY() + ", Z: " + this.waypoint.getZ();
@@ -183,11 +189,9 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
             }
         }
 
+        // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
-        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
-            double mouseX = mouseButtonEvent.x();
-            double mouseY = mouseButtonEvent.y();
-
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (mouseY < GuiSlotWaypoints.this.getY() || mouseY > GuiSlotWaypoints.this.getBottom()) {
                 return false;
             }
