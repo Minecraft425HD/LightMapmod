@@ -1,6 +1,7 @@
 package com.mamiyaotaru.voxelmap.gui.overridden;
 
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - MouseButtonEvent doesn't exist, using primitive parameters instead
+// import net.minecraft.client.input.MouseButtonEvent;
 
 public interface IPopupGuiScreen {
     boolean overPopup(int mouseX, int mouseY);
@@ -9,5 +10,6 @@ public interface IPopupGuiScreen {
 
     void popupAction(Popup popup, int action);
 
-    boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick);
+    // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
+    boolean mouseClicked(double mouseX, double mouseY, int button);
 }

@@ -9,8 +9,9 @@ import com.mamiyaotaru.voxelmap.gui.overridden.GuiScreenMinimap;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
+// TODO: 1.20.1 Port - Input event classes don't exist, using primitive parameters instead
+// import net.minecraft.client.input.CharacterEvent;
+// import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
@@ -92,12 +93,12 @@ public class GuiMinimapPerformance extends GuiScreenMinimap {
         par1GuiButton.setMessage(Component.literal(perfBomb + this.options.getKeyText(option)));
     }
 
+    // 1.20.1: Input event system changed - keyPressed uses primitive parameters
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
-        int keyCode = keyEvent.key();
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 258) {
-            this.worldSeedButton.keyPressed(keyEvent);
-            this.teleportCommandButton.keyPressed(keyEvent);
+            this.worldSeedButton.keyPressed(keyCode, scanCode, modifiers);
+            this.teleportCommandButton.keyPressed(keyCode, scanCode, modifiers);
         }
 
         if ((keyCode == 257 || keyCode == 335)) {
@@ -109,13 +110,14 @@ public class GuiMinimapPerformance extends GuiScreenMinimap {
 
         }
 
-        return super.keyPressed(keyEvent);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    // 1.20.1: Input event system changed - charTyped uses primitive parameters
     @Override
-    public boolean charTyped(CharacterEvent characterEvent) {
-        boolean OK = super.charTyped(characterEvent);
-        if (characterEvent.codepoint() == '\r') {
+    public boolean charTyped(char codePoint, int modifiers) {
+        boolean OK = super.charTyped(codePoint, modifiers);
+        if (codePoint == '\r') {
             if (this.worldSeedButton.isEditing()) {
                 this.newSeed();
             } else if (this.teleportCommandButton.isEditing()) {

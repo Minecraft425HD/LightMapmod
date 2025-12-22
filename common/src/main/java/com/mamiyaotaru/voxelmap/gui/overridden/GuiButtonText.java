@@ -4,12 +4,14 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - Input event classes don't exist, using primitive parameters instead
+// import net.minecraft.client.input.CharacterEvent;
+// import net.minecraft.client.input.KeyEvent;
+// import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
-public class GuiButtonText extends Button.Plain {
+// TODO: 1.20.1 Port - Button.Plain doesn't exist, extending Button directly
+public class GuiButtonText extends Button {
     private boolean editing;
     private final EditBox textField;
 
@@ -28,9 +30,10 @@ public class GuiButtonText extends Button.Plain {
         super.renderContents(drawContext, mouseX, mouseY, delta);
     }
 
+    // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
     @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
-        boolean pressed = super.mouseClicked(mouseButtonEvent, doubleClick);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        boolean pressed = super.mouseClicked(mouseX, mouseY, button);
         this.setEditing(pressed);
         return pressed;
     }
@@ -44,14 +47,14 @@ public class GuiButtonText extends Button.Plain {
         textField.setFocused(editing);
     }
 
+    // 1.20.1: Input event system changed - keyPressed uses primitive parameters
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
-        int keyCode = keyEvent.key();
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!(editing)) {
-            return super.keyPressed(keyEvent);
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
         if (keyCode != 257 && keyCode != 335 && keyCode != 258) {
-            return textField.keyPressed(keyEvent);
+            return textField.keyPressed(keyCode, scanCode, modifiers);
         }
 
         setEditing(false);
@@ -59,13 +62,14 @@ public class GuiButtonText extends Button.Plain {
     }
 
 
+    // 1.20.1: Input event system changed - charTyped uses primitive parameters
     @Override
-    public boolean charTyped(CharacterEvent characterEvent) {
+    public boolean charTyped(char codePoint, int modifiers) {
         if (!(editing)) {
-            return super.charTyped(characterEvent);
+            return super.charTyped(codePoint, modifiers);
         }
-        if (characterEvent.codepoint() != '\r') {
-            return textField.charTyped(characterEvent);
+        if (codePoint != '\r') {
+            return textField.charTyped(codePoint, modifiers);
         }
 
         setEditing(false);

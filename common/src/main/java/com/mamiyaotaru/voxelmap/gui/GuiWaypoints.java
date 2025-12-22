@@ -16,9 +16,10 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - Input event classes don't exist, using primitive parameters instead
+// import net.minecraft.client.input.CharacterEvent;
+// import net.minecraft.client.input.KeyEvent;
+// import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
@@ -150,9 +151,10 @@ public class GuiWaypoints extends GuiScreenMinimap implements IGuiWaypoints {
         this.sort();
     }
 
+    // 1.20.1: Input event system changed - keyPressed uses primitive parameters
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
-        boolean OK = super.keyPressed(keyEvent);
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        boolean OK = super.keyPressed(keyCode, scanCode, modifiers);
         if (this.filter.isFocused()) {
             this.waypointList.updateFilter(this.filter.getValue().toLowerCase());
         }
@@ -160,9 +162,10 @@ public class GuiWaypoints extends GuiScreenMinimap implements IGuiWaypoints {
         return OK;
     }
 
+    // 1.20.1: Input event system changed - charTyped uses primitive parameters
     @Override
-    public boolean charTyped(CharacterEvent characterEvent) {
-        boolean OK = super.charTyped(characterEvent);
+    public boolean charTyped(char codePoint, int modifiers) {
+        boolean OK = super.charTyped(codePoint, modifiers);
         if (this.filter.isFocused()) {
             this.waypointList.updateFilter(this.filter.getValue().toLowerCase());
         }
@@ -170,21 +173,27 @@ public class GuiWaypoints extends GuiScreenMinimap implements IGuiWaypoints {
         return OK;
     }
 
+    // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
     @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
-        this.waypointList.mouseClicked(mouseButtonEvent, bl);
-        return super.mouseClicked(mouseButtonEvent, bl);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        this.waypointList.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
+    // 1.20.1: Input event system changed - mouseReleased uses primitive parameters
     @Override
-    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
-        this.waypointList.mouseReleased(mouseButtonEvent);
-        return super.mouseReleased(mouseButtonEvent);
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        // TODO: 1.20.1 Port - GuiSlotWaypoints doesn't have mouseReleased method
+        // this.waypointList.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
+    // 1.20.1: Input event system changed - mouseDragged uses primitive parameters
     @Override
-    public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double d, double e) {
-        return this.waypointList.mouseDragged(mouseButtonEvent, d, e);
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        // TODO: 1.20.1 Port - GuiSlotWaypoints doesn't have mouseDragged method
+        // return this.waypointList.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
