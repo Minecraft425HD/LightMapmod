@@ -40,11 +40,7 @@ configurations {
 }
 
 dependencies {
-    jarJar(project(":forge", "serviceConfig")) {
-        version {
-            strictly("[${MOD_VERSION},)")
-        }
-    }
+    jarJar(project(":forge", "serviceConfig"))
 }
 
 tasks.jar {
