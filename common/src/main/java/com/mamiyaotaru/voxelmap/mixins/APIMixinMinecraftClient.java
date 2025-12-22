@@ -10,7 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Minecraft.class)
 public class APIMixinMinecraftClient {
 
-    @Inject(method = "tick()V", at = @At("RETURN"))
+    // 1.20.1: tick method
+    @Inject(method = "tick()V", at = @At("RETURN"), require = 0)
     private void onTick(CallbackInfo ci) {
         VoxelConstants.clientTick();
     }

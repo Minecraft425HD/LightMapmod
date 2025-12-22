@@ -5,8 +5,8 @@ import com.mamiyaotaru.voxelmap.entityrender.EntityVariantData;
 import java.util.Map;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+// EntityRenderState doesn't exist in 1.20.1
+// LivingEntityRenderState doesn't exist in 1.20.1
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -34,11 +34,12 @@ public class HorseVariantDataFactory extends DefaultEntityVariantDataFactory {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public EntityVariantData createVariantData(Entity entity, EntityRenderer renderer, EntityRenderState state, int size, boolean addBorder) {
+    public EntityVariantData createVariantData(Entity entity, EntityRenderer renderer, int size, boolean addBorder) {
         Horse horse = (Horse) entity;
         Markings markings = horse.getMarkings();
         ResourceLocation secondaryTexture = LOCATION_BY_MARKINGS.get(markings);
-        return new DefaultEntityVariantData(getType(), ((LivingEntityRenderer) renderer).getTextureLocation((LivingEntityRenderState) state), secondaryTexture == INVISIBLE_TEXTURE ? null : secondaryTexture, size, addBorder);
+        // 1.20.1: getTextureLocation() takes Entity, not LivingEntityRenderState
+        return new DefaultEntityVariantData(getType(), ((LivingEntityRenderer) renderer).getTextureLocation(entity), secondaryTexture == INVISIBLE_TEXTURE ? null : secondaryTexture, size, addBorder);
     }
 
 }

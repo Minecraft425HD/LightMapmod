@@ -1,15 +1,17 @@
 package com.mamiyaotaru.voxelmap.util;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
+// TODO: 1.20.1 Port - GPU APIs don't exist in 1.20.1
+// import com.mojang.blaze3d.buffers.GpuBuffer;
+// import com.mojang.blaze3d.systems.CommandEncoder;
+// import com.mojang.blaze3d.systems.RenderSystem;
+// import com.mojang.blaze3d.textures.GpuTexture;
 import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
 import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 
 public class GLUtils {
-    public static void readTextureContentsToBufferedImage(GpuTexture gpuTexture, Consumer<BufferedImage> resultConsumer) {
+    // TODO: 1.20.1 Port - Stubbed out because GpuTexture doesn't exist in 1.20.1
+    public static void readTextureContentsToBufferedImage(Object gpuTexture, Consumer<BufferedImage> resultConsumer) {
         // TODO: 1.20.1 Port - RenderSystem.getDevice() doesn't exist in 1.20.1
         // RenderSystem.assertOnRenderThread();
         // int bytePerPixel = gpuTexture.getFormat().pixelSize();

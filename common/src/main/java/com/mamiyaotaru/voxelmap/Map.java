@@ -27,9 +27,10 @@ import com.mamiyaotaru.voxelmap.util.VoxelMapCachedOrthoProjectionMatrixBuffer;
 import com.mamiyaotaru.voxelmap.util.VoxelMapGuiGraphics;
 import com.mamiyaotaru.voxelmap.util.VoxelMapPipelines;
 import com.mamiyaotaru.voxelmap.util.Waypoint;
-import com.mojang.blaze3d.ProjectionType;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
+// TODO: 1.20.1 Port - GPU APIs don't exist in 1.20.1
+// import com.mojang.blaze3d.ProjectionType;
+// import com.mojang.blaze3d.buffers.GpuBuffer;
+// import com.mojang.blaze3d.buffers.GpuBufferSlice;
 // import com.mojang.blaze3d.pipeline.RenderPipeline;
 // import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
