@@ -2,7 +2,8 @@ package com.mamiyaotaru.voxelmap.entityrender.variants;
 
 import com.mamiyaotaru.voxelmap.entityrender.EntityVariantData;
 import com.mamiyaotaru.voxelmap.entityrender.EntityVariantDataFactory;
-import com.mamiyaotaru.voxelmap.mixins.AccessorEnderDragonRenderer;
+// TODO: 1.20.1 Port - AccessorEnderDragonRenderer is disabled
+// import com.mamiyaotaru.voxelmap.mixins.AccessorEnderDragonRenderer;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;

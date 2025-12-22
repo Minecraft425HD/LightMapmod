@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ChatComponent.class)
 public class MixinChatHud {
 
-    // TODO: 1.20.1 Port - addMessage uses 1-parameter signature, let Mixin auto-detect
-    @Inject(method = "addMessage", at = @At("HEAD"))
+    // TODO: 1.20.1 Port - addMessage is overloaded, must specify 1-parameter descriptor
+    @Inject(method = "addMessage(Lnet/minecraft/network/chat/Component;)V", at = @At("HEAD"))
     private void addMessage(Component message, CallbackInfo ci) {
         VoxelMap.checkPermissionMessages(message);
     }

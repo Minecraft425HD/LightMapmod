@@ -15,8 +15,8 @@ public class MixinInGameHud {
     //
     // entriesHeight is: int n = m * 9;
 
-    // TODO: 1.20.1 Port - Let Mixin auto-detect method signature with official mappings
-    @ModifyVariable(method = "displayScoreboardSidebar", at = @At("STORE"), ordinal = 6, require = 0)
+    // TODO: 1.20.1 Port - Explicit descriptor required for official mappings
+    @ModifyVariable(method = "displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V", at = @At("STORE"), ordinal = 6, require = 0)
     private int injected(int bottomX, @Local(ordinal = 5) int entriesHeight) {
         return VoxelConstants.moveScoreboard(bottomX, entriesHeight);
     }
