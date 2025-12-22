@@ -25,9 +25,10 @@ public record FourColoredRectangleRenderState(
         int color11,
         @Nullable ScreenRectangle scissorArea,
         @Nullable ScreenRectangle bounds) { // GuiElementRenderState doesn't exist in 1.20.1
+    // TODO: 1.20.1 Port - RenderPipeline and TextureSetup don't exist, using Object instead
     public FourColoredRectangleRenderState(
-            RenderPipeline renderPipeline,
-            TextureSetup textureSetup,
+            Object renderPipeline,
+            Object textureSetup,
             Matrix3x2f matrix3x2f,
             float x0,
             float y0,

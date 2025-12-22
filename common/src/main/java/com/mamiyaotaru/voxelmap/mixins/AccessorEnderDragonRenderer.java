@@ -9,12 +9,12 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(EnderDragonRenderer.class)
 public interface AccessorEnderDragonRenderer {
-    // 1.20.1: Field names may be different - using require = 0
-    @Accessor(value = "model", remap = false)
+    // 1.20.1: Use remap = true to let Mixin handle field name mapping
+    @Accessor("model")
     EnderDragonModel getModel();
 
-    // 1.20.1: DRAGON_LOCATION constant may have different name
-    @Accessor(value = "DRAGON_LOCATION", remap = false)
+    // 1.20.1: Use remap = true for constants as well
+    @Accessor("DRAGON_LOCATION")
     static ResourceLocation getTextureLocation() {
         throw new AssertionError();
     }
