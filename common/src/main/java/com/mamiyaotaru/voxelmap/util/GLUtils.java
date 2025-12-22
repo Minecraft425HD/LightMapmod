@@ -6,7 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
-import net.minecraft.util.ARGB;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 
 public class GLUtils {
     public static void readTextureContentsToBufferedImage(GpuTexture gpuTexture, Consumer<BufferedImage> resultConsumer) {
@@ -24,7 +24,7 @@ public class GLUtils {
         //         for (int y = 0; y < height; y++) {
         //             for (int x = 0; x < width; x++) {
         //                 int pixel = readView.data().getInt((x + y * width) * bytePerPixel);
-        //                 image.setRGB(x, y, ARGB.fromABGR(pixel));
+        //                 image.setRGB(x, y, ARGBCompat.toABGR(pixel));
         //             }
         //         }
         //     }

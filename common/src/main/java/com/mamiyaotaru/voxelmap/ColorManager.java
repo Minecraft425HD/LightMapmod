@@ -27,7 +27,7 @@ import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.ARGB;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.FoliageColor;
@@ -332,7 +332,7 @@ public class ColorManager {
                 col = this.blockColorsWithDefaultTint[blockStateID];
             } catch (ArrayIndexOutOfBoundsException ignored) {
             }
-            return ARGB.toABGR(col != 0xFEFF00FF ? col : this.getBlockColor(blockPos, blockStateID));
+            return ARGBCompat.toABGR(col != 0xFEFF00FF ? col : this.getBlockColor(blockPos, blockStateID));
         } else {
             return 0;
         }
@@ -343,11 +343,11 @@ public class ColorManager {
             if (this.optifineInstalled && this.biomeTextureAvailable.contains(blockStateID)) {
                 Integer col = this.blockBiomeSpecificColors.get(blockStateID + " " + biomeID);
                 if (col != null) {
-                    return ARGB.toABGR(col);
+                    return ARGBCompat.toABGR(col);
                 }
             }
 
-            return ARGB.toABGR(this.getBlockColor(blockPos, blockStateID));
+            return ARGBCompat.toABGR(this.getBlockColor(blockPos, blockStateID));
         } else {
             return 0;
         }
@@ -616,7 +616,7 @@ public class ColorManager {
             tint = this.getBuiltInBiomeTint(mapData, world, blockState, blockStateID, blockPos, loopBlockPos, startX, startZ, live);
         }
 
-        return ARGB.toABGR(tint);
+        return ARGBCompat.toABGR(tint);
     }
 
     private int getBuiltInBiomeTint(AbstractMapData mapData, Level world, BlockState blockState, int blockStateID, MutableBlockPos blockPos, MutableBlockPos loopBlockPos, int startX, int startZ, boolean live) {

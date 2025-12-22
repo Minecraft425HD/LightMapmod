@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.util.ARGB;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
@@ -453,7 +453,7 @@ public class PersistentMap implements IChangeObserver {
         surfaceBlockState = mapData.getBlockstate(imageX, imageY);
         if (surfaceBlockState != null && (surfaceBlockState.getBlock() != BlockRepository.air || mapData.getLight(imageX, imageY) != 0 || mapData.getHeight(imageX, imageY) != Short.MIN_VALUE) && biome != null) {
             if (mapOptions.biomeOverlay == 1) {
-                color24 = ARGB.toABGR(BiomeRepository.getBiomeColor(biome) | 0xFF000000);
+                color24 = ARGBCompat.toABGR(BiomeRepository.getBiomeColor(biome) | 0xFF000000);
             } else {
                 boolean solid = false;
                 int blockStateID;
@@ -600,7 +600,7 @@ public class PersistentMap implements IChangeObserver {
                 if (mapOptions.biomeOverlay == 2) {
                     int bc = 0;
                     if (biome != null) {
-                        bc = ARGB.toABGR(BiomeRepository.getBiomeColor(biome));
+                        bc = ARGBCompat.toABGR(BiomeRepository.getBiomeColor(biome));
                     }
 
                     bc = 0x7F000000 | bc;
@@ -608,7 +608,7 @@ public class PersistentMap implements IChangeObserver {
                 }
 
             }
-            return MapUtils.doSlimeAndGrid(ARGB.toABGR(color24), world, mcX, mcZ);
+            return MapUtils.doSlimeAndGrid(ARGBCompat.toABGR(color24), world, mcX, mcZ);
         } else {
             return 0;
         }

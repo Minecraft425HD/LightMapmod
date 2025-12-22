@@ -13,19 +13,19 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.bee.Bee;
-import net.minecraft.world.entity.animal.polarbear.PolarBear;
-import net.minecraft.world.entity.animal.rabbit.Rabbit;
-import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.animal.polar_bear.PolarBear;
+import net.minecraft.world.entity.animal.Rabbit;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 
 import java.util.ArrayList;
 
@@ -194,12 +194,12 @@ public class Radar implements IRadar {
 
             int color;
             if (wayY < 0) {
-                color = ARGB.colorFromFloat(contact.brightness, 1.0F, 1.0F, 1.0F);
+                color = ARGBCompat.colorFromFloat(contact.brightness, 1.0F, 1.0F, 1.0F);
             } else {
                 if (contact.brightness < 0.3f) {
                     contact.brightness = 0.3f;
                 }
-                color = ARGB.colorFromFloat(1.0f, contact.brightness, contact.brightness, contact.brightness);
+                color = ARGBCompat.colorFromFloat(1.0f, contact.brightness, contact.brightness, contact.brightness);
             }
 
             if (this.minimapOptions.rotates) {

@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ARGB;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +82,7 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
 
         int lineHeight = getFont().lineHeight;
 
-        int boxColor = ARGB.color((int) (minecraft.options.textBackgroundOpacity().get().floatValue() * 255.0F), 0, 0, 0);
+        int boxColor = ARGBCompat.color((int) (minecraft.options.textBackgroundOpacity().get().floatValue() * 255.0F), 0, 0, 0);
         int boxTop = centerY - ((this.welcomeTexts.size() * lineHeight) / 2);
 
         // Main Box

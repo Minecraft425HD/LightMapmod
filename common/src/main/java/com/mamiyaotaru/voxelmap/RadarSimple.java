@@ -16,7 +16,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.ARGB;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -143,7 +143,7 @@ public class RadarSimple implements IRadar {
             contact.angle = (float) Math.toDegrees(Math.atan2(wayX, wayZ));
             contact.distance = Math.sqrt(wayX * wayX + wayZ * wayZ) / this.layoutVariables.zoomScaleAdjusted;
 
-            int color = wayY < 0 ? ARGB.colorFromFloat(contact.brightness, 1, 1, 1) : ARGB.colorFromFloat(1, contact.brightness, contact.brightness, contact.brightness);
+            int color = wayY < 0 ? ARGBCompat.colorFromFloat(contact.brightness, 1, 1, 1) : ARGBCompat.colorFromFloat(1, contact.brightness, contact.brightness, contact.brightness);
 
             if (this.minimapOptions.rotates) {
                 contact.angle += this.direction;

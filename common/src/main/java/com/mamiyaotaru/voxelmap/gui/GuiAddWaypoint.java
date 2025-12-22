@@ -20,7 +20,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 
 public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen {
     private static final ResourceLocation PICKER = new ResourceLocation("voxelmap:images/colorpicker.png");
@@ -202,9 +202,9 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
         if (this.choosingColor && button == 0) {
             int pickedColor = pickColor(colorPickerWidth, colorPickerHeight, (int) mouseX, (int) mouseY);
             if (pickedColor != -1) {
-                this.waypoint.red = ARGB.red(pickedColor) / 255.0F;
-                this.waypoint.green = ARGB.green(pickedColor) / 255.0F;
-                this.waypoint.blue = ARGB.blue(pickedColor) / 255.0F;
+                this.waypoint.red = ARGBCompat.red(pickedColor) / 255.0F;
+                this.waypoint.green = ARGBCompat.green(pickedColor) / 255.0F;
+                this.waypoint.blue = ARGBCompat.blue(pickedColor) / 255.0F;
 
                 this.choosingColor = false;
             }
@@ -284,9 +284,9 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
 
                 int pickedColor = pickColor(colorPickerWidth, colorPickerHeight, mouseX, mouseY);
                 if (pickedColor != -1) {
-                    int red = ARGB.red(pickedColor);
-                    int green = ARGB.green(pickedColor);
-                    int blue = ARGB.blue(pickedColor);
+                    int red = ARGBCompat.red(pickedColor);
+                    int green = ARGBCompat.green(pickedColor);
+                    int blue = ARGBCompat.blue(pickedColor);
                    
                     drawContext.blit(null, TARGET, mouseX - 8, mouseY - 8, 0f, 0f, 16, 16, 16, 16);
                     drawContext.drawCenteredString(this.getFont(), "R: " + red + ", G: " + green + ", B: " + blue, this.getWidth() / 2, this.getHeight() / 2 + colorPickerHeight / 2 + 8, pickedColor);

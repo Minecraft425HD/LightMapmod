@@ -6,8 +6,8 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.TreeSet;
 import net.minecraft.client.Camera;
-import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 import net.minecraft.world.phys.Vec3;
 
 public class Waypoint implements Serializable, Comparable<Waypoint> {
@@ -46,7 +46,7 @@ public class Waypoint implements Serializable, Comparable<Waypoint> {
     }
 
     public int getUnifiedColor(float alpha) {
-        return ARGB.colorFromFloat(alpha, red, green, blue);
+        return ARGBCompat.colorFromFloat(alpha, red, green, blue);
     }
 
     public boolean isActive() {

@@ -56,7 +56,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 import net.minecraft.util.Mth;
 import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -618,7 +618,7 @@ public class Map implements Runnable, IChangeObserver {
         if (this.lightmapColors == null) {
             return 0;
         }
-        return ARGB.toABGR(this.lightmapColors[blockLight + skyLight * 16]);
+        return ARGBCompat.toABGR(this.lightmapColors[blockLight + skyLight * 16]);
     }
 
     public void drawMinimap(GuiGraphics drawContext) {
@@ -952,7 +952,7 @@ public class Map implements Runnable, IChangeObserver {
 
         if (this.options.biomeOverlay == 1) {
             if (biome != null) {
-                color24 = ARGB.toABGR(BiomeRepository.getBiomeColor(biome) | 0xFF000000);
+                color24 = ARGBCompat.toABGR(BiomeRepository.getBiomeColor(biome) | 0xFF000000);
             } else {
                 color24 = 0;
             }
@@ -1280,7 +1280,7 @@ public class Map implements Runnable, IChangeObserver {
             if (this.options.biomeOverlay == 2) {
                 int bc = 0;
                 if (biome != null) {
-                    bc = ARGB.toABGR(BiomeRepository.getBiomeColor(biome));
+                    bc = ARGBCompat.toABGR(BiomeRepository.getBiomeColor(biome));
                 }
 
                 bc = 2130706432 | bc;
@@ -1505,7 +1505,7 @@ public class Map implements Runnable, IChangeObserver {
             combinedLight = getLightmapColor(skyLight, blockLight);
         }
 
-        return ARGB.toABGR(combinedLight);
+        return ARGBCompat.toABGR(combinedLight);
     }
 
     private void renderMap(GuiGraphics guiGraphics, int x, int y, int scScale, float scaleProj) {
