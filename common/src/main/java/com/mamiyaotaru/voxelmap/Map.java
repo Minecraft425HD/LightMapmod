@@ -33,11 +33,13 @@ import com.mamiyaotaru.voxelmap.util.Waypoint;
 // import com.mojang.blaze3d.buffers.GpuBufferSlice;
 // import com.mojang.blaze3d.pipeline.RenderPipeline;
 // import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 // TODO: 1.20.1 Port - These texture classes don't exist in 1.20.1
 // import com.mojang.blaze3d.textures.FilterMode;
 // import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 // TODO: 1.20.1 Port - MeshData doesn't exist in 1.20.1
 // import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -446,8 +448,8 @@ public class Map implements Runnable, IChangeObserver {
             this.doFullRender = false;
         }
 
-        // 1.20.1: debugEntries.isOverlayVisible() -> getDebugOverlay().showDebugScreen()
-        boolean enabled = !minecraft.options.hideGui && (this.options.showUnderMenus || minecraft.screen == null) && !minecraft.getDebugOverlay().showDebugScreen();
+        // 1.20.1: debugEntries.isOverlayVisible() -> minecraft.options.renderDebug
+        boolean enabled = !minecraft.options.hideGui && (this.options.showUnderMenus || minecraft.screen == null) && !minecraft.options.renderDebug;
 
         this.direction = GameVariableAccessShim.rotationYaw() + 180.0F;
 
@@ -583,7 +585,7 @@ public class Map implements Runnable, IChangeObserver {
                 }
 
                 MutableBlockPos blockPos = MutableBlockPosCache.get();
-                int biomeID = this.world.registryAccess().lookupOrThrow(Registries.BIOME).getId(this.world.getBiome(blockPos.withXYZ(GameVariableAccessShim.xCoord(), GameVariableAccessShim.yCoord(), GameVariableAccessShim.zCoord())).value());
+                int biomeID = this.world.registryAccess().registryOrThrow(Registries.BIOME).getId(this.world.getBiome(blockPos.withXYZ(GameVariableAccessShim.xCoord(), GameVariableAccessShim.yCoord(), GameVariableAccessShim.zCoord())).value());
                 MutableBlockPosCache.release(blockPos);
                 if (biomeID != this.lastBiome) {
                     this.needSkyColor = true;
@@ -605,7 +607,8 @@ public class Map implements Runnable, IChangeObserver {
         // TODO: 1.20.1 Port - FogRenderer.computeFogColor() API is different in 1.20.1
         // Original: Vector4f color = Minecraft.getInstance().gameRenderer.fogRenderer.computeFogColor(minecraft.gameRenderer.getMainCamera(), 0.0F, this.world, minecraft.options.renderDistance().get(), minecraft.gameRenderer.getDarkenWorldAmount(0.0F));
         // Fallback: Get biome sky color
-        int skyColorInt = this.world.getSkyColor(minecraft.gameRenderer.getMainCamera().getPosition(), 0.0F);
+        net.minecraft.world.phys.Vec3 skyColorVec = this.world.getSkyColor(minecraft.gameRenderer.getMainCamera().getPosition(), 0.0F);
+        int skyColorInt = ((int)(skyColorVec.x * 255) << 16) | ((int)(skyColorVec.y * 255) << 8) | (int)(skyColorVec.z * 255);
         Vector4f color = new Vector4f(((skyColorInt >> 16) & 0xFF) / 255.0F, ((skyColorInt >> 8) & 0xFF) / 255.0F, (skyColorInt & 0xFF) / 255.0F, 1.0F);
         float r = color.x;
         float g = color.y;
@@ -1548,12 +1551,12 @@ public class Map implements Runnable, IChangeObserver {
         guiGraphics.pose().setIdentity();
 
         // TODO: 1.20.1 Port - RenderPipelines.GUI_TEXTURED.getVertexFormat() doesn't exist, using stub
-        BufferBuilder bufferBuilder = fboTessellator.begin(Mode.QUADS, VertexFormat.POSITION_TEX_COLOR);
+        BufferBuilder bufferBuilder = fboTessellator.begin(Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
-        bufferBuilder.addVertex(-256, 256, -2500).setUv(0, 0).setColor(255, 255, 255, 255);
-        bufferBuilder.addVertex(256, 256, -2500).setUv(1, 0).setColor(255, 255, 255, 255);
-        bufferBuilder.addVertex(256, -256, -2500).setUv(1, 1).setColor(255, 255, 255, 255);
-        bufferBuilder.addVertex(-256, -256, -2500).setUv(0, 1).setColor(255, 255, 255, 255);
+        bufferBuilder.vertex(guiGraphics.pose().last().pose(), -256, 256, -2500).uv(0, 0).color(255, 255, 255, 255).endVertex();
+        bufferBuilder.vertex(guiGraphics.pose().last().pose(), 256, 256, -2500).uv(1, 0).color(255, 255, 255, 255).endVertex();
+        bufferBuilder.vertex(guiGraphics.pose().last().pose(), 256, -256, -2500).uv(1, 1).color(255, 255, 255, 255).endVertex();
+        bufferBuilder.vertex(guiGraphics.pose().last().pose(), -256, -256, -2500).uv(0, 1).color(255, 255, 255, 255).endVertex();
 
         // guiGraphics.pose().translate(256, 256, 0.0f);
         if (!this.options.rotates) {
@@ -1567,26 +1570,31 @@ public class Map implements Runnable, IChangeObserver {
 
         Vector3f vector3f = new Vector3f();
         org.joml.Matrix4f matrix = guiGraphics.pose().last().pose();
+        org.joml.Matrix4f identityMatrix = new org.joml.Matrix4f();
         org.joml.Vector4f vector4f = new org.joml.Vector4f(-256, 256, 0, 1);
         vector4f.mul(matrix);
         vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
-        bufferBuilder.addVertex(vector3f.x, vector3f.y, -2500).setUv(0, 0).setColor(255, 255, 255, 255);
+        bufferBuilder.vertex(identityMatrix, vector3f.x, vector3f.y, -2500).uv(0, 0).color(255, 255, 255, 255).endVertex();
 
         vector4f.set(256, 256, 0, 1);
         vector4f.mul(matrix);
         vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
-        bufferBuilder.addVertex(vector3f.x, vector3f.y, -2500).setUv(1, 0).setColor(255, 255, 255, 255);
+        bufferBuilder.vertex(identityMatrix, vector3f.x, vector3f.y, -2500).uv(1, 0).color(255, 255, 255, 255).endVertex();
 
         vector4f.set(256, -256, 0, 1);
         vector4f.mul(matrix);
         vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
-        bufferBuilder.addVertex(vector3f.x, vector3f.y, -2500).setUv(1, 1).setColor(255, 255, 255, 255);
+        bufferBuilder.vertex(identityMatrix, vector3f.x, vector3f.y, -2500).uv(1, 1).color(255, 255, 255, 255).endVertex();
 
         vector4f.set(-256, -256, 0, 1);
         vector4f.mul(matrix);
         vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
-        bufferBuilder.addVertex(vector3f.x, vector3f.y, -2500).setUv(0, 1).setColor(255, 255, 255, 255);
+        bufferBuilder.vertex(identityMatrix, vector3f.x, vector3f.y, -2500).uv(0, 1).color(255, 255, 255, 255).endVertex();
 
+        // TODO: 1.20.1 Port - GPU rendering APIs (ProjectionType, GpuBufferSlice, RenderPass, etc.) don't exist in 1.20.1
+        // This entire section from lines 1594-1649 needs to be rewritten for 1.20.1 rendering APIs
+        // Commenting out for now to achieve compilation
+        /*
         ProjectionType originalProjectionType = RenderSystem.getProjectionType();
         GpuBufferSlice originalProjectionMatrix = RenderSystem.getProjectionMatrixBuffer();
         RenderSystem.setProjectionMatrix(projection.getBuffer(), ProjectionType.ORTHOGRAPHIC);
@@ -1600,11 +1608,9 @@ public class Map implements Runnable, IChangeObserver {
                         new Vector3f(),
                         new Matrix4f());
 
-        // TODO: 1.20.1 Port - RenderPipeline doesn't exist in 1.20.1, this entire section needs rewrite
         Object renderPipeline = VoxelMapPipelines.GUI_TEXTURED_ANY_DEPTH_PIPELINE;
         try (MeshData meshData = bufferBuilder.build()) {
-            // TODO: 1.20.1 Port - Replace with 1.20.1 compatible vertex buffer upload
-            GpuBuffer vertexBuffer = null; // renderPipeline.getVertexFormat().uploadImmediateVertexBuffer(meshData.vertexBuffer());
+            GpuBuffer vertexBuffer = null;
             GpuBuffer indexBuffer;
             VertexFormat.IndexType indexType;
             if (meshData.indexBuffer() == null) {
@@ -1612,8 +1618,7 @@ public class Map implements Runnable, IChangeObserver {
                 indexBuffer = autoStorageIndexBuffer.getBuffer(meshData.drawState().indexCount());
                 indexType = autoStorageIndexBuffer.type();
             } else {
-                // TODO: 1.20.1 Port - Replace with 1.20.1 compatible index buffer upload
-                indexBuffer = null; // renderPipeline.getVertexFormat().uploadImmediateIndexBuffer(meshData.indexBuffer());
+                indexBuffer = null;
                 indexType = meshData.drawState().indexType();
             }
 
@@ -1631,26 +1636,23 @@ public class Map implements Runnable, IChangeObserver {
                 renderPass.setVertexBuffer(0, vertexBuffer);
                 renderPass.setIndexBuffer(indexBuffer, indexType);
 
-                // TODO: 1.20.1 Port - getTextureView() and getSampler() don't exist in 1.20.1
-                // renderPass.bindTexture("Sampler0", stencilTexture.getTextureView(), stencilTexture.getSampler());
                 renderPass.drawIndexed(0, 0, meshData.drawState().indexCount() / 2, 1);
                 renderPass.setPipeline(VoxelMapPipelines.GUI_TEXTURED_ANY_DEPTH_DST_ALPHA_PIPELINE);
 
-                // TODO: 1.20.1 Port - getTextureView() and getSampler() don't exist in 1.20.1
-                // renderPass.bindTexture("Sampler0", mapImages[this.zoom].getTextureView(), mapImages[this.zoom].getSampler());
                 renderPass.drawIndexed(0, meshData.drawState().indexCount() / 2, meshData.drawState().indexCount() / 2, 1);
             }
         }
         RenderSystem.getModelViewStack().popPose();
         RenderSystem.setProjectionMatrix(originalProjectionMatrix, originalProjectionType);
         fboTessellator.clear();
+        */
         // if (((saved++) % 1000) == 0)
         // ImageUtils.saveImage("minimap_" + saved, fboTexture);
 
         guiGraphics.pose().popPose();
 
-       
-        VoxelMapGuiGraphics.blitFloat(guiGraphics, null, fboTextureView, x - 32, y - 32, 64, 64, 0, 1, 0, 1, 0xffffffff);
+        // TODO: 1.20.1 Port - fboTextureView depends on GPU rendering APIs that don't exist in 1.20.1
+        // VoxelMapGuiGraphics.blitFloat(guiGraphics, null, fboTextureView, x - 32, y - 32, 64, 64, 0, 1, 0, 1, 0xffffffff);
 
         if (VoxelConstants.getVoxelMapInstance().getRadar() != null) {
             this.layoutVariables.updateVars(scScale, x, y, this.zoomScale, this.zoomScaleAdjusted);
@@ -1807,8 +1809,8 @@ public class Map implements Runnable, IChangeObserver {
         guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(this.options.rotates && !this.fullscreenMap ? 0.0F : this.direction + this.northRotate));
         guiGraphics.pose().translate(-x, -y, 0.0f);
 
-       
-        guiGraphics.blit(null, resourceArrow, x - 4, y - 4, 0, 0, 8, 8, 8, 8);
+
+        guiGraphics.blit(resourceArrow, x - 4, y - 4, 0, 0, 8, 8, 8, 8);
 
         guiGraphics.pose().popPose();
     }
@@ -1827,11 +1829,11 @@ public class Map implements Runnable, IChangeObserver {
         matrixStack.scale(scaleProj, scaleProj, 1.0f);
         matrixStack.translate(scWidth / 2.0F, scHeight / 2.0F, 0.0f);
         matrixStack.mulPose(Axis.ZP.rotationDegrees(this.northRotate));
-        matrixStack.translate(-(scWidth / 2.0F), -(scHeight / 2.0F));
+        matrixStack.translate(-(scWidth / 2.0F), -(scHeight / 2.0F), 0.0f);
         int left = scWidth / 2 - 128;
         int top = scHeight / 2 - 128;
-       
-        guiGraphics.blit(null, mapResources[this.zoom], left, top, 0, 0, 256, 256, 256, 256);
+
+        guiGraphics.blit(mapResources[this.zoom], left, top, 0, 0, 256, 256, 256, 256);
         matrixStack.popPose();
 
         if (this.options.biomeOverlay != 0) {
@@ -1860,7 +1862,7 @@ public class Map implements Runnable, IChangeObserver {
     }
 
     private void drawMapFrame(GuiGraphics guiGraphics, int x, int y, boolean squaremap) {
-        Identifier frameResource = squaremap ? resourceSquareMap : resourceRoundMap;
+        ResourceLocation frameResource = squaremap ? resourceSquareMap : resourceRoundMap;
         guiGraphics.blit(VoxelMapPipelines.GUI_TEXTURED_LESS_OR_EQUAL_DEPTH_PIPELINE, frameResource, x - 32, y - 32, 0, 0, 64, 64, 64, 64);
     }
 
@@ -1893,19 +1895,19 @@ public class Map implements Runnable, IChangeObserver {
         poseStack.scale(scale, scale, 1.0f);
 
         poseStack.pushPose();
-        poseStack.translate((float) (distance * Math.sin(Math.toRadians(-(rotate - 90.0)))), (float) (distance * Math.cos(Math.toRadians(-(rotate - 90.0)))));
+        poseStack.translate((float) (distance * Math.sin(Math.toRadians(-(rotate - 90.0)))), (float) (distance * Math.cos(Math.toRadians(-(rotate - 90.0)))), 0.0f);
         this.write(drawContext, "N", x / scale - 2.0F, y / scale - 4.0F, 0xFFFFFFFF);
         poseStack.popPose();
         poseStack.pushPose();
-        poseStack.translate((float) (distance * Math.sin(Math.toRadians(-rotate))), (float) (distance * Math.cos(Math.toRadians(-rotate))));
+        poseStack.translate((float) (distance * Math.sin(Math.toRadians(-rotate))), (float) (distance * Math.cos(Math.toRadians(-rotate))), 0.0f);
         this.write(drawContext, "E", x / scale - 2.0F, y / scale - 4.0F, 0xFFFFFFFF);
         poseStack.popPose();
         poseStack.pushPose();
-        poseStack.translate((float) (distance * Math.sin(Math.toRadians(-(rotate + 90.0)))), (float) (distance * Math.cos(Math.toRadians(-(rotate + 90.0)))));
+        poseStack.translate((float) (distance * Math.sin(Math.toRadians(-(rotate + 90.0)))), (float) (distance * Math.cos(Math.toRadians(-(rotate + 90.0)))), 0.0f);
         this.write(drawContext, "S", x / scale - 2.0F, y / scale - 4.0F, 0xFFFFFFFF);
         poseStack.popPose();
         poseStack.pushPose();
-        poseStack.translate((float) (distance * Math.sin(Math.toRadians(-(rotate + 180.0)))), (float) (distance * Math.cos(Math.toRadians(-(rotate + 180.0)))));
+        poseStack.translate((float) (distance * Math.sin(Math.toRadians(-(rotate + 180.0)))), (float) (distance * Math.cos(Math.toRadians(-(rotate + 180.0)))), 0.0f);
         this.write(drawContext, "W", x / scale - 2.0F, y / scale - 4.0F, 0xFFFFFFFF);
         poseStack.popPose();
 

@@ -24,6 +24,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 // AtlasIds doesn't exist in 1.20.1 - using TextureAtlas.LOCATION_BLOCKS instead
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.Registry;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import com.mamiyaotaru.voxelmap.util.ARGBCompat;
@@ -90,12 +92,12 @@ public class ColorManager {
     private boolean loaded;
     private boolean loadedTerrainImage;
     private final MutableBlockPos dummyBlockPos = new MutableBlockPos(BlockPos.ZERO.getX(), BlockPos.ZERO.getY(), BlockPos.ZERO.getZ());
-    private final ColorResolver spruceColorResolver = (blockState, biomex, blockPos) -> FoliageColor.FOLIAGE_EVERGREEN;
-    private final ColorResolver birchColorResolver = (blockState, biomex, blockPos) -> FoliageColor.FOLIAGE_BIRCH;
-    private final ColorResolver mangroveColorResolver = (blockState, biomex, blockPos) -> FoliageColor.FOLIAGE_MANGROVE;
+    private final ColorResolver spruceColorResolver = (blockState, biomex, blockPos) -> FoliageColor.getEvergreenColor();
+    private final ColorResolver birchColorResolver = (blockState, biomex, blockPos) -> FoliageColor.getBirchColor();
+    private final ColorResolver mangroveColorResolver = (blockState, biomex, blockPos) -> FoliageColor.getMangroveColor();
     private final ColorResolver grassColorResolver = (blockState, biomex, blockPos) -> biomex.getGrassColor(blockPos.getX(), blockPos.getZ());
     private final ColorResolver foliageColorResolver = (blockState, biomex, blockPos) -> biomex.getFoliageColor();
-    private final ColorResolver dryFoliageColorResolver = (blockState, biomex, blockPos) -> biomex.getDryFoliageColor();
+    private final ColorResolver dryFoliageColorResolver = (blockState, biomex, blockPos) -> biomex.getFoliageColor();
     private final ColorResolver waterColorResolver = (blockState, biomex, blockPos) -> biomex.getWaterColor();
     private final ColorResolver redstoneColorResolver = (blockState, biomex, blockPos) -> RedStoneWireBlock.getColorForPower(blockState.getValue(RedStoneWireBlock.POWER));
 
@@ -135,8 +137,10 @@ public class ColorManager {
             this.world = VoxelConstants.getClientWorld();
             int largestBiomeID = 0;
 
-            for (Biome biome : this.world.registryAccess().lookupOrThrow(Registries.BIOME)) {
-                int biomeID = this.world.registryAccess().lookupOrThrow(Registries.BIOME).getId(biome);
+            Registry<Biome> biomeRegistry = this.world.registryAccess().registryOrThrow(Registries.BIOME);
+            for (Map.Entry<ResourceKey<Biome>, Biome> entry : biomeRegistry.entrySet()) {
+                Biome biome = entry.getValue();
+                int biomeID = biomeRegistry.getId(biome);
                 if (biomeID > largestBiomeID) {
                     largestBiomeID = biomeID;
                 }
@@ -159,11 +163,12 @@ public class ColorManager {
 
     private void loadColors() {
         this.loadedTerrainImage = false;
-        VoxelConstants.getMinecraft().getSkinManager().get(VoxelConstants.getPlayer().getGameProfile());
+        // TODO: SkinManager.get() doesn't exist in 1.20.1
+        // VoxelConstants.getMinecraft().getSkinManager().get(VoxelConstants.getPlayer().getGameProfile());
         BlockRepository.getBlocks();
         this.loadColorPicker();
         this.loadTexturePackTerrainImage();
-        TextureAtlasSprite missing = VoxelConstants.getMinecraft().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("missingno"));
+        TextureAtlasSprite missing = VoxelConstants.getMinecraft().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("missingno"));
         this.failedToLoadX = missing.getU0();
         this.failedToLoadY = missing.getV0();
         this.loaded = false;
@@ -443,7 +448,7 @@ public class ColorManager {
                     if (modelImage != null) {
                         color = this.getColorForCoordinatesAndImage(new float[]{0.0F, 1.0F, 0.0F, 1.0F}, modelImage);
                     } else {
-                        VoxelConstants.getLogger().warn(String.format("Block texture for block %s is missing!", blockState.getBlockHolder().getRegisteredName()));
+                        VoxelConstants.getLogger().warn(String.format("Block texture for block %s is missing!", BuiltInRegistries.BLOCK.getKey(blockState.getBlock())));
                     }
                 }
             }
@@ -462,14 +467,14 @@ public class ColorManager {
             Block material = blockState.getBlock();
             if (block instanceof LiquidBlock) {
                 if (material == Blocks.WATER) {
-                    icon = VoxelConstants.getMinecraft().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("minecraft:blocks/water_flow"));
+                    icon = VoxelConstants.getMinecraft().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("minecraft:blocks/water_flow"));
                 } else if (material == Blocks.LAVA) {
-                    icon = VoxelConstants.getMinecraft().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("minecraft:blocks/lava_flow"));
+                    icon = VoxelConstants.getMinecraft().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("minecraft:blocks/lava_flow"));
                 }
             } else if (material == Blocks.WATER) {
-                icon = VoxelConstants.getMinecraft().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("minecraft:blocks/water_still"));
+                icon = VoxelConstants.getMinecraft().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("minecraft:blocks/water_still"));
             } else if (material == Blocks.LAVA) {
-                icon = VoxelConstants.getMinecraft().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("minecraft:blocks/lava_still"));
+                icon = VoxelConstants.getMinecraft().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("minecraft:blocks/lava_still"));
             }
         }
 
@@ -594,9 +599,9 @@ public class ColorManager {
                             }
 
                             if (biome == null) {
-                                biome = world.registryAccess().lookupOrThrow(Registries.BIOME).get(Biomes.PLAINS).get().value();
+                                biome = world.registryAccess().registryOrThrow(Registries.BIOME).get(Biomes.PLAINS).get().value();
                             }
-                            int biomeID = world.registryAccess().lookupOrThrow(Registries.BIOME).getId(biome);
+                            int biomeID = world.registryAccess().registryOrThrow(Registries.BIOME).getId(biome);
                             int biomeTint = tints[biomeID][loopBlockPos.y / 8];
                             r += (biomeTint & 0xFF0000) >> 16;
                             g += (biomeTint & 0xFF00) >> 8;
@@ -841,7 +846,7 @@ public class ColorManager {
                     }
 
                     ResourceLocation matchID = new ResourceLocation(matchTiles);
-                    TextureAtlasSprite compareIcon = VoxelConstants.getMinecraft().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS).getSprite(matchID);
+                    TextureAtlasSprite compareIcon = VoxelConstants.getMinecraft().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).getSprite(matchID);
                     if (compareIcon.atlasLocation() != MissingTextureAtlasSprite.getLocation()) {
                         ArrayList<BlockState> tmpList = new ArrayList<>();
 
@@ -1074,8 +1079,8 @@ public class ColorManager {
     }
 
     private int parseBiomeName(String name) {
-        Biome biome = this.world.registryAccess().lookupOrThrow(Registries.BIOME).get(new ResourceLocation(name)).get().value();
-        return biome != null ? this.world.registryAccess().lookupOrThrow(Registries.BIOME).getId(biome) : -1;
+        Biome biome = this.world.registryAccess().registryOrThrow(Registries.BIOME).get(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(name))).get().value();
+        return biome != null ? this.world.registryAccess().registryOrThrow(Registries.BIOME).getId(biome) : -1;
     }
 
     private List<ResourceLocation> findResources(String namespace, String startingPath, String suffixMaybeNull, boolean recursive, boolean directories, boolean sortByFilename) {
@@ -1259,7 +1264,7 @@ public class ColorManager {
         int numBiomesToCheck = grid ? Math.min(tintColorsBuff.getWidth(), this.sizeOfBiomeArray) : this.sizeOfBiomeArray;
 
         for (int t = 0; t < numBiomesToCheck; ++t) {
-            Biome biome = this.world.registryAccess().lookupOrThrow(Registries.BIOME).byId(t);
+            Biome biome = this.world.registryAccess().registryOrThrow(Registries.BIOME).byId(t);
             if (biome != null) {
                 int tintMult;
                 int heightMultiplier = tintColorsBuff.getHeight() / 32;
@@ -1269,7 +1274,7 @@ public class ColorManager {
                         tintMult = tintColorsBuff.getRGB(t, Math.max(0, s * heightMultiplier - yOffset)) & 16777215;
                     } else {
                         double var1 = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
-                        double var2 = Mth.clamp(biome.climateSettings.downfall(), 0.0F, 1.0F);
+                        double var2 = Mth.clamp(biome.getModifiedClimateSettings().downfall(), 0.0F, 1.0F);
 
                         var2 *= var1;
                         var1 = 1.0 - var1;
@@ -1328,7 +1333,7 @@ public class ColorManager {
     private Block getBlockFromName(String name) {
         try {
             ResourceLocation identifier = new ResourceLocation(name);
-            return BuiltInRegistries.BLOCK.containsKey(identifier) ? BuiltInRegistries.BLOCK.get(identifier).get().value() : null;
+            return BuiltInRegistries.BLOCK.containsKey(identifier) ? BuiltInRegistries.BLOCK.get(identifier) : null;
         } catch (ResourceLocationException | NumberFormatException var3) {
             return null;
         }

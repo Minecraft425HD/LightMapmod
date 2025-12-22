@@ -12,15 +12,15 @@ public class DynamicMoveableTexture extends DynamicTexture {
     }
 
     public int getWidth() {
-        return this.getPixelsRGBA().getWidth();
+        return this.getPixels().getWidth();
     }
 
     public int getHeight() {
-        return this.getPixelsRGBA().getHeight();
+        return this.getPixels().getHeight();
     }
 
     public int getIndex() {
-        return ((GlTexture) this.getId()).glId();
+        return this.getId();
     }
 
     public void moveX(int offset) {
@@ -65,6 +65,6 @@ public class DynamicMoveableTexture extends DynamicTexture {
         byte g = (byte) ((color24 >> 8 & 0xFF) * alpha / 255);
         byte b = (byte) ((color24 >> 16 & 0xFF) * alpha / 255);
         int color = (a & 255) << 24 | (r & 255) << 16 | (g & 255) << 8 | b & 255;
-        this.getPixelsRGBA().setPixel(x, y, color);
+        this.getPixels().setPixel(x, y, color);
     }
 }

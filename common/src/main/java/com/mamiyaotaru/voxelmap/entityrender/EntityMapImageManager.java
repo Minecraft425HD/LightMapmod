@@ -180,8 +180,8 @@ public class EntityMapImageManager {
     private EntityVariantData getOrCreateVariantData(Entity entity, EntityRenderer renderer, int size, boolean addBorder) {
         // 1.20.1: EntityRenderState doesn't exist, work directly with entities
         if (entity instanceof AbstractClientPlayer player) {
-            // 1.20.1: getInsecureSkin() returns ResourceLocation directly, not a Skin object
-            return new DefaultEntityVariantData(entity.getType(), minecraft.getSkinManager().getInsecureSkin(player.getGameProfile()), null, size, addBorder);
+            // 1.20.1: Use getInsecureSkinInformation() instead of getInsecureSkin()
+            return new DefaultEntityVariantData(entity.getType(), minecraft.getSkinManager().getInsecureSkinInformation(player.getGameProfile()).texture(), null, size, addBorder);
         }
 
         // 1.20.1: createRenderState() doesn't exist in 1.20.1, skip the state creation
