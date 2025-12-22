@@ -8,6 +8,7 @@ import com.mamiyaotaru.voxelmap.util.LayoutVariables;
 import com.mamiyaotaru.voxelmap.util.MobCategory;
 import com.mamiyaotaru.voxelmap.util.TextUtils;
 import com.mamiyaotaru.voxelmap.util.VoxelMapPipelines;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.RemotePlayer;
@@ -168,8 +169,8 @@ public class Radar implements IRadar {
     }
 
     public void renderMapMobs(GuiGraphics guiGraphics, int x, int y, float scaleProj) {
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().scale(scaleProj, scaleProj);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().scale(scaleProj, scaleProj, 1.0f);
         double max = this.layoutVariables.zoomScaleAdjusted * 32.0;
         double lastX = GameVariableAccessShim.xCoordDouble();
         double lastZ = GameVariableAccessShim.zCoordDouble();
@@ -221,17 +222,17 @@ public class Radar implements IRadar {
 
             if (inRange) {
                 try {
-                    guiGraphics.pose().pushMatrix();
+                    guiGraphics.pose().pushPose();
                     if (this.options.filtering) {
-                        guiGraphics.pose().translate(x, y);
-                        guiGraphics.pose().rotate(-contact.angle * Mth.DEG_TO_RAD);
-                        guiGraphics.pose().translate(0.0f, (float) -contact.distance);
-                        guiGraphics.pose().rotate((contact.angle + contact.rotationFactor) * Mth.DEG_TO_RAD);
-                        guiGraphics.pose().translate(-x, -y);
+                        guiGraphics.pose().translate((float)x, (float)y, 0.0f);
+                        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(-contact.angle));
+                        guiGraphics.pose().translate(0.0f, (float) -contact.distance, 0.0f);
+                        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(contact.angle + contact.rotationFactor));
+                        guiGraphics.pose().translate((float)-x, (float)-y, 0.0f);
                     } else {
                         wayZ = Math.cos(Math.toRadians(contact.angle)) * contact.distance;
                         wayX = Math.sin(Math.toRadians(contact.angle)) * contact.distance;
-                        guiGraphics.pose().translate((float) Math.round(-wayX * this.layoutVariables.scScale) / this.layoutVariables.scScale, (float) Math.round(-wayZ * this.layoutVariables.scScale) / this.layoutVariables.scScale);
+                        guiGraphics.pose().translate((float) Math.round(-wayX * this.layoutVariables.scScale) / this.layoutVariables.scScale, (float) Math.round(-wayZ * this.layoutVariables.scScale) / this.layoutVariables.scScale, 0.0f);
                     }
 
                     float yOffset = 0.0F;
@@ -272,22 +273,22 @@ public class Radar implements IRadar {
                     if (contact.name != null && ((this.options.showPlayerNames && contact.category == MobCategory.PLAYER) || (this.options.showMobNames && contact.category != MobCategory.PLAYER && contact.entity.hasCustomName()))) {
 
                         float scaleFactor = this.options.fontScale / 4.0F;
-                        guiGraphics.pose().scale( scaleFactor, scaleFactor);
+                        guiGraphics.pose().scale(scaleFactor, scaleFactor, 1.0f);
 
                         int m = minecraft.font.width(contact.name) / 2;
 
-                        guiGraphics.pose().pushMatrix();
+                        guiGraphics.pose().pushPose();
                         guiGraphics.drawString(minecraft.font, contact.name, (int) (x / scaleFactor - m), (int) ((y + 3) / scaleFactor), 0xFFFFFFFF, false);
-                        guiGraphics.pose().popMatrix();
+                        guiGraphics.pose().popPose();
                     }
                 } catch (Exception e) {
                     VoxelConstants.getLogger().error("Error rendering mob icon! " + e.getLocalizedMessage() + " contact type " + BuiltInRegistries.ENTITY_TYPE.getKey(contact.entity.getType()), e);
                 } finally {
-                    guiGraphics.pose().popMatrix();
+                    guiGraphics.pose().popPose();
                 }
             }
         }
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
     }
 
     private boolean isHostile(Entity entity) {

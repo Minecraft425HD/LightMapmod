@@ -76,7 +76,7 @@ public class WaypointContainer {
 
     public void renderWaypointsBeams(float gameTimeDeltaPartialTick, PoseStack poseStack, BufferSource bufferSource, Camera camera) {
         Vec3 cameraPos = camera.position();
-        double bottomOfWorld = VoxelConstants.getPlayer().level().getMinY() - cameraPos.y;
+        double bottomOfWorld = VoxelConstants.getPlayer().level().getMinBuildHeight() - cameraPos.y;
 
         if (!this.options.showBeacons) return;
         for (ExtendedWaypoint pt : this.wayPts) {

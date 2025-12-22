@@ -248,7 +248,7 @@ public final class CommandUtils {
 
         for (Waypoint wp : VoxelConstants.getVoxelMapInstance().getWaypointManager().getWaypoints()) {
             if (wp.name.equalsIgnoreCase(details) && wp.inDimension && wp.inWorld) {
-                int y = wp.getY() > VoxelConstants.getPlayer().level().getMinY() ? wp.getY() : (!VoxelConstants.getPlayer().level().dimensionType().hasCeiling() ? VoxelConstants.getPlayer().level().getMaxY() : 64);
+                int y = wp.getY() > VoxelConstants.getPlayer().level().getMinBuildHeight() ? wp.getY() : (!VoxelConstants.getPlayer().level().dimensionType().hasCeiling() ? VoxelConstants.getPlayer().level().getMaxBuildHeight() : 64);
                 VoxelConstants.playerRunTeleportCommand(wp.getX(), y, wp.getZ());
                 return;
             }
@@ -263,20 +263,20 @@ public final class CommandUtils {
         if (inNetherDimension) {
             int safeY = -1;
 
-            for (int t = worldObj.getMinY(); t < worldObj.getMaxY(); ++t) {
-                if (y + t < worldObj.getMaxY() && isBlockStandable(worldObj, x, y + t, z) && isBlockOpen(worldObj, x, y + t + 1, z) && isBlockOpen(worldObj, x, y + t + 2, z)) {
+            for (int t = worldObj.getMinBuildHeight(); t < worldObj.getMaxBuildHeight(); ++t) {
+                if (y + t < worldObj.getMaxBuildHeight() && isBlockStandable(worldObj, x, y + t, z) && isBlockOpen(worldObj, x, y + t + 1, z) && isBlockOpen(worldObj, x, y + t + 2, z)) {
                     safeY = y + t + 1;
-                    t = worldObj.getMaxY();
+                    t = worldObj.getMaxBuildHeight();
                 }
 
-                if (y - t > worldObj.getMinY() && isBlockStandable(worldObj, x, y - t, z) && isBlockOpen(worldObj, x, y - t + 1, z) && isBlockOpen(worldObj, x, y - t + 2, z)) {
+                if (y - t > worldObj.getMinBuildHeight() && isBlockStandable(worldObj, x, y - t, z) && isBlockOpen(worldObj, x, y - t + 1, z) && isBlockOpen(worldObj, x, y - t + 2, z)) {
                     safeY = y - t + 1;
-                    t = worldObj.getMaxY();
+                    t = worldObj.getMaxBuildHeight();
                 }
             }
 
             y = safeY;
-        } else if (y <= worldObj.getMinY()) {
+        } else if (y <= worldObj.getMinBuildHeight()) {
             y = worldObj.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) + 1;
         }
 

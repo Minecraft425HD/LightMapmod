@@ -224,7 +224,7 @@ public class PersistentMap implements IChangeObserver {
     }
 
     public void getAndStoreData(AbstractMapData mapData, Level world, LevelChunk chunk, MutableBlockPos pos, boolean underground, int startX, int startZ, int imageX, int imageY) {
-        int bottomY = world.getMinY();
+        int bottomY = world.getMinBuildHeight();
         int surfaceHeight;
         int seafloorHeight = bottomY;
         int transparentHeight = bottomY;
@@ -384,7 +384,7 @@ public class PersistentMap implements IChangeObserver {
     }
 
     private int getNetherHeight(LevelChunk chunk, int x, int z) {
-        int bottomY = chunk.getMinY();
+        int bottomY = chunk.getMinBuildHeight();
         int y = 80;
         this.blockPos.setXYZ(x, y, z);
         BlockState blockState = chunk.getBlockState(this.blockPos);
@@ -418,7 +418,7 @@ public class PersistentMap implements IChangeObserver {
         if (solid) {
             lightCombined = 0;
         } else if (blockState != null && !(blockState.getBlock() instanceof AirBlock)) {
-            blockPos.setXYZ(x, Math.max(Math.min(height, world.getMaxY()), world.getMinY()), z);
+            blockPos.setXYZ(x, Math.max(Math.min(height, world.getMaxBuildHeight()), world.getMinBuildHeight()), z);
             int blockLight = world.getBrightness(LightLayer.BLOCK, blockPos) & 15;
             int skyLight = world.getBrightness(LightLayer.SKY, blockPos);
             if (blockState.getBlock() == Blocks.LAVA || blockState.getBlock() == Blocks.MAGMA_BLOCK) {
@@ -432,7 +432,7 @@ public class PersistentMap implements IChangeObserver {
     }
 
     public int getPixelColor(AbstractMapData mapData, ClientLevel world, MutableBlockPos blockPos, MutableBlockPos loopBlockPos, boolean underground, int multi, int startX, int startZ, int imageX, int imageY) {
-        int bottomY = world.getMinY();
+        int bottomY = world.getMinBuildHeight();
         int mcX = startX + imageX;
         int mcZ = startZ + imageY;
         BlockState surfaceBlockState;
@@ -459,7 +459,7 @@ public class PersistentMap implements IChangeObserver {
                 int blockStateID;
                 surfaceHeight = mapData.getHeight(imageX, imageY);
                 blockStateID = BlockRepository.getStateId(surfaceBlockState);
-                if (surfaceHeight < bottomY || surfaceHeight == world.getMaxY()) {
+                if (surfaceHeight < bottomY || surfaceHeight == world.getMaxBuildHeight()) {
                     surfaceHeight = 80;
                     solid = true;
                 }

@@ -43,6 +43,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
+import com.mojang.math.Axis;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -445,7 +446,8 @@ public class Map implements Runnable, IChangeObserver {
             this.doFullRender = false;
         }
 
-        boolean enabled = !minecraft.options.hideGui && (this.options.showUnderMenus || minecraft.screen == null) && !minecraft.debugEntries.isOverlayVisible();
+        // 1.20.1: debugEntries.isOverlayVisible() -> getDebugOverlay().showDebugScreen()
+        boolean enabled = !minecraft.options.hideGui && (this.options.showUnderMenus || minecraft.screen == null) && !minecraft.getDebugOverlay().showDebugScreen();
 
         this.direction = GameVariableAccessShim.rotationYaw() + 180.0F;
 
@@ -600,7 +602,11 @@ public class Map implements Runnable, IChangeObserver {
     private int getSkyColor() {
         this.needSkyColor = false;
         boolean aboveHorizon = this.lastAboveHorizon;
-        Vector4f color = Minecraft.getInstance().gameRenderer.fogRenderer.computeFogColor(minecraft.gameRenderer.getMainCamera(), 0.0F, this.world, minecraft.options.renderDistance().get(), minecraft.gameRenderer.getDarkenWorldAmount(0.0F));
+        // TODO: 1.20.1 Port - FogRenderer.computeFogColor() API is different in 1.20.1
+        // Original: Vector4f color = Minecraft.getInstance().gameRenderer.fogRenderer.computeFogColor(minecraft.gameRenderer.getMainCamera(), 0.0F, this.world, minecraft.options.renderDistance().get(), minecraft.gameRenderer.getDarkenWorldAmount(0.0F));
+        // Fallback: Get biome sky color
+        int skyColorInt = this.world.getSkyColor(minecraft.gameRenderer.getMainCamera().getPosition(), 0.0F);
+        Vector4f color = new Vector4f(((skyColorInt >> 16) & 0xFF) / 255.0F, ((skyColorInt >> 8) & 0xFF) / 255.0F, (skyColorInt & 0xFF) / 255.0F, 1.0F);
         float r = color.x;
         float g = color.y;
         float b = color.z;
@@ -636,7 +642,8 @@ public class Map implements Runnable, IChangeObserver {
         double scaledHeightD = (double) minecraft.getWindow().getHeight() / scScale;
         this.scWidth = Mth.ceil(scaledWidthD);
         this.scHeight = Mth.ceil(scaledHeightD);
-        float scaleProj = (float) (scScale) / minecraft.getWindow().getGuiScale();
+        // 1.20.1: getGuiScale() returns int, not double (cast to float for division)
+        float scaleProj = (float) (scScale) / (float) minecraft.getWindow().getGuiScale();
 
         int mapX;
         if (this.options.mapCorner != 0 && this.options.mapCorner != 3) {
@@ -658,7 +665,8 @@ public class Map implements Runnable, IChangeObserver {
 
                 for (MobEffectInstance statusEffectInstance : VoxelConstants.getPlayer().getActiveEffects()) {
                     if (statusEffectInstance.showIcon()) {
-                        if (statusEffectInstance.getEffect().value().isBeneficial()) {
+                        // 1.20.1: getEffect() returns MobEffect directly, not Holder (no .value() needed)
+                        if (statusEffectInstance.getEffect().isBeneficial()) {
                             statusIconOffset = Math.max(statusIconOffset, 24.0F);
                         } else {
                             statusIconOffset = 50.0F;
@@ -768,7 +776,7 @@ public class Map implements Runnable, IChangeObserver {
         boolean caves = false;
         boolean netherPlayerInOpen;
         MutableBlockPos blockPos = MutableBlockPosCache.get();
-        blockPos.setXYZ(this.lastX, Math.max(Math.min(GameVariableAccessShim.yCoord(), world.getMaxY() - 1), world.getMinY()), this.lastZ);
+        blockPos.setXYZ(this.lastX, Math.max(Math.min(GameVariableAccessShim.yCoord(), world.getMaxBuildHeight() - 1), world.getMinBuildHeight()), this.lastZ);
         if (VoxelConstants.getPlayer().level().dimensionType().hasCeiling()) {
 
             netherPlayerInOpen = world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
@@ -776,7 +784,7 @@ public class Map implements Runnable, IChangeObserver {
             if (this.options.cavesAllowed && this.options.showCaves && currentY >= 126 && !netherPlayerInOpen) {
                 caves = true;
             }
-        } else if (world.dimensionType().cardinalLightType() == DimensionType.CardinalLightType.NETHER && !VoxelConstants.getClientWorld().dimensionType().hasSkyLight()) {
+        } else if (!world.dimensionType().hasCeiling() && !world.dimensionType().hasSkyLight()) {
             boolean endPlayerInOpen = world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
             if (this.options.cavesAllowed && this.options.showCaves && !endPlayerInOpen) {
                 caves = true;
@@ -868,7 +876,7 @@ public class Map implements Runnable, IChangeObserver {
         boolean caves = false;
         boolean netherPlayerInOpen;
         MutableBlockPos blockPos = MutableBlockPosCache.get();
-        blockPos.setXYZ(this.lastX, Math.max(Math.min(GameVariableAccessShim.yCoord(), world.getMaxY()), world.getMinY()), this.lastZ);
+        blockPos.setXYZ(this.lastX, Math.max(Math.min(GameVariableAccessShim.yCoord(), world.getMaxBuildHeight()), world.getMinBuildHeight()), this.lastZ);
         int currentY = GameVariableAccessShim.yCoord();
         if (VoxelConstants.getPlayer().level().dimensionType().hasCeiling()) {
             netherPlayerInOpen = this.world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
@@ -876,7 +884,7 @@ public class Map implements Runnable, IChangeObserver {
             if (this.options.cavesAllowed && this.options.showCaves && currentY >= 126 && !netherPlayerInOpen) {
                 caves = true;
             }
-        } else if (world.dimensionType().cardinalLightType() == DimensionType.CardinalLightType.NETHER && !world.dimensionType().hasSkyLight()) {
+        } else if (!world.dimensionType().hasCeiling() && !world.dimensionType().hasSkyLight()) {
             boolean endPlayerInOpen = this.world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
             if (this.options.cavesAllowed && this.options.showCaves && !endPlayerInOpen) {
                 caves = true;
@@ -975,15 +983,16 @@ public class Map implements Runnable, IChangeObserver {
                     surfaceHeight = transparentHeight;
                     this.surfaceBlockState = this.transparentBlockState;
                     VoxelShape voxelShape;
-                    boolean hasOpacity = this.surfaceBlockState.getLightBlock() > 0;
+                    tempBlockPos.setXYZ(startX + imageX, surfaceHeight - 1, startZ + imageY);
+                    boolean hasOpacity = this.surfaceBlockState.getLightBlock(world, tempBlockPos) > 0;
                     if (!hasOpacity && this.surfaceBlockState.canOcclude() && this.surfaceBlockState.useShapeForLightOcclusion()) {
-                        voxelShape = this.surfaceBlockState.getFaceOcclusionShape(Direction.DOWN);
+                        voxelShape = this.surfaceBlockState.getFaceOcclusionShape(world, tempBlockPos, Direction.DOWN);
                         hasOpacity = Shapes.faceShapeOccludes(voxelShape, Shapes.empty());
-                        voxelShape = this.surfaceBlockState.getFaceOcclusionShape(Direction.UP);
+                        voxelShape = this.surfaceBlockState.getFaceOcclusionShape(world, tempBlockPos, Direction.UP);
                         hasOpacity = hasOpacity || Shapes.faceShapeOccludes(Shapes.empty(), voxelShape);
                     }
 
-                    while (!hasOpacity && surfaceHeight > world.getMinY()) {
+                    while (!hasOpacity && surfaceHeight > world.getMinBuildHeight()) {
                         foliageBlockState = this.surfaceBlockState;
                         --surfaceHeight;
                         this.surfaceBlockState = world.getBlockState(blockPos.withXYZ(startX + imageX, surfaceHeight - 1, startZ + imageY));
@@ -992,11 +1001,12 @@ public class Map implements Runnable, IChangeObserver {
                             this.surfaceBlockState = fluidState.createLegacyBlock();
                         }
 
-                        hasOpacity = this.surfaceBlockState.getLightBlock() > 0;
+                        tempBlockPos.setXYZ(startX + imageX, surfaceHeight - 1, startZ + imageY);
+                        hasOpacity = this.surfaceBlockState.getLightBlock(world, tempBlockPos) > 0;
                         if (!hasOpacity && this.surfaceBlockState.canOcclude() && this.surfaceBlockState.useShapeForLightOcclusion()) {
-                            voxelShape = this.surfaceBlockState.getFaceOcclusionShape(Direction.DOWN);
+                            voxelShape = this.surfaceBlockState.getFaceOcclusionShape(world, tempBlockPos, Direction.DOWN);
                             hasOpacity = Shapes.faceShapeOccludes(voxelShape, Shapes.empty());
-                            voxelShape = this.surfaceBlockState.getFaceOcclusionShape(Direction.UP);
+                            voxelShape = this.surfaceBlockState.getFaceOcclusionShape(world, tempBlockPos, Direction.UP);
                             hasOpacity = hasOpacity || Shapes.faceShapeOccludes(Shapes.empty(), voxelShape);
                         }
                     }
@@ -1026,8 +1036,8 @@ public class Map implements Runnable, IChangeObserver {
                     if (material == Blocks.WATER || material == Blocks.ICE) {
                         seafloorHeight = surfaceHeight;
 
-                        for (seafloorBlockState = world.getBlockState(blockPos.withXYZ(startX + imageX, surfaceHeight - 1, startZ + imageY)); seafloorBlockState.getLightBlock() < 5 && !(seafloorBlockState.getBlock() instanceof LeavesBlock)
-                                && seafloorHeight > world.getMinY() + 1; seafloorBlockState = world.getBlockState(blockPos.withXYZ(startX + imageX, seafloorHeight - 1, startZ + imageY))) {
+                        for (seafloorBlockState = world.getBlockState(blockPos.withXYZ(startX + imageX, surfaceHeight - 1, startZ + imageY)); seafloorBlockState.getLightBlock(world, blockPos.withXYZ(startX + imageX, seafloorHeight - 1, startZ + imageY)) < 5 && !(seafloorBlockState.getBlock() instanceof LeavesBlock)
+                                && seafloorHeight > world.getMinBuildHeight() + 1; seafloorBlockState = world.getBlockState(blockPos.withXYZ(startX + imageX, seafloorHeight - 1, startZ + imageY))) {
                             material = seafloorBlockState.getBlock();
                             if (transparentHeight == Short.MIN_VALUE && material != Blocks.ICE && material != Blocks.WATER && Heightmap.Types.MOTION_BLOCKING.isOpaque().test(seafloorBlockState)) {
                                 transparentHeight = seafloorHeight;
@@ -1308,7 +1318,7 @@ public class Map implements Runnable, IChangeObserver {
             blockState = fluidState.createLegacyBlock();
         }
 
-        while (blockState.getLightBlock() == 0 && height > world.getMinY()) {
+        while (blockState.getLightBlock(world, blockPos.withXYZ(x, height - 1, z)) == 0 && height > world.getMinBuildHeight()) {
             --height;
             blockState = world.getBlockState(blockPos.withXYZ(x, height - 1, z));
             fluidState = this.surfaceBlockState.getFluidState();
@@ -1325,12 +1335,12 @@ public class Map implements Runnable, IChangeObserver {
         int y = this.lastY;
         blockPos.setXYZ(x, y, z);
         BlockState blockState = this.world.getBlockState(blockPos);
-        if (blockState.getLightBlock() == 0 && blockState.getBlock() != Blocks.LAVA) {
-            while (y > world.getMinY()) {
+        if (blockState.getLightBlock(this.world, blockPos) == 0 && blockState.getBlock() != Blocks.LAVA) {
+            while (y > world.getMinBuildHeight()) {
                 --y;
                 blockPos.setXYZ(x, y, z);
                 blockState = this.world.getBlockState(blockPos);
-                if (blockState.getLightBlock() > 0 || blockState.getBlock() == Blocks.LAVA) {
+                if (blockState.getLightBlock(this.world, blockPos) > 0 || blockState.getBlock() == Blocks.LAVA) {
                     MutableBlockPosCache.release(blockPos);
                     return y + 1;
                 }
@@ -1338,23 +1348,23 @@ public class Map implements Runnable, IChangeObserver {
             MutableBlockPosCache.release(blockPos);
             return y;
         } else {
-            while (y <= this.lastY + 10 && y < world.getMaxY()) {
+            while (y <= this.lastY + 10 && y < world.getMaxBuildHeight()) {
                 ++y;
                 blockPos.setXYZ(x, y, z);
                 blockState = this.world.getBlockState(blockPos);
-                if (blockState.getLightBlock() == 0 && blockState.getBlock() != Blocks.LAVA) {
+                if (blockState.getLightBlock(this.world, blockPos) == 0 && blockState.getBlock() != Blocks.LAVA) {
                     MutableBlockPosCache.release(blockPos);
                     return y;
                 }
             }
             MutableBlockPosCache.release(blockPos);
-            return this.world.getMinY() - 1;
+            return this.world.getMinBuildHeight() - 1;
         }
     }
 
     private int getSeafloorHeight(Level world, int x, int z, int height) {
         MutableBlockPos blockPos = MutableBlockPosCache.get();
-        for (BlockState blockState = world.getBlockState(blockPos.withXYZ(x, height - 1, z)); blockState.getLightBlock() < 5 && !(blockState.getBlock() instanceof LeavesBlock) && height > world.getMinY() + 1; blockState = world.getBlockState(blockPos.withXYZ(x, height - 1, z))) {
+        for (BlockState blockState = world.getBlockState(blockPos.withXYZ(x, height - 1, z)); blockState.getLightBlock(world, blockPos.withXYZ(x, height - 1, z)) < 5 && !(blockState.getBlock() instanceof LeavesBlock) && height > world.getMinBuildHeight() + 1; blockState = world.getBlockState(blockPos.withXYZ(x, height - 1, z))) {
             --height;
         }
         MutableBlockPosCache.release(blockPos);
@@ -1498,7 +1508,7 @@ public class Map implements Runnable, IChangeObserver {
             combinedLight = 0;
         } else if (color24 != this.colorManager.getAirColor() && color24 != 0 && this.options.lightmap) {
             MutableBlockPos blockPos = MutableBlockPosCache.get();
-            blockPos.setXYZ(x, Math.max(Math.min(height, world.getMaxY()), world.getMinY()), z);
+            blockPos.setXYZ(x, Math.max(Math.min(height, world.getMaxBuildHeight()), world.getMinBuildHeight()), z);
             int blockLight = world.getBrightness(LightLayer.BLOCK, blockPos);
             int skyLight = world.getBrightness(LightLayer.SKY, blockPos);
             if (blockState.getBlock() == Blocks.LAVA || blockState.getBlock() == Blocks.MAGMA_BLOCK) {
@@ -1512,8 +1522,8 @@ public class Map implements Runnable, IChangeObserver {
     }
 
     private void renderMap(GuiGraphics guiGraphics, int x, int y, int scScale, float scaleProj) {
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().scale(scaleProj, scaleProj);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().scale(scaleProj, scaleProj, 1.0f);
 
         float scale = 1.0F;
         if (this.options.squareMap && this.options.rotates) {
@@ -1534,8 +1544,8 @@ public class Map implements Runnable, IChangeObserver {
         this.percentY = (float) (GameVariableAccessShim.zCoordDouble() - this.lastImageZ);
         this.percentX *= multi;
         this.percentY *= multi;
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().identity();
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().setIdentity();
 
         // TODO: 1.20.1 Port - RenderPipelines.GUI_TEXTURED.getVertexFormat() doesn't exist, using stub
         BufferBuilder bufferBuilder = fboTessellator.begin(Mode.QUADS, VertexFormat.POSITION_TEX_COLOR);
@@ -1545,34 +1555,43 @@ public class Map implements Runnable, IChangeObserver {
         bufferBuilder.addVertex(256, -256, -2500).setUv(1, 1).setColor(255, 255, 255, 255);
         bufferBuilder.addVertex(-256, -256, -2500).setUv(0, 1).setColor(255, 255, 255, 255);
 
-        // guiGraphics.pose().translate(256, 256);
+        // guiGraphics.pose().translate(256, 256, 0.0f);
         if (!this.options.rotates) {
-            guiGraphics.pose().rotate(-this.northRotate * Mth.DEG_TO_RAD);
+            guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(-this.northRotate));
         } else {
-            guiGraphics.pose().rotate(this.direction * Mth.DEG_TO_RAD);
+            guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(this.direction));
         }
-        guiGraphics.pose().scale(scale, scale);
-        // guiGraphics.pose().translate(-256, -256);
-        guiGraphics.pose().translate(-this.percentX * 512.0F / 64.0F, this.percentY * 512.0F / 64.0F);
+        guiGraphics.pose().scale(scale, scale, 1.0f);
+        // guiGraphics.pose().translate(-256, -256, 0.0f);
+        guiGraphics.pose().translate(-this.percentX * 512.0F / 64.0F, this.percentY * 512.0F / 64.0F, 0.0f);
 
         Vector3f vector3f = new Vector3f();
-        guiGraphics.pose().transform(-256, 256, 1, vector3f);
+        org.joml.Matrix4f matrix = guiGraphics.pose().last().pose();
+        org.joml.Vector4f vector4f = new org.joml.Vector4f(-256, 256, 0, 1);
+        vector4f.mul(matrix);
+        vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
         bufferBuilder.addVertex(vector3f.x, vector3f.y, -2500).setUv(0, 0).setColor(255, 255, 255, 255);
 
-        guiGraphics.pose().transform(256, 256, 1, vector3f);
+        vector4f.set(256, 256, 0, 1);
+        vector4f.mul(matrix);
+        vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
         bufferBuilder.addVertex(vector3f.x, vector3f.y, -2500).setUv(1, 0).setColor(255, 255, 255, 255);
 
-        guiGraphics.pose().transform(256, -256, 1, vector3f);
+        vector4f.set(256, -256, 0, 1);
+        vector4f.mul(matrix);
+        vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
         bufferBuilder.addVertex(vector3f.x, vector3f.y, -2500).setUv(1, 1).setColor(255, 255, 255, 255);
 
-        guiGraphics.pose().transform(-256, -256, 1, vector3f);
+        vector4f.set(-256, -256, 0, 1);
+        vector4f.mul(matrix);
+        vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
         bufferBuilder.addVertex(vector3f.x, vector3f.y, -2500).setUv(0, 1).setColor(255, 255, 255, 255);
 
         ProjectionType originalProjectionType = RenderSystem.getProjectionType();
         GpuBufferSlice originalProjectionMatrix = RenderSystem.getProjectionMatrixBuffer();
         RenderSystem.setProjectionMatrix(projection.getBuffer(), ProjectionType.ORTHOGRAPHIC);
-        RenderSystem.getModelViewStack().pushMatrix();
-        RenderSystem.getModelViewStack().identity();
+        RenderSystem.getModelViewStack().pushPose();
+        RenderSystem.getModelViewStack().setIdentity();
 
         GpuBufferSlice gpuBufferSlice = RenderSystem.getDynamicUniforms()
                 .writeTransform(
@@ -1622,13 +1641,13 @@ public class Map implements Runnable, IChangeObserver {
                 renderPass.drawIndexed(0, meshData.drawState().indexCount() / 2, meshData.drawState().indexCount() / 2, 1);
             }
         }
-        RenderSystem.getModelViewStack().popMatrix();
+        RenderSystem.getModelViewStack().popPose();
         RenderSystem.setProjectionMatrix(originalProjectionMatrix, originalProjectionType);
         fboTessellator.clear();
         // if (((saved++) % 1000) == 0)
         // ImageUtils.saveImage("minimap_" + saved, fboTexture);
 
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
 
        
         VoxelMapGuiGraphics.blitFloat(guiGraphics, null, fboTextureView, x - 32, y - 32, 64, 64, 0, 1, 0, 1, 0xffffffff);
@@ -1661,7 +1680,7 @@ public class Map implements Runnable, IChangeObserver {
                 this.drawWaypoint(guiGraphics, highlightedPoint, textureAtlas, x, y, scScale, lastXDouble, lastZDouble, textureAtlas.getAtlasSprite("voxelmap:images/waypoints/target.png"), 1.0F, 0.0F, 0.0F);
             }
         }
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
     }
 
     private void drawWaypoint(GuiGraphics guiGraphics, Waypoint pt, TextureAtlas textureAtlas, int x, int y, int scScale, double lastXDouble, double lastZDouble, Sprite icon, Float r, Float g, Float b) {
@@ -1727,23 +1746,23 @@ public class Map implements Runnable, IChangeObserver {
             int color = pt.getUnifiedColor(!pt.enabled && !target ? 0.3F : 1.0F);
 
             try {
-                guiGraphics.pose().pushMatrix();
-                guiGraphics.pose().translate(x, y);
-                guiGraphics.pose().rotate(-locate * Mth.DEG_TO_RAD);
+                guiGraphics.pose().pushPose();
+                guiGraphics.pose().translate(x, y, 0.0f);
+                guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(-locate));
                 if (uprightIcon) {
-                    guiGraphics.pose().translate(0.0f, -hypot);
-                    guiGraphics.pose().rotate(locate * Mth.DEG_TO_RAD);
-                    guiGraphics.pose().translate(-x, -y);
+                    guiGraphics.pose().translate(0.0f, -hypot, 0.0f);
+                    guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(locate));
+                    guiGraphics.pose().translate(-x, -y, 0.0f);
                 } else {
-                    guiGraphics.pose().translate(-x, -y);
-                    guiGraphics.pose().translate(0.0f, -hypot);
+                    guiGraphics.pose().translate(-x, -y, 0.0f);
+                    guiGraphics.pose().translate(0.0f, -hypot, 0.0f);
                 }
 
                 icon.blit(guiGraphics, VoxelMapPipelines.GUI_TEXTURED_LESS_OR_EQUAL_DEPTH_PIPELINE, x - 4, y - 4, 8, 8, color);
             } catch (Exception var40) {
                 this.error = "Error: marker overlay not found!";
             } finally {
-                guiGraphics.pose().popMatrix();
+                guiGraphics.pose().popPose();
             }
         } else {
             if (icon == null) {
@@ -1766,32 +1785,32 @@ public class Map implements Runnable, IChangeObserver {
             int color = pt.getUnifiedColor(!pt.enabled && !target ? 0.3F : 1.0F);
 
             try {
-                guiGraphics.pose().pushMatrix();
-                guiGraphics.pose().rotate(-locate * Mth.DEG_TO_RAD);
-                guiGraphics.pose().translate(0.0f, -hypot);
-                guiGraphics.pose().rotate(locate * Mth.DEG_TO_RAD);
+                guiGraphics.pose().pushPose();
+                guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(-locate));
+                guiGraphics.pose().translate(0.0f, -hypot, 0.0f);
+                guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(locate));
 
                 icon.blit(guiGraphics, VoxelMapPipelines.GUI_TEXTURED_LESS_OR_EQUAL_DEPTH_PIPELINE, x - 4, y - 4, 8, 8, color);
             } catch (Exception var42) {
                 this.error = "Error: waypoint overlay not found!";
             } finally {
-                guiGraphics.pose().popMatrix();
+                guiGraphics.pose().popPose();
             }
         }
     }
 
     private void drawArrow(GuiGraphics guiGraphics, int x, int y, float scaleProj) {
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().scale(scaleProj, scaleProj);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().scale(scaleProj, scaleProj, 1.0f);
 
-        guiGraphics.pose().translate(x, y);
-        guiGraphics.pose().rotate((this.options.rotates && !this.fullscreenMap ? 0.0F : this.direction + this.northRotate) * Mth.DEG_TO_RAD);
-        guiGraphics.pose().translate(-x, -y);
+        guiGraphics.pose().translate(x, y, 0.0f);
+        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(this.options.rotates && !this.fullscreenMap ? 0.0F : this.direction + this.northRotate));
+        guiGraphics.pose().translate(-x, -y, 0.0f);
 
        
         guiGraphics.blit(null, resourceArrow, x - 4, y - 4, 0, 0, 8, 8, 8, 8);
 
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
     }
 
     private void renderMapFull(GuiGraphics guiGraphics, int scWidth, int scHeight, float scaleProj) {
@@ -1804,23 +1823,23 @@ public class Map implements Runnable, IChangeObserver {
             }
         }
         PoseStack matrixStack = guiGraphics.pose();
-        matrixStack.pushMatrix();
-        matrixStack.scale(scaleProj, scaleProj);
-        matrixStack.translate(scWidth / 2.0F, scHeight / 2.0F);
-        matrixStack.rotate(this.northRotate * Mth.DEG_TO_RAD);
+        matrixStack.pushPose();
+        matrixStack.scale(scaleProj, scaleProj, 1.0f);
+        matrixStack.translate(scWidth / 2.0F, scHeight / 2.0F, 0.0f);
+        matrixStack.mulPose(Axis.ZP.rotationDegrees(this.northRotate));
         matrixStack.translate(-(scWidth / 2.0F), -(scHeight / 2.0F));
         int left = scWidth / 2 - 128;
         int top = scHeight / 2 - 128;
        
         guiGraphics.blit(null, mapResources[this.zoom], left, top, 0, 0, 256, 256, 256, 256);
-        matrixStack.popMatrix();
+        matrixStack.popPose();
 
         if (this.options.biomeOverlay != 0) {
             double factor = Math.pow(2.0, 3 - this.zoom);
             int minimumSize = (int) Math.pow(2.0, this.zoom);
             minimumSize *= minimumSize;
             ArrayList<AbstractMapData.BiomeLabel> labels = this.mapData[this.zoom].getBiomeLabels();
-            matrixStack.pushMatrix();
+            matrixStack.pushPose();
 
             for (AbstractMapData.BiomeLabel o : labels) {
                 if (o.segmentSize > minimumSize) {
@@ -1836,7 +1855,7 @@ public class Map implements Runnable, IChangeObserver {
                 }
             }
 
-            matrixStack.popMatrix();
+            matrixStack.popPose();
         }
     }
 
@@ -1869,28 +1888,28 @@ public class Map implements Runnable, IChangeObserver {
             distance = 32.0F / scale;
         }
 
-        poseStack.pushMatrix();
-        poseStack.scale(scaleProj, scaleProj);
-        poseStack.scale(scale, scale);
+        poseStack.pushPose();
+        poseStack.scale(scaleProj, scaleProj, 1.0f);
+        poseStack.scale(scale, scale, 1.0f);
 
-        poseStack.pushMatrix();
+        poseStack.pushPose();
         poseStack.translate((float) (distance * Math.sin(Math.toRadians(-(rotate - 90.0)))), (float) (distance * Math.cos(Math.toRadians(-(rotate - 90.0)))));
         this.write(drawContext, "N", x / scale - 2.0F, y / scale - 4.0F, 0xFFFFFFFF);
-        poseStack.popMatrix();
-        poseStack.pushMatrix();
+        poseStack.popPose();
+        poseStack.pushPose();
         poseStack.translate((float) (distance * Math.sin(Math.toRadians(-rotate))), (float) (distance * Math.cos(Math.toRadians(-rotate))));
         this.write(drawContext, "E", x / scale - 2.0F, y / scale - 4.0F, 0xFFFFFFFF);
-        poseStack.popMatrix();
-        poseStack.pushMatrix();
+        poseStack.popPose();
+        poseStack.pushPose();
         poseStack.translate((float) (distance * Math.sin(Math.toRadians(-(rotate + 90.0)))), (float) (distance * Math.cos(Math.toRadians(-(rotate + 90.0)))));
         this.write(drawContext, "S", x / scale - 2.0F, y / scale - 4.0F, 0xFFFFFFFF);
-        poseStack.popMatrix();
-        poseStack.pushMatrix();
+        poseStack.popPose();
+        poseStack.pushPose();
         poseStack.translate((float) (distance * Math.sin(Math.toRadians(-(rotate + 180.0)))), (float) (distance * Math.cos(Math.toRadians(-(rotate + 180.0)))));
         this.write(drawContext, "W", x / scale - 2.0F, y / scale - 4.0F, 0xFFFFFFFF);
-        poseStack.popMatrix();
+        poseStack.popPose();
 
-        poseStack.popMatrix();
+        poseStack.popPose();
     }
 
     private void showCoords(GuiGraphics drawContext, int x, int y, float scaleProj) {
@@ -1902,14 +1921,14 @@ public class Map implements Runnable, IChangeObserver {
             textStart = y + 32 + 4;
         }
 
-        matrixStack.pushMatrix();
-        matrixStack.scale(scaleProj, scaleProj);
+        matrixStack.pushPose();
+        matrixStack.scale(scaleProj, scaleProj, 1.0f);
 
         if (!this.options.hide && !this.fullscreenMap) {
             boolean unicode = minecraft.options.forceUnicodeFont().get();
             float scale = unicode ? 0.65F : 0.5F;
-            matrixStack.pushMatrix();
-            matrixStack.scale(scale, scale);
+            matrixStack.pushPose();
+            matrixStack.scale(scale, scale, 1.0f);
             String xy = this.dCoord(GameVariableAccessShim.xCoord()) + ", " + this.dCoord(GameVariableAccessShim.zCoord());
             int m = this.textWidth(xy) / 2;
             this.write(drawContext, xy, x / scale - m, textStart / scale, 0xFFFFFFFF); // X, Z
@@ -1921,7 +1940,7 @@ public class Map implements Runnable, IChangeObserver {
                 this.write(drawContext, this.error, x / scale - m, textStart / scale + 19.0F, 0xFFFFFFFF); // WORLD NAME
             }
 
-            matrixStack.popMatrix();
+            matrixStack.popPose();
         } else {
             int heading = (int) (this.direction + this.northRotate);
             if (heading > 360) {
@@ -1949,7 +1968,7 @@ public class Map implements Runnable, IChangeObserver {
             }
         }
 
-        matrixStack.popMatrix();
+        matrixStack.popPose();
     }
 
     private String dCoord(int paramInt1) {

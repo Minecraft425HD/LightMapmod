@@ -132,7 +132,8 @@ public class EntityMapImageManager {
 
         mobPropertiesMap.clear();
         variantDataFactories.clear();
-        addVariantDataFactory(new DefaultEntityVariantDataFactory(EntityType.BOGGED, new ResourceLocation("minecraft", "textures/entity/skeleton/bogged_overlay.png")));
+        // 1.20.1: EntityType.BOGGED doesn't exist (added in 1.21)
+        // addVariantDataFactory(new DefaultEntityVariantDataFactory(EntityType.BOGGED, new ResourceLocation("minecraft", "textures/entity/skeleton/bogged_overlay.png")));
         addVariantDataFactory(new DefaultEntityVariantDataFactory(EntityType.DROWNED, new ResourceLocation("minecraft", "textures/entity/zombie/drowned_outer_layer.png")));
         addVariantDataFactory(new DefaultEntityVariantDataFactory(EntityType.ENDERMAN, new ResourceLocation("minecraft", "textures/entity/enderman/enderman_eyes.png")));
         // addVariantDataFactory(new DefaultEntityVariantDataFactory(EntityType.TROPICAL_FISH, new ResourceLocation("minecraft", "textures/entity/enderman/enderman_eyes.png")));
@@ -179,7 +180,8 @@ public class EntityMapImageManager {
     private EntityVariantData getOrCreateVariantData(Entity entity, EntityRenderer renderer, int size, boolean addBorder) {
         // 1.20.1: EntityRenderState doesn't exist, work directly with entities
         if (entity instanceof AbstractClientPlayer player) {
-            return new DefaultEntityVariantData(entity.getType(), minecraft.getSkinManager().getInsecureSkin(player.getGameProfile()).texture(), null, size, addBorder);
+            // 1.20.1: getInsecureSkin() returns ResourceLocation directly, not a Skin object
+            return new DefaultEntityVariantData(entity.getType(), minecraft.getSkinManager().getInsecureSkin(player.getGameProfile()), null, size, addBorder);
         }
 
         // 1.20.1: createRenderState() doesn't exist in 1.20.1, skip the state creation
@@ -203,7 +205,8 @@ public class EntityMapImageManager {
 
     @SuppressWarnings("rawtypes")
     public Sprite requestImageForMob(Entity entity, int size, boolean addBorder) {
-        EntityRenderer<?, ?> baseRenderer = minecraft.getEntityRenderDispatcher().getRenderer(entity);
+        // 1.20.1: EntityRenderer has single type parameter, not two
+        EntityRenderer<?> baseRenderer = minecraft.getEntityRenderDispatcher().getRenderer(entity);
         EntityVariantData variant = getOrCreateVariantData(entity, baseRenderer, size, addBorder);
 
         if (variant == null) {
@@ -450,6 +453,12 @@ public class EntityMapImageManager {
     }
 
     private ModelPart[] getPartToRender(EntityModel<?> model) {
+        // TODO: 1.20.1 Port - model.root() and model.allParts() don't exist in 1.20.1
+        // This entire method needs to be rewritten for 1.20.1 API
+        // For now, returning null since entity icon rendering is disabled anyway
+        return null;
+
+        /* 1.21 code - needs porting to 1.20.1
         // full-model rendered mobs
         for (Class<?> clazz : fullRenderModels) {
             if (clazz.isInstance(model)) {
@@ -503,6 +512,7 @@ public class EntityMapImageManager {
 
         // fallback
         return new ModelPart[] { model.root() };
+        */
     }
 
     // We don't need to use this code anymore. (but I'll leave this code here in case we need it later!)
