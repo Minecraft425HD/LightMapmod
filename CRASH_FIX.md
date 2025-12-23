@@ -1,17 +1,27 @@
-# VoxelMap Crash Fix - Missing Texture Resources
+# VoxelMap Crash Fix - Rendering and Resource Loading Issues
 
-## Problem
-The game was crashing with `IllegalStateException: Already building!` and missing texture errors:
+## Problems
+The game was crashing with two related issues:
+
+1. **Missing Texture Resources:**
 ```
 [VoxelMap/]: Arrow texture not found: voxelmap:images/mmarrow.png
 [VoxelMap/]: Square map texture not found: voxelmap:images/squaremap.png
 [VoxelMap/]: Failed to load texture: voxelmap:images/radar/hostile.png
-[VoxelMap/]: Error loading color picker: No value present
 [Render thread/WARN] [minecraft/Pack]: Missing metadata in pack mod:voxelmap
 ```
 
-## Root Cause
-The VoxelMap texture resources exist in `common/src/main/resources/assets/voxelmap/images/` but were not being loaded at runtime. The root cause was **missing pack metadata** - Minecraft requires a `pack.mcmeta` file to properly recognize and load resource packs containing mod assets.
+2. **BufferBuilder Crash:**
+```
+[Render thread/ERROR] [VoxelMap/]: Error while render overlay
+java.lang.IllegalStateException: Already building!
+        at com.mojang.blaze3d.vertex.BufferBuilder.begin(BufferBuilder.java:100)
+        at com.mamiyaotaru.voxelmap.Map.drawMapFrame(Map.java:1882)
+```
+
+## Root Causes
+1. **Missing pack.mcmeta** - Minecraft requires a `pack.mcmeta` file to properly recognize and load resource packs containing mod assets.
+2. **Incomplete BufferBuilder code** - The 1.20.1 port left BufferBuilder rendering code in an incomplete state, calling `BufferBuilder.begin()` without a matching `end()`, which left the buffer in a "building" state and caused all subsequent rendering to crash.
 
 ## Solution
 
@@ -29,21 +39,27 @@ Create `common/src/main/resources/pack.mcmeta` with the following content:
 
 **Important**: For Minecraft 1.20.1, the `pack_format` must be `15`. This tells Minecraft how to interpret the resource pack structure.
 
-### Step 2: Add Resource Root Markers (Already Done)
+### Step 2: Fix BufferBuilder Rendering Code
+The incomplete BufferBuilder code in `Map.renderMap()` (lines 1568-1613) has been commented out to prevent it from leaving the buffer in an inconsistent state. This code was part of an incomplete 1.20.1 port that called `BufferBuilder.begin()` but never called `Tesselator.getInstance().end()`.
+
+**File:** `common/src/main/java/com/mamiyaotaru/voxelmap/Map.java`
+**Lines:** 1568-1613 (now commented out)
+
+### Step 3: Add Resource Root Markers (Already Done)
 The `.mcassetsroot` files have been added to mark the resource directories:
 - `common/src/main/resources/.mcassetsroot`
 - `forge/src/main/resources/.mcassetsroot`
 
 These empty marker files help ForgeGradle identify resource directories during development runs.
 
-### Step 3: Clean and Rebuild
+### Step 4: Clean and Rebuild
 Run a clean build to ensure all resources are properly processed:
 
 ```bash
 ./gradlew clean build
 ```
 
-### Step 3: Run the Client
+### Step 5: Run the Client
 ```bash
 ./gradlew :forge:runClient
 ```
@@ -65,13 +81,15 @@ The resources should now be loaded correctly. You can verify by checking:
 
 ## What Was Fixed
 
-1. **Added `pack.mcmeta` file** to `common/src/main/resources/` - This is the primary fix. Without this file, Minecraft cannot properly recognize the mod's resource pack, causing all texture loading to fail. The file specifies:
+1. **Added `pack.mcmeta` file** to `common/src/main/resources/` - This fixed the texture loading issue. Without this file, Minecraft cannot properly recognize the mod's resource pack, causing all texture loading to fail. The file specifies:
    - `pack_format: 15` for Minecraft 1.20.1
    - A description for the resource pack
 
-2. **Added `.mcassetsroot` markers** to `common/src/main/resources/` and `forge/src/main/resources/` directories. These files tell Forge's development environment where to find mod resources.
+2. **Fixed BufferBuilder crash** in `common/src/main/java/com/mamiyaotaru/voxelmap/Map.java` (lines 1568-1613) - Commented out incomplete rendering code that was calling `BufferBuilder.begin()` without a matching `end()`. This was leaving the BufferBuilder in a "building" state and causing the `IllegalStateException: Already building!` crash.
 
-3. **Build configuration already correct** in `forge/build.gradle.kts`:
+3. **Added `.mcassetsroot` markers** to `common/src/main/resources/` and `forge/src/main/resources/` directories. These files tell Forge's development environment where to find mod resources.
+
+4. **Build configuration already correct** in `forge/build.gradle.kts`:
    ```kotlin
    tasks.jar {
        val main = project.project(":common").sourceSets.getByName("main")
@@ -107,6 +125,16 @@ Minecraft's resource pack system requires a `pack.mcmeta` file at the root of an
 **Pack Format Versions:**
 - Minecraft 1.20.1 requires `pack_format: 15`
 - Without this file, Minecraft logs "Missing metadata in pack" and fails to load any resources from the pack
+
+### BufferBuilder State Management
+Minecraft's rendering system uses a `BufferBuilder` to batch vertex data before sending it to the GPU. The BufferBuilder has strict state management:
+1. `BufferBuilder.begin()` - Starts building a new batch of vertices
+2. Add vertices with `.vertex()` calls
+3. `Tesselator.getInstance().end()` or `BufferBuilder.build()` - Finishes and submits the batch
+
+**The Issue:** The incomplete 1.20.1 port code in `Map.renderMap()` called `begin()` but the corresponding rendering code that would have called `end()` was commented out. This left the BufferBuilder in a "building" state, causing all subsequent rendering operations (including vanilla Minecraft GUI rendering) to crash with `IllegalStateException: Already building!`.
+
+**The Fix:** Comment out the entire incomplete rendering section to prevent the BufferBuilder from being left in an inconsistent state.
 
 ### Multi-Loader Project Setup
 In a multi-loader project setup (common + forge), resources in the `common` module need to be properly configured:

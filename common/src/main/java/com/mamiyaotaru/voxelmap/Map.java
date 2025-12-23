@@ -1565,7 +1565,11 @@ public class Map implements Runnable, IChangeObserver {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().setIdentity();
 
-        // TODO: 1.20.1 Port - RenderPipelines.GUI_TEXTURED.getVertexFormat() doesn't exist, using stub
+        // TODO: 1.20.1 Port - GPU rendering APIs don't exist in 1.20.1
+        // The following BufferBuilder code has been commented out because the rendering implementation
+        // is incomplete. Leaving BufferBuilder.begin() without a matching end() causes crashes.
+        // This entire section needs to be rewritten for 1.20.1 rendering APIs.
+        /*
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
@@ -1606,6 +1610,7 @@ public class Map implements Runnable, IChangeObserver {
         vector4f.mul(matrix);
         vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
         bufferBuilder.vertex(identityMatrix, vector3f.x, vector3f.y, -2500).uv(0, 1).color(255, 255, 255, 255).endVertex();
+        */
 
         // TODO: 1.20.1 Port - GPU rendering APIs (ProjectionType, GpuBufferSlice, RenderPass, etc.) don't exist in 1.20.1
         // This entire section from lines 1594-1649 needs to be rewritten for 1.20.1 rendering APIs
