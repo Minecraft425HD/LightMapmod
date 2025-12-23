@@ -87,7 +87,7 @@ public class ForgeEvents implements Events {
         @SubscribeEvent
         public void onRenderGui(RenderGuiOverlayEvent.Post event) {
             // In 1.20.1, only render after the hotbar to avoid rendering multiple times per frame
-            if (event.getOverlay() == VanillaGuiOverlay.HOTBAR) {
+            if (event.getOverlay().id().equals(VanillaGuiOverlay.HOTBAR.id())) {
                 VoxelConstants.renderOverlay(event.getGuiGraphics());
             }
         }
