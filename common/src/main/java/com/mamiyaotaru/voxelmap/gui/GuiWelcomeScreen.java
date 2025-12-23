@@ -119,7 +119,6 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
         guiGraphics.fill(x1 - inflateX, y1 - inflateY, x2 + inflateX, y2 + inflateY, color);
     }
 
-    @Override
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
     }
 }

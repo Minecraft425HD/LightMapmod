@@ -79,7 +79,9 @@ public class GuiMobs extends GuiScreenMinimap {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (mouseY >= this.mobsList.getY() && mouseY < this.mobsList.getBottom()) {
+        int listTop = 40;
+        int listBottom = this.getHeight() - 110;
+        if (mouseY >= listTop && mouseY < listBottom) {
             this.mobsList.mouseClicked(mouseX, mouseY, button);
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -87,7 +89,9 @@ public class GuiMobs extends GuiScreenMinimap {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (mouseY >= this.mobsList.getY() && mouseY < this.mobsList.getBottom()) {
+        int listTop = 40;
+        int listBottom = this.getHeight() - 110;
+        if (mouseY >= listTop && mouseY < listBottom) {
             this.mobsList.mouseReleased(mouseX, mouseY, button);
         }
         return super.mouseReleased(mouseX, mouseY, button);
@@ -95,7 +99,9 @@ public class GuiMobs extends GuiScreenMinimap {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (mouseY >= this.mobsList.getY() && mouseY < this.mobsList.getBottom()) {
+        int listTop = 40;
+        int listBottom = this.getHeight() - 110;
+        if (mouseY >= listTop && mouseY < listBottom) {
             return this.mobsList.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
@@ -103,7 +109,9 @@ public class GuiMobs extends GuiScreenMinimap {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        if (mouseY >= this.mobsList.getY() && mouseY < this.mobsList.getBottom()) {
+        int listTop = 40;
+        int listBottom = this.getHeight() - 110;
+        if (mouseY >= listTop && mouseY < listBottom) {
             return this.mobsList.mouseScrolled(mouseX, mouseY, amount);
         }
         return super.mouseScrolled(mouseX, mouseY, amount);

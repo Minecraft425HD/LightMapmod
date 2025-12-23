@@ -271,7 +271,7 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
         waypointManager.getTextureAtlasChooser().getAtlasSprite("voxelmap:images/waypoints/waypoint" + this.waypoint.imageSuffix + ".png").blit(drawContext, null, this.getWidth() / 2 - 25, buttonListY + 48 + 2, 16, 16, color);
 
         if (this.choosingColor || this.choosingIcon) {
-            this.renderBackground(drawContext, 0, 0, 0);
+            this.renderBackground(drawContext);
 
             if (this.choosingColor) {
                 int anchorX = this.getWidth() / 2 - colorPickerWidth / 2;
@@ -298,7 +298,7 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
                 int anchorY = (int) (this.getHeight() / 2.0F - chooser.getHeight() / 2.0F);
 
 
-                drawContext.blit(WaypointManager.resourceTextureAtlasWaypointChooser, anchorX, anchorY, 0f, 0f, chooser.getWidth(), chooser.getHeight(), chooser.getWidth(), chooser.getHeight(), 0xFFC8C8C8);
+                drawContext.blit(WaypointManager.resourceTextureAtlasWaypointChooser, anchorX, anchorY, 0, 0, chooser.getWidth(), chooser.getHeight(), chooser.getWidth(), chooser.getHeight());
 
                 Sprite pickedIcon = pickIcon(mouseX, mouseY);
                 if (pickedIcon != chooser.getMissingImage()) {

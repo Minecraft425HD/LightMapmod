@@ -25,6 +25,10 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
 
     private final GuiAddWaypoint parentGui;
     private final ArrayList<DimensionItem> dimensions;
+    private final int listX;
+    private final int listWidth;
+    private final int listTop;
+    private final int listBottom;
 
     protected long lastClicked;
     public boolean doubleClicked;
@@ -32,6 +36,10 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
     GuiSlotDimensions(GuiAddWaypoint par1GuiWaypoints) {
         super(VoxelConstants.getMinecraft(), 101, 64, par1GuiWaypoints.getHeight() / 6 + 90, 64, 18);
         this.parentGui = par1GuiWaypoints;
+        this.listX = par1GuiWaypoints.getWidth() / 2;
+        this.listWidth = 101;
+        this.listTop = par1GuiWaypoints.getHeight() / 6 + 90;
+        this.listBottom = 64;
         // TODO: 1.20.1 Port - setX() doesn't exist in AbstractSelectionList
         // this.setX(this.parentGui.getWidth() / 2);
         DimensionManager dimensionManager = VoxelConstants.getVoxelMapInstance().getDimensionManager();
@@ -76,11 +84,14 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
     // return this.dimensions.get(index).dim.equals(this.parentGui.selectedDimension);
     // }
 
-    @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 
     }
 
+    @Override
+    public void updateNarration(NarrationElementOutput output) {
+        // Empty implementation for 1.20.1
+    }
 
     // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
     @Override
@@ -101,7 +112,7 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
 
         @Override
         public void render(GuiGraphics drawContext, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            drawContext.drawCenteredString(((net.minecraft.client.gui.screens.Screen)this.parentGui).font, this.dim.getDisplayName(), this.parentGui.getWidth() / 2 + GuiSlotDimensions.this.width / 2, top + 3, 0xFFFFFFFF);
+            drawContext.drawCenteredString(this.parentGui.font, this.dim.getDisplayName(), this.parentGui.getWidth() / 2 + GuiSlotDimensions.this.width / 2, top + 3, 0xFFFFFFFF);
             byte padding = 4;
             byte iconWidth = 18;
             int x = this.parentGui.getWidth() / 2;
@@ -131,13 +142,13 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
         // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (mouseY < GuiSlotDimensions.this.getY() || mouseY > GuiSlotDimensions.this.getBottom()) {
+            if (mouseY < GuiSlotDimensions.this.listTop || mouseY > GuiSlotDimensions.this.listBottom) {
                 return false;
             }
 
             GuiSlotDimensions.this.setSelected(this);
             byte iconWidth = 18;
-            int rightEdge = GuiSlotDimensions.this.getX() + GuiSlotDimensions.this.getWidth();
+            int rightEdge = GuiSlotDimensions.this.listX + GuiSlotDimensions.this.listWidth;
             boolean inRange = mouseX >= (rightEdge - iconWidth) && mouseX <= rightEdge;
             if (inRange) {
                 this.parentGui.toggleDimensionSelected();

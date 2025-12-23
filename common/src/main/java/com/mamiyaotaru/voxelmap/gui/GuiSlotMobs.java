@@ -34,9 +34,13 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
     static final Component TOOLTIP_DISABLE = Component.translatable("options.minimap.mobs.disableTooltip");
     final ResourceLocation visibleIconIdentifier = new ResourceLocation("textures/gui/sprites/container/beacon/confirm.png");
     final ResourceLocation invisibleIconIdentifier = new ResourceLocation("textures/gui/sprites/container/beacon/cancel.png");
+    private final int listTop;
+    private final int listBottom;
 
     GuiSlotMobs(GuiMobs par1GuiMobs) {
         super(VoxelConstants.getMinecraft(), par1GuiMobs.getWidth(), par1GuiMobs.getHeight(), 40, par1GuiMobs.getHeight() - 110, 18);
+        this.listTop = 40;
+        this.listBottom = par1GuiMobs.getHeight() - 110;
 
         this.parentGui = par1GuiMobs;
         // RadarSettingsManager options = this.parentGui.options;
@@ -95,9 +99,13 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
         this.mobsFiltered.forEach(x -> this.addEntry((MobItem) x));
     }
 
-    @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput output) {
+        // Empty implementation for 1.20.1
     }
 
     public class MobItem extends AbstractSelectionList.Entry<MobItem> {
@@ -126,7 +134,7 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
             int red = isHostile ? 255 : 0;
             int green = isNeutral ? 255 : 0;
             int color = 0xFF000000 + (red << 16) + (green << 8);
-            drawContext.drawCenteredString(((net.minecraft.client.gui.screens.Screen)this.parentGui).font, this.name, this.parentGui.getWidth() / 2, top + 5, color);
+            drawContext.drawCenteredString(this.parentGui.font, this.name, this.parentGui.getWidth() / 2, top + 5, color);
             byte padding = 3;
             if (mouseX >= left - padding && mouseY >= top && mouseX <= left + 215 + padding && mouseY <= top + GuiSlotMobs.this.itemHeight) {
                 Component tooltip;
@@ -152,7 +160,7 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
         // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (mouseY < GuiSlotMobs.this.getY() || mouseY > GuiSlotMobs.this.getBottom()) {
+            if (mouseY < GuiSlotMobs.this.listTop || mouseY > GuiSlotMobs.this.listBottom) {
                 return false;
             }
 

@@ -37,7 +37,7 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
     static final Component CONFIRM_DENY = Component.translatable("gui.cancel");
 
     public GuiButtonRowListPlayers(GuiSelectPlayer par1GuiSelectPlayer) {
-        super(VoxelConstants.getMinecraft(), par1GuiSelectPlayer.getWidth(), par1GuiSelectPlayer.getHeight() - 65 + 4 - 89, 89, 25);
+        super(VoxelConstants.getMinecraft(), par1GuiSelectPlayer.getWidth(), par1GuiSelectPlayer.getHeight(), 89, par1GuiSelectPlayer.getHeight() - 65 + 4, 25);
         this.parentGui = par1GuiSelectPlayer;
         ClientPacketListener netHandlerPlayClient = VoxelConstants.getPlayer().connection;
         this.players = new ArrayList<>(netHandlerPlayClient.getOnlinePlayers());
@@ -122,8 +122,12 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
 
     }
 
-    @Override
     public void updateWidgetNarration(NarrationElementOutput builder) {
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput output) {
+        // Empty implementation for 1.20.1
     }
 
     public class Row extends AbstractSelectionList.Entry<Row> {
@@ -176,10 +180,10 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
                 VoxelConstants.getMinecraft().getSkinManager().registerTexture(texture, com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN) :
                 net.minecraft.client.resources.DefaultPlayerSkin.getDefaultSkin(gameProfile.getId());
 
-            drawContext.blit(skinIdentifier, button.getX() + 6, button.getY() + 6, 8.0F, 8.0F, 8, 8, 8, 8, 64, 64);
+            drawContext.blit(skinIdentifier, button.getX() + 6, button.getY() + 6, 8, 8, 8, 8, 8, 8, 64, 64);
             if (entityPlayer != null && entityPlayer.isModelPartShown(PlayerModelPart.HAT)) {
 
-                drawContext.blit(skinIdentifier, button.getX() + 6, button.getY() + 6, 40.0F, 8.0F, 8, 8, 8, 8, 64, 64);
+                drawContext.blit(skinIdentifier, button.getX() + 6, button.getY() + 6, 40, 8, 8, 8, 8, 8, 64, 64);
             }
         }
 

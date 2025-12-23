@@ -119,8 +119,12 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
         return 340;
     }
 
-    @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput output) {
+        // Empty implementation for 1.20.1
     }
 
     public class RowItem extends AbstractSelectionList.Entry<RowItem> {

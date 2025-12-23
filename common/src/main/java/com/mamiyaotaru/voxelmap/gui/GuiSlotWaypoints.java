@@ -41,10 +41,18 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
     public boolean doubleClicked;
     private final ResourceLocation targetIconLocation = new ResourceLocation("voxelmap", "images/waypoints/target.png");
     private final TextureAtlas textureAtlas;
+    private final int listX;
+    private final int listWidth;
+    private final int listTop;
+    private final int listBottom;
 
     GuiSlotWaypoints(GuiWaypoints par1GuiWaypoints) {
         super(VoxelConstants.getMinecraft(), par1GuiWaypoints.getWidth(), par1GuiWaypoints.getHeight(), 54, par1GuiWaypoints.getHeight() - 140, 18);
         this.parentGui = par1GuiWaypoints;
+        this.listX = par1GuiWaypoints.getWidth() / 2 - 92 - 16;
+        this.listWidth = par1GuiWaypoints.getWidth();
+        this.listTop = 54;
+        this.listBottom = par1GuiWaypoints.getHeight() - 140;
         this.waypoints = new ArrayList<>();
 
         for (Waypoint pt : this.parentGui.waypointManager.getWaypoints()) {
@@ -128,9 +136,13 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
         this.waypointsFiltered.forEach(x -> this.addEntry((WaypointItem) x));
     }
 
-    @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput output) {
+        // Empty implementation for 1.20.1
     }
 
     // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
@@ -155,7 +167,7 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
             int x = left;
             int y = top;
             int entryHeight = height;
-            drawContext.drawCenteredString(((net.minecraft.client.gui.screens.Screen)this.parentGui).font, this.waypoint.name, this.parentGui.getWidth() / 2, y + 5, this.waypoint.getUnifiedColor());
+            drawContext.drawCenteredString(this.parentGui.font, this.waypoint.name, this.parentGui.getWidth() / 2, y + 5, this.waypoint.getUnifiedColor());
             byte padding = 3;
             byte iconWidth = 16;
             if (mouseX >= x - padding && mouseY >= y && mouseX <= x + 215 + padding && mouseY <= y + entryHeight) {
@@ -174,7 +186,7 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
                     tooltip = Component.literal(tooltipText);
                 }
 
-                if (mouseX >= GuiSlotWaypoints.this.getX() && mouseX <= GuiSlotWaypoints.this.getRight() && mouseY >= GuiSlotWaypoints.this.getY() && mouseY <= GuiSlotWaypoints.this.getBottom()) {
+                if (mouseX >= GuiSlotWaypoints.this.listX && mouseX <= (GuiSlotWaypoints.this.listX + GuiSlotWaypoints.this.listWidth) && mouseY >= GuiSlotWaypoints.this.listTop && mouseY <= GuiSlotWaypoints.this.listBottom) {
                     GuiWaypoints.setTooltip(GuiSlotWaypoints.this.parentGui, tooltip);
                 }
             }
@@ -185,14 +197,14 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
 
             if (this.waypoint == this.parentGui.highlightedWaypoint) {
 
-                drawContext.blit(targetIconLocation, x, y, 0.0F, 1.0F, 18, 18, 18, 18, 0xFFFF0000);
+                drawContext.blit(targetIconLocation, x, y, 0, 1, 18, 18, 18, 18);
             }
         }
 
         // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (mouseY < GuiSlotWaypoints.this.getY() || mouseY > GuiSlotWaypoints.this.getBottom()) {
+            if (mouseY < GuiSlotWaypoints.this.listTop || mouseY > GuiSlotWaypoints.this.listBottom) {
                 return false;
             }
 

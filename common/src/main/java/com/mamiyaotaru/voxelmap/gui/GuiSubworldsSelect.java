@@ -196,7 +196,6 @@ public class GuiSubworldsSelect extends GuiScreenMinimap implements BooleanConsu
 
     }
 
-    @Override
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
     }
 
