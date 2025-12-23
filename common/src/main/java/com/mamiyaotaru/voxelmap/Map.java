@@ -1562,55 +1562,30 @@ public class Map implements Runnable, IChangeObserver {
         this.percentY = (float) (GameVariableAccessShim.zCoordDouble() - this.lastImageZ);
         this.percentX *= multi;
         this.percentY *= multi;
+
+        // Render the minimap texture using 1.20.1 GuiGraphics API
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().setIdentity();
+        guiGraphics.pose().translate(x, y, 0.0f);
 
-        // TODO: 1.20.1 Port - GPU rendering APIs don't exist in 1.20.1
-        // The following BufferBuilder code has been commented out because the rendering implementation
-        // is incomplete. Leaving BufferBuilder.begin() without a matching end() causes crashes.
-        // This entire section needs to be rewritten for 1.20.1 rendering APIs.
-        /*
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-
-        bufferBuilder.vertex(guiGraphics.pose().last().pose(), -256, 256, -2500).uv(0, 0).color(255, 255, 255, 255).endVertex();
-        bufferBuilder.vertex(guiGraphics.pose().last().pose(), 256, 256, -2500).uv(1, 0).color(255, 255, 255, 255).endVertex();
-        bufferBuilder.vertex(guiGraphics.pose().last().pose(), 256, -256, -2500).uv(1, 1).color(255, 255, 255, 255).endVertex();
-        bufferBuilder.vertex(guiGraphics.pose().last().pose(), -256, -256, -2500).uv(0, 1).color(255, 255, 255, 255).endVertex();
-
-        // guiGraphics.pose().translate(256, 256, 0.0f);
+        // Apply rotation based on map settings
         if (!this.options.rotates) {
             guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(-this.northRotate));
         } else {
             guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(this.direction));
         }
-        guiGraphics.pose().scale(scale, scale, 1.0f);
-        // guiGraphics.pose().translate(-256, -256, 0.0f);
-        guiGraphics.pose().translate(-this.percentX * 512.0F / 64.0F, this.percentY * 512.0F / 64.0F, 0.0f);
 
-        Vector3f vector3f = new Vector3f();
-        org.joml.Matrix4f matrix = guiGraphics.pose().last().pose();
-        org.joml.Matrix4f identityMatrix = new org.joml.Matrix4f();
-        org.joml.Vector4f vector4f = new org.joml.Vector4f(-256, 256, 0, 1);
-        vector4f.mul(matrix);
-        vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
-        bufferBuilder.vertex(identityMatrix, vector3f.x, vector3f.y, -2500).uv(0, 0).color(255, 255, 255, 255).endVertex();
+        // Apply scaling for square maps
+        if (this.options.squareMap && this.options.rotates) {
+            guiGraphics.pose().scale(scale, scale, 1.0f);
+        }
 
-        vector4f.set(256, 256, 0, 1);
-        vector4f.mul(matrix);
-        vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
-        bufferBuilder.vertex(identityMatrix, vector3f.x, vector3f.y, -2500).uv(1, 0).color(255, 255, 255, 255).endVertex();
+        // Apply offset based on player movement within the map
+        guiGraphics.pose().translate(-this.percentX * 4.0F, this.percentY * 4.0F, 0.0f);
 
-        vector4f.set(256, -256, 0, 1);
-        vector4f.mul(matrix);
-        vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
-        bufferBuilder.vertex(identityMatrix, vector3f.x, vector3f.y, -2500).uv(1, 1).color(255, 255, 255, 255).endVertex();
+        // Render the map texture centered at the minimap position (64x64 size, so -32 to center)
+        guiGraphics.blit(mapResources[this.zoom], -32, -32, 0, 0, 64, 64, 256, 256);
 
-        vector4f.set(-256, -256, 0, 1);
-        vector4f.mul(matrix);
-        vector3f.set(vector4f.x(), vector4f.y(), vector4f.z());
-        bufferBuilder.vertex(identityMatrix, vector3f.x, vector3f.y, -2500).uv(0, 1).color(255, 255, 255, 255).endVertex();
-        */
+        guiGraphics.pose().popPose();
 
         // TODO: 1.20.1 Port - GPU rendering APIs (ProjectionType, GpuBufferSlice, RenderPass, etc.) don't exist in 1.20.1
         // This entire section from lines 1594-1649 needs to be rewritten for 1.20.1 rendering APIs
