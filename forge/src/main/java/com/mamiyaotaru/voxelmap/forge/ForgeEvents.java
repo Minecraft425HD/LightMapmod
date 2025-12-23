@@ -19,6 +19,7 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.event.GameShuttingDownEvent;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ForgeEvents implements Events {
@@ -52,19 +53,19 @@ public class ForgeEvents implements Events {
             VoxelmapSettingsS2C::write,
             VoxelmapSettingsS2C::new,
             (msg, ctx) -> VoxelmapSettingsChannelHandlerForge.handleDataOnMain(msg, ctx),
-            () -> NetworkDirection.PLAY_TO_CLIENT
+            Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
         CHANNEL.registerMessage(id++, WorldIdS2C.class,
             WorldIdS2C::write,
             WorldIdS2C::new,
             (msg, ctx) -> VoxelmapWorldIdChannelHandlerForge.handleDataOnMain(msg, ctx),
-            () -> NetworkDirection.PLAY_TO_CLIENT
+            Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
         CHANNEL.registerMessage(id++, WorldIdC2S.class,
             WorldIdC2S::write,
             WorldIdC2S::new,
             (msg, ctx) -> { ctx.get().setPacketHandled(true); },
-            () -> NetworkDirection.PLAY_TO_SERVER
+            Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
     }
 
