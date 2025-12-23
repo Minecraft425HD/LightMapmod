@@ -1,7 +1,7 @@
 package com.mamiyaotaru.voxelmap.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ARGB;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 
 /**
  * from lightmap.fsh + net.minecraft.client.renderer.LightTexture
@@ -92,6 +92,6 @@ public class CPULightmap {
         colorg = Math.min(colorg, 1.0f);
         colorb = Math.min(colorb, 1.0f);
 
-        return ARGB.colorFromFloat(1.0f, colorb, colorg, colorr);
+        return ARGBCompat.colorFromFloat(1.0f, colorb, colorg, colorr);
     }
 }

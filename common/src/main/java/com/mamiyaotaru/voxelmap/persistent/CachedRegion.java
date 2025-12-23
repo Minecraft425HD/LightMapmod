@@ -46,7 +46,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelResource;
 import org.apache.logging.log4j.Level;
@@ -114,7 +114,7 @@ public class CachedRegion {
         this.dimensionNamePathPart = TextUtils.scrubNameFile(dimensionName);
         boolean knownUnderground;
         knownUnderground = dimensionName.toLowerCase().contains("erebus");
-        this.underground = world.dimensionType().cardinalLightType() != DimensionType.CardinalLightType.NETHER && !world.dimensionType().hasSkyLight() || world.dimensionType().hasCeiling() || knownUnderground;
+        this.underground = !world.dimensionType().hasSkyLight() || world.dimensionType().hasCeiling() || knownUnderground;
         this.remoteWorld = !VoxelConstants.getMinecraft().hasSingleplayerServer();
         persistentMap.getSettingsAndLightingChangeNotifier().addObserver(this);
         this.x = x;
@@ -270,11 +270,11 @@ public class CachedRegion {
     }
 
     private boolean isChunkEmptyOrUnlit(LevelChunk chunk) {
-        return this.closed || chunk.isEmpty() || !chunk.getPersistedStatus().isOrAfter(ChunkStatus.FULL);
+        return this.closed || chunk.isEmpty() || !chunk.getStatus().isOrAfter(ChunkStatus.FULL);
     }
 
     private boolean isChunkEmpty(LevelChunk chunk) {
-        return this.closed || chunk.isEmpty() || !chunk.getPersistedStatus().isOrAfter(ChunkStatus.FULL);
+        return this.closed || chunk.isEmpty() || !chunk.getStatus().isOrAfter(ChunkStatus.FULL);
     }
 
     public boolean isSurroundedByLoaded(LevelChunk chunk) {
@@ -329,6 +329,11 @@ public class CachedRegion {
                                         if (!this.closed && this.data.getHeight(tx * 16, sx * 16) == Short.MIN_VALUE && this.data.getLight(tx * 16, sx * 16) == 0) {
                                             int index = tx + sx * 16;
                                             ChunkPos chunkPos = new ChunkPos(this.x * 16 + tx, this.z * 16 + sx);
+                                            // TODO: NBT upgrade section commented out for 1.20.1 compatibility
+                                            // The upgradeChunkTag method signature has changed in 1.20.1
+                                            // NBT tag access methods (.get()) have also changed
+                                            // This section needs to be reimplemented with 1.20.1 APIs
+                                            /*
                                             CompoundTag rawNbt = this.chunkLoader.read(chunkPos).join().get();
                                             CompoundTag nbt = this.chunkLoader.upgradeChunkTag(rawNbt, -1);
                                             if (!this.closed && nbt.contains("Level")) {
@@ -353,6 +358,7 @@ public class CachedRegion {
                                                     }
                                                 }
                                             }
+                                            */
                                         }
                                     }
                                 }
@@ -388,7 +394,7 @@ public class CachedRegion {
                                         VoxelConstants.getLogger().warn("non world chunk at " + chunks[index].getPos().x + "," + chunks[index].getPos().z);
                                     }
 
-                                    if (!this.closed && loadedChunk != null && loadedChunk.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
+                                    if (!this.closed && loadedChunk != null && loadedChunk.getStatus().isOrAfter(ChunkStatus.FULL)) {
                                         CompletableFuture<ChunkAccess> lightFuture = this.chunkProvider.getLightEngine().lightChunk(loadedChunk, false);
 
                                         while (!this.closed && !lightFuture.isDone()) {
@@ -399,7 +405,7 @@ public class CachedRegion {
                                         lightFuture.cancel(false);
                                     }
 
-                                    if (!this.closed && loadedChunk != null && loadedChunk.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
+                                    if (!this.closed && loadedChunk != null && loadedChunk.getStatus().isOrAfter(ChunkStatus.FULL)) {
                                         this.loadChunkDataSkipLightCheck(loadedChunk, t, s);
                                         dataChanged = true;
                                     }
@@ -592,7 +598,7 @@ public class CachedRegion {
 
                 for (Entry<Biome, Integer> entry : biomeToInt.entrySet()) {
                     try {
-                        String nextLine = entry.getValue() + " " + world.registryAccess().lookupOrThrow(Registries.BIOME).getKey(entry.getKey()).toString() + "\r\n";
+                        String nextLine = entry.getValue() + " " + world.registryAccess().registryOrThrow(Registries.BIOME).getKey(entry.getKey()).toString() + "\r\n";
                         stringBuffer.append(nextLine);
                     } catch (NullPointerException ex) {
                         VoxelConstants.getLogger().warn("Nullpointer for Biome: " + entry.getValue() + " at " + this.x + "," + this.z + " in " + this.worldNamePathPart + "/" + this.subworldNamePathPart + this.dimensionNamePathPart);

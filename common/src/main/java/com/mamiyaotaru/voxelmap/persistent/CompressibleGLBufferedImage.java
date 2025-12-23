@@ -2,12 +2,11 @@ package com.mamiyaotaru.voxelmap.persistent;
 
 import com.mamiyaotaru.voxelmap.VoxelConstants;
 import com.mamiyaotaru.voxelmap.util.CompressionUtils;
-import com.mojang.blaze3d.opengl.GlTexture;
+// GlTexture doesn't exist in 1.20.1
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.NativeImage.Format;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.AddressMode;
-import com.mojang.blaze3d.textures.FilterMode;
+// AddressMode and FilterMode don't exist in 1.20.1 - using GL constants directly when needed
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
@@ -117,12 +116,12 @@ public class CompressibleGLBufferedImage {
                 byte b = buffer.get();
                 byte a = buffer.get();
                 int color = (a & 255) << 24 | (r & 255) << 16 | (g & 255) << 8 | b & 255;
-                this.texture.getPixelsRGBA().setPixel(x, y, color);
+                this.texture.getPixels().setPixelRGBA(x, y, color);
             }
         }
 
         this.texture.upload();
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, ((GlTexture) this.texture.getId()).glId());
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.getId());
         GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
         this.compress();
     }

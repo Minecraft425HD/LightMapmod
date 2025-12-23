@@ -15,6 +15,8 @@ public class VoxelmapForgeMod {
         VoxelmapForgeMod.modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         VoxelConstants.setEvents(new ForgeEvents());
         VoxelConstants.setPacketBridge(new ForgePacketBridge());
+        // Register event listeners early (VoxelMap initialization happens later in FMLClientSetupEvent)
+        VoxelConstants.getEvents().initEvents(VoxelConstants.getVoxelMapInstance());
     }
 
     public static IEventBus getModEventBus() {

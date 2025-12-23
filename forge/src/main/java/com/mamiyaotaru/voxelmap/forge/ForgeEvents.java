@@ -17,8 +17,10 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.GameShuttingDownEvent;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ForgeEvents implements Events {
@@ -43,7 +45,11 @@ public class ForgeEvents implements Events {
     }
 
     private void preInitClient(final FMLClientSetupEvent event) {
-        map.onConfigurationInit();
+        // Initialize VoxelMap on the main thread (required for texture creation)
+        event.enqueueWork(() -> {
+            VoxelConstants.lateInit();
+            map.onConfigurationInit();
+        });
     }
 
     public void registerPackets(final FMLClientSetupEvent event) {
@@ -52,19 +58,19 @@ public class ForgeEvents implements Events {
             VoxelmapSettingsS2C::write,
             VoxelmapSettingsS2C::new,
             (msg, ctx) -> VoxelmapSettingsChannelHandlerForge.handleDataOnMain(msg, ctx),
-            () -> NetworkDirection.PLAY_TO_CLIENT
+            Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
         CHANNEL.registerMessage(id++, WorldIdS2C.class,
             WorldIdS2C::write,
             WorldIdS2C::new,
             (msg, ctx) -> VoxelmapWorldIdChannelHandlerForge.handleDataOnMain(msg, ctx),
-            () -> NetworkDirection.PLAY_TO_CLIENT
+            Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
         CHANNEL.registerMessage(id++, WorldIdC2S.class,
             WorldIdC2S::write,
             WorldIdC2S::new,
             (msg, ctx) -> { ctx.get().setPacketHandled(true); },
-            () -> NetworkDirection.PLAY_TO_SERVER
+            Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
     }
 
@@ -76,9 +82,18 @@ public class ForgeEvents implements Events {
         }
 
         @SubscribeEvent
-        public void onRenderGui(RenderGuiOverlayEvent.Pre event) {
-            // In 1.20.1, render on all overlays or check specific overlay name
-            VoxelConstants.renderOverlay(event.getGuiGraphics());
+        public void onClientTick(TickEvent.ClientTickEvent event) {
+            if (event.phase == TickEvent.Phase.END) {
+                VoxelConstants.clientTick();
+            }
+        }
+
+        @SubscribeEvent
+        public void onRenderGui(RenderGuiOverlayEvent.Post event) {
+            // In 1.20.1, only render after the hotbar to avoid rendering multiple times per frame
+            if (event.getOverlay().id().equals(VanillaGuiOverlay.HOTBAR.id())) {
+                VoxelConstants.renderOverlay(event.getGuiGraphics());
+            }
         }
 
         @SubscribeEvent

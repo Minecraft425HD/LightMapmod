@@ -5,9 +5,10 @@ import com.mamiyaotaru.voxelmap.VoxelConstants;
 import com.mamiyaotaru.voxelmap.util.ImageUtils;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.AddressMode;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.TextureFormat;
+// TODO: 1.20.1 Port - These texture classes don't exist in 1.20.1
+// import com.mojang.blaze3d.textures.AddressMode;
+// import com.mojang.blaze3d.textures.FilterMode;
+// import com.mojang.blaze3d.textures.TextureFormat;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
@@ -245,8 +246,13 @@ public class TextureAtlas extends AbstractTexture {
                 icon = Sprite.spriteFromIdentifier(resourceLocation, this);
 
                 try {
-                    NativeImage image = NativeImage.read(Minecraft.getInstance().getResourceManager().getResource(resourceLocation).get().open());
-                    icon.setTextureData(image);
+                    var resourceOpt = Minecraft.getInstance().getResourceManager().getResource(resourceLocation);
+                    if (resourceOpt.isPresent()) {
+                        NativeImage image = NativeImage.read(resourceOpt.get().open());
+                        icon.setTextureData(image);
+                    } else {
+                        VoxelConstants.getLogger().warn("Texture resource not found: " + resourceLocation);
+                    }
                 } catch (RuntimeException var6) {
                     VoxelConstants.getLogger().error("Unable to parse metadata from " + resourceLocation, var6);
                 } catch (IOException var7) {
@@ -261,6 +267,10 @@ public class TextureAtlas extends AbstractTexture {
     }
 
     public Sprite registerIconForBufferedImage(Object name, BufferedImage bufferedImage) {
+        if (bufferedImage == null) {
+            VoxelConstants.getLogger().warn("Cannot register icon for null BufferedImage: " + name);
+            return null;
+        }
         NativeImage img = ImageUtils.nativeImageFromBufferedImage(bufferedImage);
         return registerIconForBufferedImage(name, img);
     }

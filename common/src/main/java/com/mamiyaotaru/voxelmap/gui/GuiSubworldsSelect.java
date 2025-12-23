@@ -12,15 +12,14 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+// 1.20.1: Input event system changed
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.KeyboardInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Input;
+// TODO: 1.20.1 Port - Input class doesn't exist in net.minecraft.world.entity.player package
+// import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.phys.Vec3;
 
 public class GuiSubworldsSelect extends GuiScreenMinimap implements BooleanConsumer {
@@ -44,9 +43,11 @@ public class GuiSubworldsSelect extends GuiScreenMinimap implements BooleanConsu
         this.setParentScreen(this.parent);
 
         this.thePlayer = VoxelConstants.getPlayer();
-        this.camera = new LocalPlayer(VoxelConstants.getMinecraft(), clientWorld, VoxelConstants.getMinecraft().getConnection(), this.thePlayer.getStats(), new ClientRecipeBook(), Input.EMPTY, false);
+        // TODO: 1.20.1 Port - Input.EMPTY doesn't exist, needs replacement with appropriate 1.20.1 API
+        this.camera = new LocalPlayer(VoxelConstants.getMinecraft(), clientWorld, VoxelConstants.getMinecraft().getConnection(), this.thePlayer.getStats(), new ClientRecipeBook(), false, false);
         this.camera.input = new KeyboardInput(VoxelConstants.getMinecraft().options);
-        this.camera.moveOrInterpolateTo(new Vec3(this.thePlayer.getX(), this.thePlayer.getY() + 0.35, this.thePlayer.getZ()), this.thePlayer.getYRot(), 0.0F);
+        // TODO: 1.20.1 Port - moveOrInterpolateTo() doesn't exist in 1.20.1
+        // this.camera.moveOrInterpolateTo(new Vec3(this.thePlayer.getX(), this.thePlayer.getY() + 0.35, this.thePlayer.getZ()), this.thePlayer.getYRot(), 0.0F);
         this.yaw = this.thePlayer.getYRot();
         this.thirdPersonViewOrig = VoxelConstants.getMinecraft().options.getCameraType();
         this.waypointManager = VoxelConstants.getVoxelMapInstance().getWaypointManager();
@@ -109,7 +110,7 @@ public class GuiSubworldsSelect extends GuiScreenMinimap implements BooleanConsu
             this.addRenderableWidget(selectButtons[numButtons]);
         }
 
-        this.newNameField = new EditBox(this.getFont(), i + xSpacing + 1, this.height - 60 - numButtons / buttonsPerRow * 21 + 1, buttonWidth - 4, 18, null);
+        this.newNameField = new EditBox(this.font, i + xSpacing + 1, this.height - 60 - numButtons / buttonsPerRow * 21 + 1, buttonWidth - 4, 18, null);
     }
 
     @Override
@@ -124,19 +125,20 @@ public class GuiSubworldsSelect extends GuiScreenMinimap implements BooleanConsu
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // 1.20.1: Input event system changed
         if (this.newWorld) {
-            this.newNameField.mouseClicked(mouseButtonEvent, bl);
+            this.newNameField.mouseClicked(mouseX, mouseY, button);
         }
 
-        return super.mouseClicked(mouseButtonEvent, bl);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // 1.20.1: Input event system changed
         if (this.newNameField.isFocused()) {
-            this.newNameField.keyPressed(keyEvent);
-            int keyCode = keyEvent.key(); //TODO 1.21.9
+            this.newNameField.keyPressed(keyCode, scanCode, modifiers);
             if ((keyCode == 257 || keyCode == 335) && this.newNameField.isFocused()) {
                 String newName = this.newNameField.getValue();
                 if (newName != null && !newName.isEmpty()) {
@@ -145,14 +147,14 @@ public class GuiSubworldsSelect extends GuiScreenMinimap implements BooleanConsu
             }
         }
 
-        return super.keyPressed(keyEvent);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public boolean charTyped(CharacterEvent characterEvent) {
+    public boolean charTyped(char codePoint, int modifiers) {
+        // 1.20.1: Input event system changed
         if (this.newNameField.isFocused()) {
-            this.newNameField.charTyped(characterEvent);
-            int modifiers = characterEvent.modifiers();
+            this.newNameField.charTyped(codePoint, modifiers);
             if (modifiers == 28) {
                 String newName = this.newNameField.getValue();
                 if (newName != null && !newName.isEmpty()) {
@@ -161,7 +163,7 @@ public class GuiSubworldsSelect extends GuiScreenMinimap implements BooleanConsu
             }
         }
 
-        return super.charTyped(characterEvent);
+        return super.charTyped(codePoint, modifiers);
     }
 
     @Override
@@ -171,11 +173,11 @@ public class GuiSubworldsSelect extends GuiScreenMinimap implements BooleanConsu
 
     @Override
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        int titleStringWidth = this.getFont().width(this.title);
-        titleStringWidth = Math.max(titleStringWidth, this.getFont().width(this.select));
+        int titleStringWidth = this.font.width(this.title);
+        titleStringWidth = Math.max(titleStringWidth, this.font.width(this.select));
         drawContext.fill(this.width / 2 - titleStringWidth / 2 - 5, 0, this.width / 2 + titleStringWidth / 2 + 5, 27, -1073741824);
-        drawContext.drawCenteredString(this.getFont(), this.title, this.width / 2, 5, 0xFFFFFFFF);
-        drawContext.drawCenteredString(this.getFont(), this.select, this.width / 2, 15, 0xFFFF0000);
+        drawContext.drawCenteredString(this.font, this.title, this.width / 2, 5, 0xFFFFFFFF);
+        drawContext.drawCenteredString(this.font, this.select, this.width / 2, 15, 0xFFFF0000);
         this.camera.xRotO = 0.0F;
         this.camera.setXRot(0.0F);
         this.camera.yRotO = this.yaw;
@@ -194,7 +196,6 @@ public class GuiSubworldsSelect extends GuiScreenMinimap implements BooleanConsu
 
     }
 
-    @Override
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
     }
 

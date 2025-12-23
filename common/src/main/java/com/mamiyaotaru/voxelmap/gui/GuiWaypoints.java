@@ -16,9 +16,10 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - Input event classes don't exist, using primitive parameters instead
+// import net.minecraft.client.input.CharacterEvent;
+// import net.minecraft.client.input.KeyEvent;
+// import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
@@ -70,8 +71,8 @@ public class GuiWaypoints extends GuiScreenMinimap implements IGuiWaypoints {
         this.addRenderableWidget(this.buttonSortDistance = new Button.Builder(Component.translatable("minimap.waypoints.sortByDistance"), button -> this.sortClicked(3)).bounds(this.getWidth() / 2 - 77, 34, 77, 20).build());
         this.addRenderableWidget(this.buttonSortCreated = new Button.Builder(Component.translatable("minimap.waypoints.sortByCreated"), button -> this.sortClicked(1)).bounds(this.getWidth() / 2, 34, 77, 20).build());
         this.addRenderableWidget(this.buttonSortColor = new Button.Builder(Component.translatable("minimap.waypoints.sortByColor"), button -> this.sortClicked(4)).bounds(this.getWidth() / 2 + 77, 34, 77, 20).build());
-        int filterStringWidth = this.getFont().width(I18n.get("minimap.waypoints.filter") + ":");
-        this.filter = new EditBox(this.getFont(), this.getWidth() / 2 - 153 + filterStringWidth + 5, this.getHeight() - 80, 305 - filterStringWidth - 5, 20, Component.empty());
+        int filterStringWidth = this.font.width(I18n.get("minimap.waypoints.filter") + ":");
+        this.filter = new EditBox(this.font, this.getWidth() / 2 - 153 + filterStringWidth + 5, this.getHeight() - 80, 305 - filterStringWidth - 5, 20, Component.empty());
         this.filter.setMaxLength(35);
         this.addRenderableWidget(this.filter);
         this.addRenderableWidget(new Button.Builder(Component.translatable("minimap.waypoints.add"), button -> this.addWaypoint()).bounds(this.getWidth() / 2 - 154, this.getHeight() - 52, 74, 20).build());
@@ -139,7 +140,7 @@ public class GuiWaypoints extends GuiScreenMinimap implements IGuiWaypoints {
     }
 
     private void teleportClicked() {
-        int y = selectedWaypoint.getY() > VoxelConstants.getPlayer().level().getMinY() ? selectedWaypoint.getY() : (!(VoxelConstants.getPlayer().level().dimensionType().hasCeiling()) ? VoxelConstants.getPlayer().level().getMaxY() : 64);
+        int y = selectedWaypoint.getY() > VoxelConstants.getPlayer().level().getMinBuildHeight() ? selectedWaypoint.getY() : (!(VoxelConstants.getPlayer().level().dimensionType().hasCeiling()) ? VoxelConstants.getPlayer().level().getMaxBuildHeight() : 64);
         VoxelConstants.playerRunTeleportCommand(selectedWaypoint.getX(), y, selectedWaypoint.getZ());
         VoxelConstants.getMinecraft().setScreen(null);
     }
@@ -150,9 +151,10 @@ public class GuiWaypoints extends GuiScreenMinimap implements IGuiWaypoints {
         this.sort();
     }
 
+    // 1.20.1: Input event system changed - keyPressed uses primitive parameters
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
-        boolean OK = super.keyPressed(keyEvent);
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        boolean OK = super.keyPressed(keyCode, scanCode, modifiers);
         if (this.filter.isFocused()) {
             this.waypointList.updateFilter(this.filter.getValue().toLowerCase());
         }
@@ -160,9 +162,10 @@ public class GuiWaypoints extends GuiScreenMinimap implements IGuiWaypoints {
         return OK;
     }
 
+    // 1.20.1: Input event system changed - charTyped uses primitive parameters
     @Override
-    public boolean charTyped(CharacterEvent characterEvent) {
-        boolean OK = super.charTyped(characterEvent);
+    public boolean charTyped(char codePoint, int modifiers) {
+        boolean OK = super.charTyped(codePoint, modifiers);
         if (this.filter.isFocused()) {
             this.waypointList.updateFilter(this.filter.getValue().toLowerCase());
         }
@@ -170,26 +173,32 @@ public class GuiWaypoints extends GuiScreenMinimap implements IGuiWaypoints {
         return OK;
     }
 
+    // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
     @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
-        this.waypointList.mouseClicked(mouseButtonEvent, bl);
-        return super.mouseClicked(mouseButtonEvent, bl);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        this.waypointList.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    // 1.20.1: Input event system changed - mouseReleased uses primitive parameters
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        // TODO: 1.20.1 Port - GuiSlotWaypoints doesn't have mouseReleased method
+        // this.waypointList.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    // 1.20.1: Input event system changed - mouseDragged uses primitive parameters
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        // TODO: 1.20.1 Port - GuiSlotWaypoints doesn't have mouseDragged method
+        // return this.waypointList.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
-        this.waypointList.mouseReleased(mouseButtonEvent);
-        return super.mouseReleased(mouseButtonEvent);
-    }
-
-    @Override
-    public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double d, double e) {
-        return this.waypointList.mouseDragged(mouseButtonEvent, d, e);
-    }
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double amount) {
-        return this.waypointList.mouseScrolled(mouseX, mouseY, 0, amount);
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return this.waypointList.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
@@ -284,9 +293,9 @@ public class GuiWaypoints extends GuiScreenMinimap implements IGuiWaypoints {
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         this.tooltip = null;
         this.waypointList.render(drawContext, mouseX, mouseY, delta);
-        drawContext.drawCenteredString(this.getFont(), this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
+        drawContext.drawCenteredString(this.font, this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
         super.render(drawContext, mouseX, mouseY, delta);
-        drawContext.drawString(this.getFont(), I18n.get("minimap.waypoints.filter") + ":", this.getWidth() / 2 - 153, this.getHeight() - 75, 0xFFA0A0A0);
+        drawContext.drawString(this.font, I18n.get("minimap.waypoints.filter") + ":", this.getWidth() / 2 - 153, this.getHeight() - 75, 0xFFA0A0A0);
         this.filter.render(drawContext, mouseX, mouseY, delta);
         if (this.tooltip != null) {
             this.renderTooltip(drawContext, this.tooltip, mouseX, mouseY);
@@ -306,9 +315,9 @@ public class GuiWaypoints extends GuiScreenMinimap implements IGuiWaypoints {
         }
 
         try {
-            return integratedServer.get().getPlayerList().isOp(VoxelConstants.getPlayer().nameAndId());
+            return integratedServer.get().getPlayerList().isOp(VoxelConstants.getPlayer().getGameProfile());
         } catch (RuntimeException exception) {
-            return integratedServer.get().getWorldData().isAllowCommands();
+            return integratedServer.get().getWorldData().getAllowCommands();
         }
     }
 

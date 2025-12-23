@@ -20,7 +20,7 @@ import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.ReloadableTexture;
+// ReloadableTexture doesn't exist in 1.20.1
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.system.MemoryUtil;
 
@@ -56,8 +56,10 @@ public class ImageUtils {
             AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture(Identifier);
             BufferedImage image = null;
             if (texture instanceof DynamicTexture dynamicTexture) {
-                image = bufferedImageFromNativeImage(dynamicTexture.getPixelsRGBA());
-            } else if (texture instanceof ReloadableTexture) {
+                image = bufferedImageFromNativeImage(dynamicTexture.getPixels());
+            }
+            // ReloadableTexture doesn't exist in 1.20.1
+            /* else if (texture instanceof ReloadableTexture) {
                 InputStream is = VoxelConstants.getMinecraft().getResourceManager().getResource(Identifier).get().open();
                 image = ImageIO.read(is);
                 is.close();
@@ -68,7 +70,7 @@ public class ImageUtils {
                     g2.dispose();
                     image = temp;
                 }
-            }
+            }*/
             return image;
         } catch (Exception var5) {
             return null;
@@ -76,6 +78,10 @@ public class ImageUtils {
     }
 
     public static NativeImage nativeImageFromBufferedImage(BufferedImage image) {
+        if (image == null) {
+            VoxelConstants.getLogger().warn("Cannot convert null BufferedImage to NativeImage");
+            return null;
+        }
         int width = image.getWidth();
         int height = image.getHeight();
         NativeImage nativeImage = new NativeImage(width, height, false);
@@ -93,7 +99,7 @@ public class ImageUtils {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int argb = image.getRGB(x, y);
-                nativeImage.setPixel(x, y, argb);
+                nativeImage.setPixelRGBA(x, y, argb);
             }
         }
         return nativeImage;
@@ -125,7 +131,7 @@ public class ImageUtils {
         // Fallback to pixel-by-pixel copy (unoptimized but works)
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int argb = image.getPixel(x, y);
+                int argb = image.getPixelRGBA(x, y);
                 bufferedImage.setRGB(x, y, argb);
             }
         }
@@ -463,7 +469,7 @@ public class ImageUtils {
 
         for (int t = 0; t < image.getWidth(); ++t) {
             for (int s = 0; s < image.getHeight(); ++s) {
-                int color = temp.getPixel(t, s);
+                int color = temp.getPixelRGBA(t, s);
                 if ((color >> 24 & 0xFF) == 0) {
                     int newColor = sampleNonTransparentNeighborPixel(t, s, temp);
                     if (newColor != -420) {
@@ -480,7 +486,7 @@ public class ImageUtils {
                             newColor = (red & 0xFF) << 16 | (green & 0xFF) << 8 | blue & 0xFF;
                         }
 
-                        image.setPixel(t, s, newColor);
+                        image.setPixelRGBA(t, s, newColor);
                     }
                 }
             }
@@ -491,56 +497,56 @@ public class ImageUtils {
 
     private static int sampleNonTransparentNeighborPixel(int x, int y, NativeImage image) {
         if (x > 0) {
-            int color = image.getPixel(x - 1, y);
+            int color = image.getPixelRGBA(x - 1, y);
             if ((color >> 24 & 0xFF) > 50) {
                 return color;
             }
         }
 
         if (x < image.getWidth() - 1) {
-            int color = image.getPixel(x + 1, y);
+            int color = image.getPixelRGBA(x + 1, y);
             if ((color >> 24 & 0xFF) > 50) {
                 return color;
             }
         }
 
         if (y > 0) {
-            int color = image.getPixel(x, y - 1);
+            int color = image.getPixelRGBA(x, y - 1);
             if ((color >> 24 & 0xFF) > 50) {
                 return color;
             }
         }
 
         if (y < image.getHeight() - 1) {
-            int color = image.getPixel(x, y + 1);
+            int color = image.getPixelRGBA(x, y + 1);
             if ((color >> 24 & 0xFF) > 50) {
                 return color;
             }
         }
 
         if (x > 0 && y > 0) {
-            int color = image.getPixel(x - 1, y - 1);
+            int color = image.getPixelRGBA(x - 1, y - 1);
             if ((color >> 24 & 0xFF) > 50) {
                 return color;
             }
         }
 
         if (x > 0 && y < image.getHeight() - 1) {
-            int color = image.getPixel(x - 1, y + 1);
+            int color = image.getPixelRGBA(x - 1, y + 1);
             if ((color >> 24 & 0xFF) > 50) {
                 return color;
             }
         }
 
         if (x < image.getWidth() - 1 && y > 0) {
-            int color = image.getPixel(x + 1, y - 1);
+            int color = image.getPixelRGBA(x + 1, y - 1);
             if ((color >> 24 & 0xFF) > 50) {
                 return color;
             }
         }
 
         if (x < image.getWidth() - 1 && y < image.getHeight() - 1) {
-            int color = image.getPixel(x + 1, y + 1);
+            int color = image.getPixelRGBA(x + 1, y + 1);
             if ((color >> 24 & 0xFF) > 50) {
                 return color;
             }

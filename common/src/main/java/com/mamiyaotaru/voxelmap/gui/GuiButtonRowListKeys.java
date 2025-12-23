@@ -10,8 +10,9 @@ import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - Input event classes don't exist, using primitive parameters instead
+// import net.minecraft.client.input.KeyEvent;
+// import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.lwjgl.glfw.GLFW;
@@ -29,7 +30,7 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
     private final HashMap<KeyMapping, Component> duplicateKeys = new HashMap<>();
 
     public GuiButtonRowListKeys(GuiMinimapControls parentScreen) {
-        super(VoxelConstants.getMinecraft(), parentScreen.getWidth(), parentScreen.getHeight() - 114, 40, 20);
+        super(VoxelConstants.getMinecraft(), parentScreen.getWidth(), parentScreen.getHeight(), 40, parentScreen.getHeight() - 114, 20);
         this.parentGui = parentScreen;
         this.options = VoxelConstants.getVoxelMapInstance().getMapOptions();
         for (int i = 0; i < this.options.keyBindings.length; ++i) {
@@ -55,36 +56,39 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
         KeyMapping.resetMapping();
     }
 
+    // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
     @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.keyEditing()) {
-            this.options.setKeyBinding(this.keyForEdit, InputConstants.Type.MOUSE.getOrCreate(mouseButtonEvent.button()));
+            this.options.setKeyBinding(this.keyForEdit, InputConstants.Type.MOUSE.getOrCreate(button));
             this.keyForEdit = null;
             this.checkDuplicateKeys();
             KeyMapping.resetMapping();
             return true;
         } else {
-            return super.mouseClicked(mouseButtonEvent, doubleClick);
+            return super.mouseClicked(mouseX, mouseY, button);
         }
     }
 
+    // 1.20.1: Input event system changed - keyPressed uses primitive parameters
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.keyEditing()) {
-            if (keyEvent.key() == GLFW.GLFW_KEY_ESCAPE) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 boolean isMenuKey = this.keyForEdit.same(this.options.keyBindMenu);
                 if (!isMenuKey) {
                     this.options.setKeyBinding(this.keyForEdit, InputConstants.UNKNOWN);
                 }
             } else {
-                this.options.setKeyBinding(this.keyForEdit, InputConstants.getKey(keyEvent));
+                // 1.20.1: InputConstants.getKey takes keyCode and scanCode
+                this.options.setKeyBinding(this.keyForEdit, InputConstants.getKey(keyCode, scanCode));
             }
             this.keyForEdit = null;
             this.checkDuplicateKeys();
             KeyMapping.resetMapping();
             return true;
         } else {
-            return super.keyPressed(keyEvent);
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
     }
 
@@ -115,8 +119,12 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
         return 340;
     }
 
-    @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput output) {
+        // Empty implementation for 1.20.1
     }
 
     public class RowItem extends AbstractSelectionList.Entry<RowItem> {
@@ -133,9 +141,9 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
         }
 
         @Override
-        public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             if (this.button != null && this.buttonReset != null) {
-                guiGraphics.drawString(this.parentGui.getFont(), Component.translatable(this.keyMapping.getName()), getX() + 5, getY() + 5, 0xFFFFFFFF);
+                guiGraphics.drawString(this.parentGui.getFont(), Component.translatable(this.keyMapping.getName()), left + 5, top + 5, 0xFFFFFFFF);
 
                 Component tooltip = null;
 
@@ -160,24 +168,25 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
                 }
 
                 this.button.setMessage(keyText);
-                this.button.setX(getX() + getWidth() - 135);
-                this.button.setY(getY());
+                this.button.setX(left + width - 135);
+                this.button.setY(top);
                 this.button.render(guiGraphics, mouseX, mouseY, tickDelta);
 
                 this.buttonReset.active = !this.keyMapping.isDefault();
-                this.buttonReset.setX(getX() + getWidth() - 55);
-                this.buttonReset.setY(getY());
+                this.buttonReset.setX(left + width - 55);
+                this.buttonReset.setY(top);
                 this.buttonReset.render(guiGraphics, mouseX, mouseY, tickDelta);
             }
         }
 
+        // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
-        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
             GuiButtonRowListKeys.this.setSelected(this);
             boolean clicked = false;
-            if (this.button != null && this.button.mouseClicked(mouseButtonEvent, doubleClick)) {
+            if (this.button != null && this.button.mouseClicked(mouseX, mouseY, button)) {
                 clicked = true;
-            } else if (this.buttonReset != null && this.buttonReset.mouseClicked(mouseButtonEvent, doubleClick)) {
+            } else if (this.buttonReset != null && this.buttonReset.mouseClicked(mouseX, mouseY, button)) {
                 clicked = true;
             }
             return clicked;

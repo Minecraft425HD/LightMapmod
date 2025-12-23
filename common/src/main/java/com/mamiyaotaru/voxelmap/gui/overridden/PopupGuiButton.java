@@ -5,7 +5,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class PopupGuiButton extends Button.Plain {
+// TODO: 1.20.1 Port - Button.Plain doesn't exist, extending Button directly
+public class PopupGuiButton extends Button {
     final IPopupGuiScreen parentScreen;
 
     public PopupGuiButton(int x, int y, int width, int height, Component message, OnPress onPress, IPopupGuiScreen parentScreen) {
@@ -14,12 +15,12 @@ public class PopupGuiButton extends Button.Plain {
     }
 
     @Override
-    public void renderContents(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         boolean canHover = this.parentScreen.overPopup(mouseX, mouseY);
         if (!canHover) {
             mouseX = 0;
             mouseY = 0;
         }
-        super.renderContents(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 }

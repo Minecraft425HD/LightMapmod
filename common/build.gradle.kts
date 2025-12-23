@@ -1,6 +1,7 @@
 plugins {
-    id("java")
+    id("net.minecraftforge.gradle")
     id("idea")
+    id("java-library")
 }
 
 val MINECRAFT_VERSION: String by rootProject.extra
@@ -12,8 +13,12 @@ repositories {
     maven { url = uri("https://repo.spongepowered.org/maven/") }
 }
 
+minecraft {
+    mappings("official", MINECRAFT_VERSION)
+}
+
 dependencies {
-    compileOnly("net.minecraftforge:forge:${MINECRAFT_VERSION}-${FORGE_VERSION}")
+    minecraft("net.minecraftforge:forge:${MINECRAFT_VERSION}-${FORGE_VERSION}")
     compileOnly("org.spongepowered:mixin:0.8.5")
 
     compileOnly("io.github.llamalad7:mixinextras-common:0.5.0")
@@ -35,6 +40,10 @@ sourceSets {
 tasks {
     jar {
         from(rootDir.resolve("LICENSE.md"))
+    }
+
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 }
 

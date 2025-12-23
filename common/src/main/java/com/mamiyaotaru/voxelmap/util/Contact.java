@@ -49,8 +49,10 @@ public class Contact {
     }
 
     public void updateLocation() {
-        this.x = this.entity.xo + (this.entity.getX() - this.entity.xo) * VoxelConstants.getMinecraft().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+        // 1.20.1: getDeltaTracker() doesn't exist, use getFrameTime() instead
+        float partialTick = VoxelConstants.getMinecraft().getFrameTime();
+        this.x = this.entity.xo + (this.entity.getX() - this.entity.xo) * partialTick;
         this.y = this.entity.getY() + this.yFudge;
-        this.z = this.entity.zo + (this.entity.getZ() - this.entity.zo) * VoxelConstants.getMinecraft().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+        this.z = this.entity.zo + (this.entity.getZ() - this.entity.zo) * partialTick;
     }
 }

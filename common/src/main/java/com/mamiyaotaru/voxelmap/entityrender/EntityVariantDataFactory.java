@@ -1,7 +1,7 @@
 package com.mamiyaotaru.voxelmap.entityrender;
 
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+// EntityRenderState doesn't exist in 1.20.1
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 
@@ -9,6 +9,7 @@ public interface EntityVariantDataFactory {
 
     EntityType<?> getType();
 
-    EntityVariantData createVariantData(Entity entity, @SuppressWarnings("rawtypes") EntityRenderer renderer, EntityRenderState state, int size, boolean addBorder);
+    // 1.20.1: Removed EntityRenderState parameter - doesn't exist in 1.20.1
+    EntityVariantData createVariantData(Entity entity, @SuppressWarnings("rawtypes") EntityRenderer renderer, int size, boolean addBorder);
 
 }

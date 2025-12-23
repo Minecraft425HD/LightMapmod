@@ -5,27 +5,29 @@ import com.mamiyaotaru.voxelmap.entityrender.EntityVariantData;
 import java.util.Map;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+// EntityRenderState doesn't exist in 1.20.1
+// LivingEntityRenderState doesn't exist in 1.20.1
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.equine.Horse;
-import net.minecraft.world.entity.animal.equine.Markings;
+// 1.20.1: Horse moved from animal.equine to animal.horse package
+import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.animal.horse.Variant;
 
 public class HorseVariantDataFactory extends DefaultEntityVariantDataFactory {
     private static final ResourceLocation INVISIBLE_TEXTURE = new ResourceLocation("minecraft", "invisible");
-    private static final Map<Markings, ResourceLocation> LOCATION_BY_MARKINGS = Maps.newEnumMap(
+    // 1.20.1: Markings renamed to Variant in 1.20.1
+    private static final Map<Variant, ResourceLocation> LOCATION_BY_VARIANT = Maps.newEnumMap(
             Map.of(
-                    Markings.NONE,
+                    Variant.values()[0],
                     INVISIBLE_TEXTURE,
-                    Markings.WHITE,
+                    Variant.values()[1],
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_white.png"),
-                    Markings.WHITE_FIELD,
+                    Variant.values()[2],
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_whitefield.png"),
-                    Markings.WHITE_DOTS,
+                    Variant.values()[3],
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_whitedots.png"),
-                    Markings.BLACK_DOTS,
+                    Variant.values()[4],
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_blackdots.png")));
 
     public HorseVariantDataFactory(EntityType<?> type) {
@@ -34,11 +36,13 @@ public class HorseVariantDataFactory extends DefaultEntityVariantDataFactory {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public EntityVariantData createVariantData(Entity entity, EntityRenderer renderer, EntityRenderState state, int size, boolean addBorder) {
+    public EntityVariantData createVariantData(Entity entity, EntityRenderer renderer, int size, boolean addBorder) {
         Horse horse = (Horse) entity;
-        Markings markings = horse.getMarkings();
-        ResourceLocation secondaryTexture = LOCATION_BY_MARKINGS.get(markings);
-        return new DefaultEntityVariantData(getType(), ((LivingEntityRenderer) renderer).getTextureLocation((LivingEntityRenderState) state), secondaryTexture == INVISIBLE_TEXTURE ? null : secondaryTexture, size, addBorder);
+        // 1.20.1: getMarkings() renamed to getVariant()
+        Variant variant = horse.getVariant();
+        ResourceLocation secondaryTexture = LOCATION_BY_VARIANT.get(variant);
+        // 1.20.1: getTextureLocation() takes Entity, not LivingEntityRenderState
+        return new DefaultEntityVariantData(getType(), ((LivingEntityRenderer) renderer).getTextureLocation(entity), secondaryTexture == INVISIBLE_TEXTURE ? null : secondaryTexture, size, addBorder);
     }
 
 }

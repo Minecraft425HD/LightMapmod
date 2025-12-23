@@ -9,7 +9,8 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.InputQuirks;
+// TODO: 1.20.1 Port - InputQuirks class doesn't exist in 1.20.1
+// import net.minecraft.client.input.InputQuirks;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ServerData;
@@ -40,15 +41,16 @@ public final class VoxelConstants {
     @NotNull
     public static Minecraft getMinecraft() { return Minecraft.getInstance(); }
 
-    public static boolean isSystemMacOS() { return InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY; }
+    // TODO: 1.20.1 Port - InputQuirks doesn't exist, need alternative way to detect macOS
+    public static boolean isSystemMacOS() { return System.getProperty("os.name").toLowerCase().contains("mac"); }
 
     public static boolean isFabulousGraphicsOrBetter() { return Minecraft.useShaderTransparency(); }
 
     public static boolean isSinglePlayer() { return getMinecraft().isLocalServer(); }
     public static boolean isRealmServer() {
-        ClientPacketListener playNetworkHandler = getMinecraft().getConnection();
-        ServerData serverInfo = playNetworkHandler != null ? getMinecraft().getConnection().getServerData() : null;
-        return serverInfo != null && serverInfo.isRealm();
+        // Realms detection not available in 1.20.1 - ServerData.type field doesn't exist
+        // Always return false as Realms check is not critical for functionality
+        return false;
     }
 
     @NotNull
@@ -111,10 +113,12 @@ public final class VoxelConstants {
             lateInit();
         }
 
-        try {
-            VoxelConstants.getVoxelMapInstance().onTickInGame(guiGraphics);
-        } catch (RuntimeException e) {
-            VoxelConstants.getLogger().log(org.apache.logging.log4j.Level.ERROR, "Error while render overlay", e);
+        if (initialized) {
+            try {
+                VoxelConstants.getVoxelMapInstance().onTickInGame(guiGraphics);
+            } catch (RuntimeException e) {
+                VoxelConstants.getLogger().log(org.apache.logging.log4j.Level.ERROR, "Error while render overlay", e);
+            }
         }
     }
 

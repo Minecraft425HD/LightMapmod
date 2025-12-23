@@ -8,8 +8,9 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.ConfirmScreen;
-import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - Input event classes don't exist, using primitive parameters instead
+// import net.minecraft.client.input.InputWithModifiers;
+// import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 // import net.minecraft.client.renderer.RenderPipelines;
@@ -17,7 +18,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
-import net.minecraft.world.entity.player.PlayerSkin;
+// TODO: 1.20.1 Port - PlayerSkin doesn't exist, getSkinManager().getInsecureSkin() returns ResourceLocation directly
+// import net.minecraft.world.entity.player.PlayerSkin;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,16 +37,15 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
     static final Component CONFIRM_DENY = Component.translatable("gui.cancel");
 
     public GuiButtonRowListPlayers(GuiSelectPlayer par1GuiSelectPlayer) {
-        super(VoxelConstants.getMinecraft(), par1GuiSelectPlayer.getWidth(), par1GuiSelectPlayer.getHeight() - 65 + 4 - 89, 89, 25);
+        super(VoxelConstants.getMinecraft(), par1GuiSelectPlayer.getWidth(), par1GuiSelectPlayer.getHeight(), 89, par1GuiSelectPlayer.getHeight() - 65 + 4, 25);
         this.parentGui = par1GuiSelectPlayer;
         ClientPacketListener netHandlerPlayClient = VoxelConstants.getPlayer().connection;
         this.players = new ArrayList<>(netHandlerPlayClient.getOnlinePlayers());
         this.sort();
-        Button everyoneButton = new Button.Plain(this.parentGui.getWidth() / 2 - 75, 0, 150, 20, EVERYONE, null, null) {
-            @Override
-            public void onPress(InputWithModifiers inputWithModifiers) {
-            }
-        };
+        // TODO: 1.20.1 Port - Button.Plain doesn't exist, using Button.Builder instead
+        Button everyoneButton = new Button.Builder(EVERYONE, button -> {
+            // Button click is handled in buttonClicked method
+        }).bounds(this.parentGui.getWidth() / 2 - 75, 0, 150, 20).build();
         everyoneButton.setTooltip(Tooltip.create(Component.translatable("minimap.waypointShare.shareWithName", EVERYONE)));
         this.everyoneRow = new Row(everyoneButton, -1);
         this.updateFilter("");
@@ -70,10 +71,11 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
         return 400;
     }
 
-    @Override
-    protected int scrollBarX() {
-        return super.scrollBarX() + 32;
-    }
+    // TODO: 1.20.1 Port - scrollBarX() doesn't exist in AbstractSelectionList
+    // @Override
+    // protected int scrollBarX() {
+    //     return super.scrollBarX() + 32;
+    // }
 
     protected void sort() {
         this.players.sort((player1, player2) -> {
@@ -120,8 +122,12 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
 
     }
 
-    @Override
     public void updateWidgetNarration(NarrationElementOutput builder) {
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput output) {
+        // Empty implementation for 1.20.1
     }
 
     public class Row extends AbstractSelectionList.Entry<Row> {
@@ -145,10 +151,10 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
         }
 
         @Override
-        public void renderContent(GuiGraphics drawContext, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            this.drawButton(drawContext, this.button, this.id, 0, getX(), getY(), getRowWidth(), defaultEntryHeight, mouseX, mouseY, hovered, tickDelta);
-            this.drawButton(drawContext, this.button1, this.id1, 0, getX(), getY(), getRowWidth(), defaultEntryHeight, mouseX, mouseY, hovered, tickDelta);
-            this.drawButton(drawContext, this.button2, this.id2, 0, getX(), getY(), getRowWidth(), defaultEntryHeight, mouseX, mouseY, hovered, tickDelta);
+        public void render(GuiGraphics drawContext, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            this.drawButton(drawContext, this.button, this.id, 0, left, top, width, height, mouseX, mouseY, hovered, tickDelta);
+            this.drawButton(drawContext, this.button1, this.id1, 0, left, top, width, height, mouseX, mouseY, hovered, tickDelta);
+            this.drawButton(drawContext, this.button2, this.id2, 0, left, top, width, height, mouseX, mouseY, hovered, tickDelta);
         }
 
         private void drawButton(GuiGraphics drawContext, Button button, int id, int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
@@ -166,25 +172,31 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
             PlayerInfo networkPlayerInfo = GuiButtonRowListPlayers.this.playersFiltered.get(id);
             GameProfile gameProfile = networkPlayerInfo.getProfile();
             Player entityPlayer = VoxelConstants.getPlayer().level().getPlayerByUUID(gameProfile.getId());
-            PlayerSkin playerSkin = VoxelConstants.getMinecraft().getSkinManager().getInsecureSkin(gameProfile);
-            ResourceLocation skinIdentifier = playerSkin.texture();
-           
-            drawContext.blit(null, skinIdentifier, button.getX() + 6, button.getY() + 6, 8.0F, 8.0F, 8, 8, 8, 8, 64, 64);
+            // 1.20.1: getSkinManager().getInsecureSkinInformation() returns Map, need to get texture from it
+            java.util.Map<com.mojang.authlib.minecraft.MinecraftProfileTexture.Type, com.mojang.authlib.minecraft.MinecraftProfileTexture> skinMap =
+                VoxelConstants.getMinecraft().getSkinManager().getInsecureSkinInformation(gameProfile);
+            com.mojang.authlib.minecraft.MinecraftProfileTexture texture = skinMap.get(com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN);
+            ResourceLocation skinIdentifier = texture != null ?
+                VoxelConstants.getMinecraft().getSkinManager().registerTexture(texture, com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN) :
+                net.minecraft.client.resources.DefaultPlayerSkin.getDefaultSkin(gameProfile.getId());
+
+            drawContext.blit(skinIdentifier, button.getX() + 6, button.getY() + 6, 8, 8, 8, 8, 8, 8, 64, 64);
             if (entityPlayer != null && entityPlayer.isModelPartShown(PlayerModelPart.HAT)) {
-               
-                drawContext.blit(null, skinIdentifier, button.getX() + 6, button.getY() + 6, 40.0F, 8.0F, 8, 8, 8, 8, 64, 64);
+
+                drawContext.blit(skinIdentifier, button.getX() + 6, button.getY() + 6, 40, 8, 8, 8, 8, 8, 64, 64);
             }
         }
 
+        // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
-        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
-            if (this.button != null && this.button.mouseClicked(mouseButtonEvent, doubleClick)) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (this.button != null && this.button.mouseClicked(mouseX, mouseY, button)) {
                 GuiButtonRowListPlayers.this.buttonClicked(this.id);
                 return true;
-            } else if (this.button1 != null && this.button1.mouseClicked(mouseButtonEvent, doubleClick)) {
+            } else if (this.button1 != null && this.button1.mouseClicked(mouseX, mouseY, button)) {
                 GuiButtonRowListPlayers.this.buttonClicked(this.id1);
                 return true;
-            } else if (this.button2 != null && this.button2.mouseClicked(mouseButtonEvent, doubleClick)) {
+            } else if (this.button2 != null && this.button2.mouseClicked(mouseX, mouseY, button)) {
                 GuiButtonRowListPlayers.this.buttonClicked(this.id2);
                 return true;
             } else {
@@ -192,16 +204,17 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
             }
         }
 
+        // 1.20.1: Input event system changed - mouseReleased uses primitive parameters
         @Override
-        public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
+        public boolean mouseReleased(double mouseX, double mouseY, int button) {
             if (this.button != null) {
-                this.button.mouseReleased(mouseButtonEvent);
+                this.button.mouseReleased(mouseX, mouseY, button);
                 return true;
             } else if (this.button1 != null) {
-                this.button1.mouseReleased(mouseButtonEvent);
+                this.button1.mouseReleased(mouseX, mouseY, button);
                 return true;
             } else if (this.button2 != null) {
-                this.button2.mouseReleased(mouseButtonEvent);
+                this.button2.mouseReleased(mouseX, mouseY, button);
                 return true;
             } else {
                 return false;

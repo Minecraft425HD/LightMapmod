@@ -3,12 +3,14 @@ package com.mamiyaotaru.voxelmap.gui;
 import com.mamiyaotaru.voxelmap.VoxelConstants;
 import com.mamiyaotaru.voxelmap.util.DimensionContainer;
 import com.mamiyaotaru.voxelmap.util.DimensionManager;
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
+// TODO: 1.20.1 Port - CursorTypes package changed or doesn't exist
+// import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - MouseButtonEvent doesn't exist, using primitive parameters instead
+// import net.minecraft.client.input.MouseButtonEvent;
 // import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,14 +25,23 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
 
     private final GuiAddWaypoint parentGui;
     private final ArrayList<DimensionItem> dimensions;
+    private final int listX;
+    private final int listWidth;
+    private final int listTop;
+    private final int listBottom;
 
     protected long lastClicked;
     public boolean doubleClicked;
 
     GuiSlotDimensions(GuiAddWaypoint par1GuiWaypoints) {
-        super(VoxelConstants.getMinecraft(), 101, 64, par1GuiWaypoints.getHeight() / 6 + 90, 18);
+        super(VoxelConstants.getMinecraft(), 101, 64, par1GuiWaypoints.getHeight() / 6 + 90, 64, 18);
         this.parentGui = par1GuiWaypoints;
-        this.setX(this.parentGui.getWidth() / 2);
+        this.listX = par1GuiWaypoints.getWidth() / 2;
+        this.listWidth = 101;
+        this.listTop = par1GuiWaypoints.getHeight() / 6 + 90;
+        this.listBottom = 64;
+        // TODO: 1.20.1 Port - setX() doesn't exist in AbstractSelectionList
+        // this.setX(this.parentGui.getWidth() / 2);
         DimensionManager dimensionManager = VoxelConstants.getVoxelMapInstance().getDimensionManager();
         this.dimensions = new ArrayList<>();
         DimensionItem first = null;
@@ -45,7 +56,8 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
 
         this.dimensions.forEach(this::addEntry);
         if (first != null) {
-            this.scrollToEntry(first);
+            // TODO: 1.20.1 Port - scrollToEntry() doesn't exist in AbstractSelectionList
+            // this.scrollToEntry(first);
         }
 
     }
@@ -60,7 +72,7 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
         super.setSelected(entry);
         if (this.getSelected() instanceof DimensionItem) {
             GameNarrator narratorManager = new GameNarrator(VoxelConstants.getMinecraft());
-            narratorManager.sayChatQueued(Component.translatable("narrator.select", (this.getSelected()).dim.name));
+            narratorManager.sayNow(Component.translatable("narrator.select", (this.getSelected()).dim.name));
         }
 
         this.parentGui.setSelectedDimension(entry.dim);
@@ -72,17 +84,21 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
     // return this.dimensions.get(index).dim.equals(this.parentGui.selectedDimension);
     // }
 
-    @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 
     }
 
-
     @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
+    public void updateNarration(NarrationElementOutput output) {
+        // Empty implementation for 1.20.1
+    }
+
+    // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         this.doubleClicked = System.currentTimeMillis() - this.lastClicked < 250L;
         this.lastClicked = System.currentTimeMillis();
-        return super.mouseClicked(mouseButtonEvent, doubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     public class DimensionItem extends AbstractSelectionList.Entry<DimensionItem> {
@@ -95,16 +111,17 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
         }
 
         @Override
-        public void renderContent(GuiGraphics drawContext, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            drawContext.drawCenteredString(this.parentGui.getFont(), this.dim.getDisplayName(), this.parentGui.getWidth() / 2 + GuiSlotDimensions.this.width / 2, getY() + 3, 0xFFFFFFFF);
+        public void render(GuiGraphics drawContext, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            drawContext.drawCenteredString(this.parentGui.getFont(), this.dim.getDisplayName(), this.parentGui.getWidth() / 2 + GuiSlotDimensions.this.width / 2, top + 3, 0xFFFFFFFF);
             byte padding = 4;
             byte iconWidth = 18;
             int x = this.parentGui.getWidth() / 2;
-            int width = GuiSlotDimensions.this.width;
-            if (mouseX >= x + padding && mouseY >= getY() && mouseX <= x + width + padding && mouseY <= getY() + GuiSlotDimensions.this.defaultEntryHeight) {
+            int listWidth = GuiSlotDimensions.this.width;
+            if (mouseX >= x + padding && mouseY >= top && mouseX <= x + listWidth + padding && mouseY <= top + GuiSlotDimensions.this.itemHeight) {
                 Component tooltip;
-                if (!this.parentGui.popupOpen() && mouseX >= x + width - iconWidth - padding && mouseX <= x + width) {
-                    drawContext.requestCursor(CursorTypes.POINTING_HAND);
+                if (!this.parentGui.popupOpen() && mouseX >= x + listWidth - iconWidth - padding && mouseX <= x + listWidth) {
+                    // TODO: 1.20.1 Port - CursorTypes.POINTING_HAND doesn't exist or has different API
+                    // drawContext.requestCursor(CursorTypes.POINTING_HAND);
                     tooltip = this.parentGui.waypoint.dimensions.contains(this.dim) ? APPLIES : NOT_APPLIES;
                 } else {
                     tooltip = null;
@@ -118,21 +135,20 @@ class GuiSlotDimensions extends AbstractSelectionList<GuiSlotDimensions.Dimensio
             // 2 float: u,v start texture (in pixels - see last 2 int)
             // 2 int: height, width on screen
             // 2 int: height, width full texture in pixels
-           
-            drawContext.blit(null, this.parentGui.waypoint.dimensions.contains(this.dim) ? CONFIRM : CANCEL, x + width - iconWidth, getY() - 3, 0, 0, 18, 18, 18, 18);
+
+            drawContext.blit(this.parentGui.waypoint.dimensions.contains(this.dim) ? CONFIRM : CANCEL, x + listWidth - iconWidth, top - 3, 0, 0, 18, 18, 18, 18);
         }
 
+        // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
-        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
-            double mouseX = mouseButtonEvent.x();
-            double mouseY = mouseButtonEvent.y();
-            if (mouseY < GuiSlotDimensions.this.getY() || mouseY > GuiSlotDimensions.this.getBottom()) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (mouseY < GuiSlotDimensions.this.listTop || mouseY > GuiSlotDimensions.this.listBottom) {
                 return false;
             }
 
             GuiSlotDimensions.this.setSelected(this);
             byte iconWidth = 18;
-            int rightEdge = GuiSlotDimensions.this.getX() + GuiSlotDimensions.this.getWidth();
+            int rightEdge = GuiSlotDimensions.this.listX + GuiSlotDimensions.this.listWidth;
             boolean inRange = mouseX >= (rightEdge - iconWidth) && mouseX <= rightEdge;
             if (inRange) {
                 this.parentGui.toggleDimensionSelected();

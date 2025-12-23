@@ -23,7 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 public final class CommandUtils {
@@ -57,10 +57,12 @@ public final class CommandUtils {
 
                 MutableComponent clickableWaypoint = Component.literal(waypointString);
                 Style chatStyle = clickableWaypoint.getStyle();
-                chatStyle = chatStyle.withClickEvent(new ClickEvent.RunCommand("/newWaypoint " + waypointString.substring(1, waypointString.length() - 1)));
+                // 1.20.1: ClickEvent.RunCommand doesn't exist, use new ClickEvent(Action.RUN_COMMAND, ...)
+                chatStyle = chatStyle.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/newWaypoint " + waypointString.substring(1, waypointString.length() - 1)));
                 chatStyle = chatStyle.withColor(ChatFormatting.AQUA);
                 Component hover = Component.literal(I18n.get("minimap.waypointShare.tooltip1") + "\n" + I18n.get("minimap.waypointShare.tooltip2"));
-                chatStyle = chatStyle.withHoverEvent(new HoverEvent.ShowText(hover));
+                // 1.20.1: HoverEvent.ShowText doesn't exist, use new HoverEvent(Action.SHOW_TEXT, ...)
+                chatStyle = chatStyle.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
                 clickableWaypoint.setStyle(chatStyle);
                 textComponents.add(clickableWaypoint);
                 count = waypointStringLocation + waypointString.length();
@@ -182,8 +184,9 @@ public final class CommandUtils {
     }
 
     public static void waypointClicked(String command) {
-        boolean control = InputConstants.isKeyDown(VoxelConstants.getMinecraft().getWindow(), InputConstants.getKey("key.keyboard.left.control").getValue())
-                || InputConstants.isKeyDown(VoxelConstants.getMinecraft().getWindow(), InputConstants.getKey("key.keyboard.right.control").getValue());
+        // 1.20.1: InputConstants.isKeyDown expects long window handle, use window.getWindow()
+        boolean control = InputConstants.isKeyDown(VoxelConstants.getMinecraft().getWindow().getWindow(), InputConstants.getKey("key.keyboard.left.control").getValue())
+                || InputConstants.isKeyDown(VoxelConstants.getMinecraft().getWindow().getWindow(), InputConstants.getKey("key.keyboard.right.control").getValue());
         String details = command.substring(NEW_WAYPOINT_COMMAND_LENGTH);
         Waypoint newWaypoint = createWaypointFromChat(details);
         if (newWaypoint != null) {
@@ -209,7 +212,8 @@ public final class CommandUtils {
     }
 
     public static void sendWaypoint(Waypoint waypoint) {
-        ResourceLocation Identifier = VoxelConstants.getVoxelMapInstance().getDimensionManager().getDimensionContainerByWorld(VoxelConstants.getPlayer().level()).Identifier;
+        // 1.20.1: DimensionContainer.Identifier → DimensionContainer.resourceLocation (property name changed)
+        ResourceLocation Identifier = VoxelConstants.getVoxelMapInstance().getDimensionManager().getDimensionContainerByWorld(VoxelConstants.getPlayer().level()).resourceLocation;
         int color = ((int) (waypoint.red * 255.0F) & 0xFF) << 16 | ((int) (waypoint.green * 255.0F) & 0xFF) << 8 | (int) (waypoint.blue * 255.0F) & 0xFF;
         StringBuilder hexColor = new StringBuilder(Integer.toHexString(color));
 
@@ -248,7 +252,7 @@ public final class CommandUtils {
 
         for (Waypoint wp : VoxelConstants.getVoxelMapInstance().getWaypointManager().getWaypoints()) {
             if (wp.name.equalsIgnoreCase(details) && wp.inDimension && wp.inWorld) {
-                int y = wp.getY() > VoxelConstants.getPlayer().level().getMinY() ? wp.getY() : (!VoxelConstants.getPlayer().level().dimensionType().hasCeiling() ? VoxelConstants.getPlayer().level().getMaxY() : 64);
+                int y = wp.getY() > VoxelConstants.getPlayer().level().getMinBuildHeight() ? wp.getY() : (!VoxelConstants.getPlayer().level().dimensionType().hasCeiling() ? VoxelConstants.getPlayer().level().getMaxBuildHeight() : 64);
                 VoxelConstants.playerRunTeleportCommand(wp.getX(), y, wp.getZ());
                 return;
             }
@@ -263,20 +267,20 @@ public final class CommandUtils {
         if (inNetherDimension) {
             int safeY = -1;
 
-            for (int t = worldObj.getMinY(); t < worldObj.getMaxY(); ++t) {
-                if (y + t < worldObj.getMaxY() && isBlockStandable(worldObj, x, y + t, z) && isBlockOpen(worldObj, x, y + t + 1, z) && isBlockOpen(worldObj, x, y + t + 2, z)) {
+            for (int t = worldObj.getMinBuildHeight(); t < worldObj.getMaxBuildHeight(); ++t) {
+                if (y + t < worldObj.getMaxBuildHeight() && isBlockStandable(worldObj, x, y + t, z) && isBlockOpen(worldObj, x, y + t + 1, z) && isBlockOpen(worldObj, x, y + t + 2, z)) {
                     safeY = y + t + 1;
-                    t = worldObj.getMaxY();
+                    t = worldObj.getMaxBuildHeight();
                 }
 
-                if (y - t > worldObj.getMinY() && isBlockStandable(worldObj, x, y - t, z) && isBlockOpen(worldObj, x, y - t + 1, z) && isBlockOpen(worldObj, x, y - t + 2, z)) {
+                if (y - t > worldObj.getMinBuildHeight() && isBlockStandable(worldObj, x, y - t, z) && isBlockOpen(worldObj, x, y - t + 1, z) && isBlockOpen(worldObj, x, y - t + 2, z)) {
                     safeY = y - t + 1;
-                    t = worldObj.getMaxY();
+                    t = worldObj.getMaxBuildHeight();
                 }
             }
 
             y = safeY;
-        } else if (y <= worldObj.getMinY()) {
+        } else if (y <= worldObj.getMinBuildHeight()) {
             y = worldObj.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) + 1;
         }
 

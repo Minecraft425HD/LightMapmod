@@ -94,11 +94,11 @@ public class WaypointManager {
     }
 
     public void onResourceManagerReload(ResourceManager resourceManager) {
-        List<Identifier> images = new ArrayList<>();
+        List<ResourceLocation> images = new ArrayList<>();
         IIconCreator iconCreator = textureAtlas -> {
 
-            Map<Identifier, Resource> resourceMap = VoxelConstants.getMinecraft().getResourceManager().listResources("images", asset -> asset.getPath().endsWith(".png"));
-            for (Identifier candidate : resourceMap.keySet()) {
+            Map<ResourceLocation, Resource> resourceMap = VoxelConstants.getMinecraft().getResourceManager().listResources("images", asset -> asset.getPath().endsWith(".png"));
+            for (ResourceLocation candidate : resourceMap.keySet()) {
                 if (candidate.getNamespace().equals("voxelmap") && candidate.getPath().contains("images/waypoints")) {
                     images.add(candidate);
                 }
@@ -123,10 +123,10 @@ public class WaypointManager {
         this.textureAtlas.loadTextureAtlas(iconCreator);
         this.textureAtlasChooser.reset();
 
-        for (Identifier Identifier : images) {
-            String name = Identifier.toString();
+        for (ResourceLocation ResourceLocation : images) {
+            String name = ResourceLocation.toString();
             if (name.toLowerCase().contains("waypoints/waypoint") && !name.toLowerCase().contains("small")) {
-                this.textureAtlasChooser.registerIconForResource(Identifier);
+                this.textureAtlasChooser.registerIconForResource(ResourceLocation);
                 this.textureAtlasChooser.stitchNew();
             }
         }
@@ -202,9 +202,9 @@ public class WaypointManager {
                     serverName = serverData.name;
                 } else if (isRealm) {
                     VoxelConstants.getLogger().info("Server is a Realm.");
-                    RealmsClient realmsClient = RealmsClient.getOrCreate(Minecraft.getInstance());
-                    RealmsServerList realmsServerList = realmsClient.listRealms();
-                    for (RealmsServer realmsServer : realmsServerList.servers()) {
+                    RealmsClient realmsClient = RealmsClient.create(Minecraft.getInstance());
+                    RealmsServerList realmsServerList = realmsClient.listWorlds();
+                    for (RealmsServer realmsServer : realmsServerList.servers) {
                         if (realmsServer.name.equals(serverData.name)) {
                             serverName = "Realm_" + realmsServer.id + "." + realmsServer.ownerUUID;
                             break;

@@ -4,59 +4,63 @@ import com.mamiyaotaru.voxelmap.VoxelConstants;
 import com.mamiyaotaru.voxelmap.entityrender.variants.DefaultEntityVariantData;
 import com.mamiyaotaru.voxelmap.entityrender.variants.DefaultEntityVariantDataFactory;
 import com.mamiyaotaru.voxelmap.entityrender.variants.HorseVariantDataFactory;
-import com.mamiyaotaru.voxelmap.mixins.AccessorEnderDragonRenderer;
+// TODO: 1.20.1 Port - AccessorEnderDragonRenderer is disabled
+// import com.mamiyaotaru.voxelmap.mixins.AccessorEnderDragonRenderer;
 import com.mamiyaotaru.voxelmap.textures.Sprite;
 import com.mamiyaotaru.voxelmap.textures.TextureAtlas;
 import com.mamiyaotaru.voxelmap.util.AllocatedTexture;
 import com.mamiyaotaru.voxelmap.util.GLUtils;
 import com.mamiyaotaru.voxelmap.util.ImageUtils;
 import com.mamiyaotaru.voxelmap.util.VoxelMapCachedOrthoProjectionMatrixBuffer;
-import com.mamiyaotaru.voxelmap.util.VoxelMapPipelines;
-import com.mojang.blaze3d.ProjectionType;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
+// TODO: 1.20.1 Port - GPU rendering APIs don't exist in 1.20.1
+// import com.mamiyaotaru.voxelmap.util.VoxelMapPipelines;
+// import com.mojang.blaze3d.ProjectionType;
+// import com.mojang.blaze3d.buffers.GpuBuffer;
+// import com.mojang.blaze3d.buffers.GpuBufferSlice;
 // import com.mojang.blaze3d.pipeline.RenderPipeline;
 // import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.textures.TextureFormat;
+// import com.mojang.blaze3d.textures.GpuTexture;
+// import com.mojang.blaze3d.textures.GpuTextureView;
+// import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
+// TODO: 1.20.1 Port - MeshData doesn't exist in 1.20.1
+// import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import com.mojang.math.Axis;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.model.animal.camel.CamelModel;
-import net.minecraft.client.model.animal.fish.CodModel;
+import net.minecraft.client.model.CamelModel;
+import net.minecraft.client.model.CodModel;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.animal.ghast.HappyGhastModel;
-import net.minecraft.client.model.monster.slime.MagmaCubeModel;
-import net.minecraft.client.model.animal.llama.LlamaModel;
-import net.minecraft.client.model.animal.fish.SalmonModel;
-import net.minecraft.client.model.monster.slime.SlimeModel;
-import net.minecraft.client.model.animal.fish.TropicalFishSmallModel;
-import net.minecraft.client.model.animal.fish.TropicalFishLargeModel;
-import net.minecraft.client.model.monster.wither.WitherBossModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.LlamaModel;
+import net.minecraft.client.model.SalmonModel;
+import net.minecraft.client.model.SlimeModel;
+import net.minecraft.client.model.TropicalFishModelA;
+import net.minecraft.client.model.TropicalFishModelB;
+import net.minecraft.client.model.WitherBossModel;
+// 1.20.1: MagmaCubeModel renamed to LavaSlimeModel
+import net.minecraft.client.model.LavaSlimeModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.SlimeRenderer;
 import net.minecraft.client.renderer.entity.layers.SlimeOuterLayer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+// EntityRenderState doesn't exist in 1.20.1
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+// EntitySpawnReason doesn't exist in 1.20.1
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -69,6 +73,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -79,8 +84,9 @@ public class EntityMapImageManager {
     public static final ResourceLocation resourceTextureAtlasMarker = new ResourceLocation("voxelmap", "atlas/mobs");
     private final TextureAtlas textureAtlas;
     private final Minecraft minecraft = Minecraft.getInstance();
-    private GpuTexture fboDepthTexture;
-    private GpuTexture fboTexture;
+    // TODO: 1.20.1 Port - GPU textures don't exist in 1.20.1
+    // private GpuTexture fboDepthTexture;
+    // private GpuTexture fboTexture;
     private final ResourceLocation resourceFboTexture = new ResourceLocation("voxelmap", "entityimagemanager/fbo");
     private Tesselator fboTessellator = new Tesselator(4096);
     private int imageCreationRequests;
@@ -88,11 +94,13 @@ public class EntityMapImageManager {
     private final HashMap<EntityType<?>, EntityVariantDataFactory> variantDataFactories = new HashMap<>();
     private ConcurrentLinkedQueue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
     private final Camera fakeCamera = new Camera();
-    private GpuTextureView fboTextureView;
-    private GpuTextureView fboDepthTextureView;
+    // TODO: 1.20.1 Port - GPU texture views don't exist in 1.20.1
+    // private GpuTextureView fboTextureView;
+    // private GpuTextureView fboDepthTextureView;
     private VoxelMapCachedOrthoProjectionMatrixBuffer projection;
     private final HashMap<String, Properties> mobPropertiesMap = new HashMap<>();
-    private final Class<?>[] fullRenderModels = new Class[] { CodModel.class, MagmaCubeModel.class, SalmonModel.class, SlimeModel.class, TropicalFishSmallModel.class, TropicalFishLargeModel.class };
+    // 1.20.1: MagmaCubeModel renamed to LavaSlimeModel
+    private final Class<?>[] fullRenderModels = new Class[] { CodModel.class, LavaSlimeModel.class, SalmonModel.class, SlimeModel.class, TropicalFishModelA.class, TropicalFishModelB.class };
 
     public EntityMapImageManager() {
         this.textureAtlas = new TextureAtlas("mobsmap", resourceTextureAtlasMarker);
@@ -126,7 +134,8 @@ public class EntityMapImageManager {
 
         mobPropertiesMap.clear();
         variantDataFactories.clear();
-        addVariantDataFactory(new DefaultEntityVariantDataFactory(EntityType.BOGGED, new ResourceLocation("minecraft", "textures/entity/skeleton/bogged_overlay.png")));
+        // 1.20.1: EntityType.BOGGED doesn't exist (added in 1.21)
+        // addVariantDataFactory(new DefaultEntityVariantDataFactory(EntityType.BOGGED, new ResourceLocation("minecraft", "textures/entity/skeleton/bogged_overlay.png")));
         addVariantDataFactory(new DefaultEntityVariantDataFactory(EntityType.DROWNED, new ResourceLocation("minecraft", "textures/entity/zombie/drowned_outer_layer.png")));
         addVariantDataFactory(new DefaultEntityVariantDataFactory(EntityType.ENDERMAN, new ResourceLocation("minecraft", "textures/entity/enderman/enderman_eyes.png")));
         // addVariantDataFactory(new DefaultEntityVariantDataFactory(EntityType.TROPICAL_FISH, new ResourceLocation("minecraft", "textures/entity/enderman/enderman_eyes.png")));
@@ -147,7 +156,7 @@ public class EntityMapImageManager {
     }
 
     public Sprite requestImageForMobType(EntityType<?> type, int size, boolean addBorder) {
-        if (minecraft.level != null && type.create(minecraft.level, EntitySpawnReason.LOAD) instanceof LivingEntity le) {
+        if (minecraft.level != null && type.create(minecraft.level) instanceof LivingEntity le) {
             return requestImageForMob(le, size, addBorder);
         }
         return null;
@@ -157,35 +166,35 @@ public class EntityMapImageManager {
         return requestImageForMob(e, -1, addBorder);
     }
 
-    private EntityVariantData getVariantData(Entity entity, @SuppressWarnings("rawtypes") EntityRenderer renderer, EntityRenderState state, int size, boolean addBorder) {
+    // 1.20.1: Removed EntityRenderState parameter - doesn't exist in 1.20.1
+    private EntityVariantData getVariantData(Entity entity, @SuppressWarnings("rawtypes") EntityRenderer renderer, int size, boolean addBorder) {
         EntityVariantDataFactory factory = variantDataFactories.get(entity.getType());
         if (factory != null) {
-            EntityVariantData data = factory.createVariantData(entity, renderer, state, size, addBorder);
+            EntityVariantData data = factory.createVariantData(entity, renderer, size, addBorder);
             if (data != null) {
                 return data;
             }
         }
-        return DefaultEntityVariantDataFactory.createSimpleVariantData(entity, renderer, state, size, addBorder);
+        return DefaultEntityVariantDataFactory.createSimpleVariantData(entity, renderer, size, addBorder);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private EntityVariantData getOrCreateVariantData(Entity entity, EntityRenderer renderer, int size, boolean addBorder) {
-        EntityRenderState renderState = null;
+        // 1.20.1: EntityRenderState doesn't exist, work directly with entities
         if (entity instanceof AbstractClientPlayer player) {
-            return new DefaultEntityVariantData(entity.getType(), minecraft.getSkinManager().getInsecureSkin(player.getGameProfile()).texture(), null, size, addBorder);
+            // 1.20.1: Use getInsecureSkinInformation() instead of getInsecureSkin()
+            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> skinMap = minecraft.getSkinManager().getInsecureSkinInformation(player.getGameProfile());
+            MinecraftProfileTexture skinTexture = skinMap.get(MinecraftProfileTexture.Type.SKIN);
+            ResourceLocation skinLocation = skinTexture != null ? minecraft.getSkinManager().registerTexture(skinTexture, MinecraftProfileTexture.Type.SKIN) : null;
+            return new DefaultEntityVariantData(entity.getType(), skinLocation, null, size, addBorder);
         }
 
-        if (entity instanceof LivingEntity entity2 && renderer instanceof LivingEntityRenderer renderer2) {
-            renderState = renderer2.createRenderState(entity2, 0.5f);
-        } else if (entity instanceof EnderDragon entity2 && renderer instanceof EnderDragonRenderer renderer2) {
-            renderState = renderer2.createRenderState(entity2, 0.5f);
-        }
-
-        if (renderState == null) {
+        // 1.20.1: createRenderState() doesn't exist in 1.20.1, skip the state creation
+        if (!(entity instanceof LivingEntity) && !(entity instanceof EnderDragon)) {
             return null;
         }
 
-        return getVariantData(entity, renderer, renderState, size, addBorder);
+        return getVariantData(entity, renderer, size, addBorder);
     }
 
     @SuppressWarnings("rawtypes")
@@ -193,14 +202,16 @@ public class EntityMapImageManager {
         if (renderer instanceof LivingEntityRenderer renderer2) {
             return renderer2.getModel();
         } else if (renderer instanceof EnderDragonRenderer renderer2) {
-            return ((AccessorEnderDragonRenderer) renderer2).getModel();
+            // TODO: 1.20.1 Port - AccessorEnderDragonRenderer is disabled, need to find alternative way to get model
+            return null;  // Temporarily return null since EnderDragonModel accessor is not working in 1.20.1
         }
         return null;
     }
 
     @SuppressWarnings("rawtypes")
     public Sprite requestImageForMob(Entity entity, int size, boolean addBorder) {
-        EntityRenderer<?, ?> baseRenderer = minecraft.getEntityRenderDispatcher().getRenderer(entity);
+        // 1.20.1: EntityRenderer has single type parameter, not two
+        EntityRenderer<?> baseRenderer = minecraft.getEntityRenderDispatcher().getRenderer(entity);
         EntityVariantData variant = getOrCreateVariantData(entity, baseRenderer, size, addBorder);
 
         if (variant == null) {
@@ -230,10 +241,16 @@ public class EntityMapImageManager {
 
         // VoxelConstants.getLogger().info(" -> " + Identifier);
         // TODO: 1.20.1 Port - RenderPipeline doesn't exist in 1.20.1, this entire section needs rewrite
-        Object renderPipeline = VoxelMapPipelines.ENTITY_ICON_PIPELINE;
+        // Object renderPipeline = VoxelMapPipelines.ENTITY_ICON_PIPELINE;
         // TODO: 1.20.1 Port - Replace with 1.20.1 compatible vertex format
-        BufferBuilder bufferBuilder = null; // fboTessellator.begin(Mode.QUADS, renderPipeline.getVertexFormat());
+        // BufferBuilder bufferBuilder = null; // fboTessellator.begin(Mode.QUADS, renderPipeline.getVertexFormat());
 
+        // TODO: 1.20.1 Port - Entity icon rendering disabled - needs complete rewrite for 1.20.1
+        // The 1.21 code uses GPU APIs that don't exist in 1.20.1
+        // This functionality will be disabled until properly ported
+        return sprite;
+
+        /*
         PoseStack pose = new PoseStack();
 
         pose.pushPose();
@@ -292,7 +309,7 @@ public class EntityMapImageManager {
         AbstractTexture texture = minecraft.getTextureManager().getTexture(ResourceLocation);
         AbstractTexture texture2 = ResourceLocation2 == null ? null : minecraft.getTextureManager().getTexture(ResourceLocation2);
 
-        RenderSystem.getModelViewStack().pushMatrix();
+        RenderSystem.getModelViewStack().pushPose();
         RenderSystem.getModelViewStack().identity();
         GpuBufferSlice gpuBufferSlice = RenderSystem.getDynamicUniforms()
                 .writeTransform(
@@ -325,12 +342,12 @@ public class EntityMapImageManager {
             GpuBufferSlice originalProjectionMatrix = RenderSystem.getProjectionMatrixBuffer();
             RenderSystem.setProjectionMatrix(projection.getBuffer(), ProjectionType.ORTHOGRAPHIC);
 
-            // TODO: 1.20.1 Port - RenderPass doesn't exist in 1.20.1
+            // RenderPass doesn't exist in 1.20.1
             // try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "VoxelMap entity image renderer", fboTextureView, OptionalInt.of(0x00000000), fboDepthTextureView, OptionalDouble.of(1.0))) {
             //     renderPass.setPipeline(renderPipeline);
             //     RenderSystem.bindDefaultUniforms(renderPass);
             //     renderPass.setUniform("DynamicTransforms", gpuBufferSlice);
-            //     // TODO: 1.20.1 Port - getTextureView() and getSampler() don't exist in 1.20.1
+            //     // getTextureView() and getSampler() don't exist in 1.20.1
             //     renderPass.bindTexture("Sampler0", texture.getTextureView(), texture.getSampler());
             //     // renderPass.bindSampler("Sampler1", texture.getTexture()); // overlay
             //     // minecraft.gameRenderer.overlayTexture().setupOverlayColor();
@@ -341,12 +358,12 @@ public class EntityMapImageManager {
             //     renderPass.drawIndexed(0, 0, meshData.drawState().indexCount(), 1);
 
             //     if (texture2 != null) {
-            //         // TODO: 1.20.1 Port - getTextureView() and getSampler() don't exist in 1.20.1
+            //         // getTextureView() and getSampler() don't exist in 1.20.1
             //         renderPass.bindTexture("Sampler0", texture2.getTextureView(), texture2.getSampler());
             //         renderPass.drawIndexed(0, 0, meshData.drawState().indexCount(), 1);
             //     }
             // }
-            RenderSystem.getModelViewStack().popMatrix();
+            RenderSystem.getModelViewStack().popPose();
             RenderSystem.setProjectionMatrix(originalProjectionMatrix, originalProjectionType);
 
         }
@@ -359,6 +376,7 @@ public class EntityMapImageManager {
         });
 
         return sprite;
+        */
     }
 
     private void postProcessRenderedMobImage(Entity entity, Sprite sprite, @SuppressWarnings("rawtypes") EntityModel model, BufferedImage image2, boolean addBorder) {
@@ -380,7 +398,8 @@ public class EntityMapImageManager {
                 g.setComposite(AlphaComposite.Clear);
                 g.fillRect(0, 248, image.getWidth(), image.getHeight());
             }
-            if (model instanceof HappyGhastModel) {
+            // HappyGhastModel doesn't exist in 1.20.1 - using generic check
+            if (false) { // Disabled ghast-specific model check for 1.20.1
                 Graphics2D g = image.createGraphics();
                 g.setComposite(AlphaComposite.Clear);
                 g.fillRect(0,  352, image.getWidth(), image.getHeight());
@@ -439,6 +458,12 @@ public class EntityMapImageManager {
     }
 
     private ModelPart[] getPartToRender(EntityModel<?> model) {
+        // TODO: 1.20.1 Port - model.root() and model.allParts() don't exist in 1.20.1
+        // This entire method needs to be rewritten for 1.20.1 API
+        // For now, returning null since entity icon rendering is disabled anyway
+        return null;
+
+        /* 1.21 code - needs porting to 1.20.1
         // full-model rendered mobs
         for (Class<?> clazz : fullRenderModels) {
             if (clazz.isInstance(model)) {
@@ -492,6 +517,7 @@ public class EntityMapImageManager {
 
         // fallback
         return new ModelPart[] { model.root() };
+        */
     }
 
     // We don't need to use this code anymore. (but I'll leave this code here in case we need it later!)

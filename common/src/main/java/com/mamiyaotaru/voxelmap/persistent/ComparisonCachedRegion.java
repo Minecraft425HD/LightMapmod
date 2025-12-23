@@ -55,7 +55,7 @@ public class ComparisonCachedRegion {
         }
         String dimensionName = VoxelConstants.getVoxelMapInstance().getDimensionManager().getDimensionContainerByWorld(world).getStorageName();
         this.dimensionNamePathPart = TextUtils.scrubNameFile(dimensionName);
-        this.underground = world.dimensionType().cardinalLightType() != DimensionType.CardinalLightType.NETHER && !world.dimensionType().hasSkyLight() || world.dimensionType().hasCeiling();
+        this.underground = !world.dimensionType().hasSkyLight() || world.dimensionType().hasCeiling();
         this.x = x;
         this.z = z;
     }

@@ -10,9 +10,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+// 1.20.1: Input event system changed
 import net.minecraft.network.chat.Component;
 
 public class GuiSubworldEdit extends GuiScreenMinimap implements BooleanConsumer {
@@ -42,7 +40,7 @@ public class GuiSubworldEdit extends GuiScreenMinimap implements BooleanConsumer
     @Override
     public void init() {
         this.clearWidgets();
-        this.subworldNameField = new EditBox(this.getFont(), this.getWidth() / 2 - 100, this.getHeight() / 6 + 13, 200, 20, null);
+        this.subworldNameField = new EditBox(this.font, this.getWidth() / 2 - 100, this.getHeight() / 6 + 13, 200, 20, null);
         this.setFocused(this.subworldNameField);
         this.subworldNameField.setFocused(true);
         this.subworldNameField.setValue(this.originalSubworldName);
@@ -91,9 +89,9 @@ public class GuiSubworldEdit extends GuiScreenMinimap implements BooleanConsumer
     }
 
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
-        int keyCode = keyEvent.key();
-        boolean OK = super.keyPressed(keyEvent);
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // 1.20.1: Input event system changed
+        boolean OK = super.keyPressed(keyCode, scanCode, modifiers);
         boolean acceptable = this.isNameAcceptable();
         this.doneButton.active = this.isNameAcceptable();
         this.deleteButton.active = this.originalSubworldName.equals(this.subworldNameField.getValue());
@@ -105,12 +103,13 @@ public class GuiSubworldEdit extends GuiScreenMinimap implements BooleanConsumer
     }
 
     @Override
-    public boolean charTyped(CharacterEvent characterEvent) {
-        boolean OK = super.charTyped(characterEvent);
+    public boolean charTyped(char codePoint, int modifiers) {
+        // 1.20.1: Input event system changed
+        boolean OK = super.charTyped(codePoint, modifiers);
         boolean acceptable = this.isNameAcceptable();
         this.doneButton.active = this.isNameAcceptable();
         this.deleteButton.active = this.originalSubworldName.equals(this.subworldNameField.getValue());
-        if (characterEvent.codepoint() == '\r' && acceptable) {
+        if (codePoint == '\r' && acceptable) {
             this.changeNameClicked();
         }
 
@@ -119,15 +118,16 @@ public class GuiSubworldEdit extends GuiScreenMinimap implements BooleanConsumer
 
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
-        this.subworldNameField.mouseClicked(mouseButtonEvent, doubleClick);
-        return super.mouseClicked(mouseButtonEvent, doubleClick);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // 1.20.1: Input event system changed
+        this.subworldNameField.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        drawContext.drawCenteredString(this.getFont(), Component.translatable("worldmap.subworld.edit"), this.getWidth() / 2, 20, 0xFFFFFFFF);
-        drawContext.drawString(this.getFont(), Component.translatable("worldmap.subworld.name"), this.getWidth() / 2 - 100, this.getHeight() / 6, 0xFFA0A0A0);
+        drawContext.drawCenteredString(this.font, Component.translatable("worldmap.subworld.edit"), this.getWidth() / 2, 20, 0xFFFFFFFF);
+        drawContext.drawString(this.font, Component.translatable("worldmap.subworld.name"), this.getWidth() / 2 - 100, this.getHeight() / 6, 0xFFA0A0A0);
         this.subworldNameField.render(drawContext, mouseX, mouseY, delta);
         super.render(drawContext, mouseX, mouseY, delta);
     }

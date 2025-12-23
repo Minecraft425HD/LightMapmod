@@ -10,12 +10,12 @@ public class ScaledDynamicMutableTexture extends DynamicMoveableTexture {
 
     @Override
     public int getWidth() {
-        return this.getPixelsRGBA().getWidth();
+        return this.getPixels().getWidth();
     }
 
     @Override
     public int getHeight() {
-        return this.getPixelsRGBA().getHeight();
+        return this.getPixels().getHeight();
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ScaledDynamicMutableTexture extends DynamicMoveableTexture {
 
         for (int t = 0; t < this.scale; ++t) {
             for (int s = 0; s < this.scale; ++s) {
-                this.getPixelsRGBA().setPixel(x * this.scale + t, y * this.scale + s, color);
+                this.getPixels().setPixelRGBA(x * this.scale + t, y * this.scale + s, color);
             }
         }
 

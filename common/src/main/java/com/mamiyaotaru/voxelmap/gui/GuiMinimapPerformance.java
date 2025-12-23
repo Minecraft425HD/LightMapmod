@@ -9,8 +9,9 @@ import com.mamiyaotaru.voxelmap.gui.overridden.GuiScreenMinimap;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
+// TODO: 1.20.1 Port - Input event classes don't exist, using primitive parameters instead
+// import net.minecraft.client.input.CharacterEvent;
+// import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
@@ -61,14 +62,14 @@ public class GuiMinimapPerformance extends GuiScreenMinimap {
         }
 
         String buttonSeedText = I18n.get("options.minimap.worldSeed") + ": " + worldSeedDisplay;
-        this.worldSeedButton = new GuiButtonText(this.getFont(), leftBorder + var2 % 2 * 160, this.getHeight() / 6 + 24 * (var2 >> 1), 150, 20, Component.literal(buttonSeedText), button -> this.worldSeedButton.setEditing(true));
+        this.worldSeedButton = new GuiButtonText(this.font, leftBorder + var2 % 2 * 160, this.getHeight() / 6 + 24 * (var2 >> 1), 150, 20, Component.literal(buttonSeedText), button -> this.worldSeedButton.setEditing(true));
         this.worldSeedButton.setText(VoxelConstants.getVoxelMapInstance().getWorldSeed());
         this.worldSeedButton.active = !VoxelConstants.getMinecraft().hasSingleplayerServer();
         this.addRenderableWidget(this.worldSeedButton);
         ++var2;
 
         String buttonTeleportText = I18n.get("options.minimap.teleportCommand") + ": " + VoxelConstants.getVoxelMapInstance().getMapOptions().teleportCommand;
-        this.teleportCommandButton = new GuiButtonText(this.getFont(), leftBorder + var2 % 2 * 160, this.getHeight() / 6 + 24 * (var2 >> 1), 150, 20, Component.literal(buttonTeleportText), button -> this.teleportCommandButton.setEditing(true));
+        this.teleportCommandButton = new GuiButtonText(this.font, leftBorder + var2 % 2 * 160, this.getHeight() / 6 + 24 * (var2 >> 1), 150, 20, Component.literal(buttonTeleportText), button -> this.teleportCommandButton.setEditing(true));
         this.teleportCommandButton.setText(VoxelConstants.getVoxelMapInstance().getMapOptions().teleportCommand);
         this.teleportCommandButton.active = VoxelConstants.getVoxelMapInstance().getMapOptions().serverTeleportCommand == null;
         this.addRenderableWidget(this.teleportCommandButton);
@@ -92,12 +93,12 @@ public class GuiMinimapPerformance extends GuiScreenMinimap {
         par1GuiButton.setMessage(Component.literal(perfBomb + this.options.getKeyText(option)));
     }
 
+    // 1.20.1: Input event system changed - keyPressed uses primitive parameters
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
-        int keyCode = keyEvent.key();
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 258) {
-            this.worldSeedButton.keyPressed(keyEvent);
-            this.teleportCommandButton.keyPressed(keyEvent);
+            this.worldSeedButton.keyPressed(keyCode, scanCode, modifiers);
+            this.teleportCommandButton.keyPressed(keyCode, scanCode, modifiers);
         }
 
         if ((keyCode == 257 || keyCode == 335)) {
@@ -109,13 +110,14 @@ public class GuiMinimapPerformance extends GuiScreenMinimap {
 
         }
 
-        return super.keyPressed(keyEvent);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    // 1.20.1: Input event system changed - charTyped uses primitive parameters
     @Override
-    public boolean charTyped(CharacterEvent characterEvent) {
-        boolean OK = super.charTyped(characterEvent);
-        if (characterEvent.codepoint() == '\r') {
+    public boolean charTyped(char codePoint, int modifiers) {
+        boolean OK = super.charTyped(codePoint, modifiers);
+        if (codePoint == '\r') {
             if (this.worldSeedButton.isEditing()) {
                 this.newSeed();
             } else if (this.teleportCommandButton.isEditing()) {
@@ -153,7 +155,7 @@ public class GuiMinimapPerformance extends GuiScreenMinimap {
 
     @Override
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        drawContext.drawCenteredString(this.getFont(), this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
+        drawContext.drawCenteredString(this.font, this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
         super.render(drawContext, mouseX, mouseY, delta);
     }
 }

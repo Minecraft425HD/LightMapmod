@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ARGB;
+import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +57,7 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
                 this.welcomeTexts.add(keyText);
             } else {
                 int lastIndex = this.welcomeTexts.size() - 1;
-                this.welcomeTexts.set(lastIndex, this.welcomeTexts.getLast().copy().append(", ").append(keyText));
+                this.welcomeTexts.set(lastIndex, this.welcomeTexts.get(this.welcomeTexts.size() - 1).copy().append(", ").append(keyText));
             }
 
             ++count;
@@ -69,10 +69,10 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
             this.options.saveAll();
 
             minecraft.setScreen(null);
-        }, getFont()));
+        }, font));
 
         Component controls = Component.translatable("options.controls").withStyle(ChatFormatting.GRAY);
-        this.addRenderableWidget(this.controlsButton = new PlainTextButton(getWidth() / 2 + 10, getHeight() / 2, 100, 10, controls, button -> minecraft.setScreen(new GuiMinimapControls(this)), getFont()));
+        this.addRenderableWidget(this.controlsButton = new PlainTextButton(getWidth() / 2 + 10, getHeight() / 2, 100, 10, controls, button -> minecraft.setScreen(new GuiMinimapControls(this)), font));
     }
 
     @Override
@@ -80,26 +80,26 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
         int centerX = minecraft.getWindow().getGuiScaledWidth() / 2;
         int centerY = minecraft.getWindow().getGuiScaledHeight() / 2;
 
-        int lineHeight = getFont().lineHeight;
+        int lineHeight = font.lineHeight;
 
-        int boxColor = ARGB.color((int) (minecraft.options.textBackgroundOpacity().get().floatValue() * 255.0F), 0, 0, 0);
+        int boxColor = ARGBCompat.color((int) (minecraft.options.textBackgroundOpacity().get().floatValue() * 255.0F), 0, 0, 0);
         int boxTop = centerY - ((this.welcomeTexts.size() * lineHeight) / 2);
 
         // Main Box
         int boxWidth = 0;
         for (int i = 1; i < this.welcomeTexts.size(); ++i) {
-            boxWidth = Math.max(boxWidth, getFont().width(this.welcomeTexts.get(i)));
+            boxWidth = Math.max(boxWidth, font.width(this.welcomeTexts.get(i)));
         }
         this.drawBox(guiGraphics, centerX - (boxWidth / 2), boxTop, centerX + (boxWidth / 2), boxTop + lineHeight * (this.welcomeTexts.size() - 1), 4, 1, boxColor);
 
         for (int i = 1; i < this.welcomeTexts.size(); ++i) {
-            guiGraphics.drawString(getFont(), this.welcomeTexts.get(i), centerX - (boxWidth / 2), boxTop + lineHeight * (i - 1), 0xFFFFFFFF);
+            guiGraphics.drawString(font, this.welcomeTexts.get(i), centerX - (boxWidth / 2), boxTop + lineHeight * (i - 1), 0xFFFFFFFF);
         }
 
         // Title Box
-        boxWidth = getFont().width(this.welcomeTexts.getFirst());
+        boxWidth = font.width(this.welcomeTexts.get(0));
         this.drawBox(guiGraphics, centerX - (boxWidth / 2), boxTop - lineHeight - 3, centerX + (boxWidth / 2), boxTop - 3, 4, 1, boxColor);
-        guiGraphics.drawCenteredString(getFont(), this.welcomeTexts.getFirst(), centerX, boxTop - lineHeight - 3, 0xFFFFFFFF);
+        guiGraphics.drawCenteredString(font, this.welcomeTexts.get(0), centerX, boxTop - lineHeight - 3, 0xFFFFFFFF);
 
         boxTop += lineHeight * this.welcomeTexts.size();
 
@@ -119,7 +119,6 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
         guiGraphics.fill(x1 - inflateX, y1 - inflateY, x2 + inflateX, y2 + inflateY, color);
     }
 
-    @Override
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
     }
 }

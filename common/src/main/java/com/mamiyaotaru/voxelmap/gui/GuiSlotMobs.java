@@ -4,18 +4,20 @@ import com.mamiyaotaru.voxelmap.VoxelConstants;
 import com.mamiyaotaru.voxelmap.VoxelMap;
 import com.mamiyaotaru.voxelmap.textures.Sprite;
 import com.mamiyaotaru.voxelmap.util.MobCategory;
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
+// TODO: 1.20.1 Port - CursorTypes package changed or doesn't exist
+// import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
+// TODO: 1.20.1 Port - MouseButtonEvent doesn't exist, using primitive parameters instead
+// import net.minecraft.client.input.MouseButtonEvent;
 // import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntitySpawnReason;
+// EntitySpawnReason doesn't exist in 1.20.1
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -32,16 +34,20 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
     static final Component TOOLTIP_DISABLE = Component.translatable("options.minimap.mobs.disableTooltip");
     final ResourceLocation visibleIconIdentifier = new ResourceLocation("textures/gui/sprites/container/beacon/confirm.png");
     final ResourceLocation invisibleIconIdentifier = new ResourceLocation("textures/gui/sprites/container/beacon/cancel.png");
+    private final int listTop;
+    private final int listBottom;
 
     GuiSlotMobs(GuiMobs par1GuiMobs) {
-        super(VoxelConstants.getMinecraft(), par1GuiMobs.getWidth(), par1GuiMobs.getHeight() - 110, 40, 18);
+        super(VoxelConstants.getMinecraft(), par1GuiMobs.getWidth(), par1GuiMobs.getHeight(), 40, par1GuiMobs.getHeight() - 110, 18);
+        this.listTop = 40;
+        this.listBottom = par1GuiMobs.getHeight() - 110;
 
         this.parentGui = par1GuiMobs;
         // RadarSettingsManager options = this.parentGui.options;
         this.mobs = new ArrayList<>();
 
         BuiltInRegistries.ENTITY_TYPE.entrySet().forEach(entry -> {
-            if (entry.getValue().create(Minecraft.getInstance().level, EntitySpawnReason.LOAD) instanceof LivingEntity) {
+            if (entry.getValue().create(Minecraft.getInstance().level) instanceof LivingEntity) {
                 this.mobs.add(new MobItem(this.parentGui, entry.getValue(), entry.getKey().location()));
             }
         });
@@ -62,7 +68,7 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
         super.setSelected(entry);
         if (this.getSelected() != null) {
             GameNarrator narratorManager = new GameNarrator(VoxelConstants.getMinecraft());
-            narratorManager.sayChatQueued(Component.translatable("narrator.select", this.getSelected().name));
+            narratorManager.sayNow(Component.translatable("narrator.select", this.getSelected().name));
         }
 
         this.parentGui.setSelectedMob(entry.id);
@@ -93,9 +99,13 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
         this.mobsFiltered.forEach(x -> this.addEntry((MobItem) x));
     }
 
-    @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput output) {
+        // Empty implementation for 1.20.1
     }
 
     public class MobItem extends AbstractSelectionList.Entry<MobItem> {
@@ -116,7 +126,7 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
         }
 
         @Override
-        public void renderContent(GuiGraphics drawContext, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void render(GuiGraphics drawContext, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             boolean isHostile = category == MobCategory.HOSTILE;
             boolean isNeutral = !isHostile;
             boolean isEnabled = VoxelMap.radarOptions.isMobEnabled(type);
@@ -124,12 +134,13 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
             int red = isHostile ? 255 : 0;
             int green = isNeutral ? 255 : 0;
             int color = 0xFF000000 + (red << 16) + (green << 8);
-            drawContext.drawCenteredString(this.parentGui.getFont(), this.name, this.parentGui.getWidth() / 2, getY() + 5, color);
+            drawContext.drawCenteredString(this.parentGui.getFont(), this.name, this.parentGui.getWidth() / 2, top + 5, color);
             byte padding = 3;
-            if (mouseX >= getX() - padding && mouseY >= getY() && mouseX <= getX() + 215 + padding && mouseY <= getY() + GuiSlotMobs.this.defaultEntryHeight) {
+            if (mouseX >= left - padding && mouseY >= top && mouseX <= left + 215 + padding && mouseY <= top + GuiSlotMobs.this.itemHeight) {
                 Component tooltip;
-                if (mouseX >= getX() + 215 - 16 - padding && mouseX <= getX() + 215 + padding) {
-                    drawContext.requestCursor(CursorTypes.POINTING_HAND);
+                if (mouseX >= left + 215 - 16 - padding && mouseX <= left + 215 + padding) {
+                    // TODO: 1.20.1 Port - CursorTypes.POINTING_HAND doesn't exist or has different API
+                    // drawContext.requestCursor(CursorTypes.POINTING_HAND);
                     tooltip = isEnabled ? GuiSlotMobs.TOOLTIP_DISABLE : GuiSlotMobs.TOOLTIP_ENABLE;
                 } else {
                     tooltip = isEnabled ? GuiSlotMobs.ENABLED : GuiSlotMobs.DISABLED;
@@ -139,18 +150,17 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
             }
             Sprite sprite = VoxelConstants.getVoxelMapInstance().getNotSimpleRadar().getEntityMapImageManager().requestImageForMobType(type, true);
             if (sprite != null) {
-               
-                sprite.blit(drawContext, null, getX() + 2, getY(), 18, 18);
+
+                sprite.blit(drawContext, null, left + 2, top, 18, 18);
             }
-           
-            drawContext.blit(null, isEnabled ? GuiSlotMobs.this.visibleIconIdentifier : GuiSlotMobs.this.invisibleIconIdentifier, getX() + 198, getY(), 0.0F, 0.0F, 18, 18, 18, 18);
+
+            drawContext.blit(isEnabled ? GuiSlotMobs.this.visibleIconIdentifier : GuiSlotMobs.this.invisibleIconIdentifier, left + 198, top, 0.0F, 0.0F, 18, 18, 18, 18);
         }
 
+        // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
         @Override
-        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
-            double mouseX = mouseButtonEvent.x();
-            double mouseY = mouseButtonEvent.y();
-            if (mouseY < GuiSlotMobs.this.getY() || mouseY > GuiSlotMobs.this.getBottom()) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (mouseY < GuiSlotMobs.this.listTop || mouseY > GuiSlotMobs.this.listBottom) {
                 return false;
             }
 

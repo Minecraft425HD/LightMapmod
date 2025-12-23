@@ -39,14 +39,6 @@ configurations {
     }
 }
 
-dependencies {
-    jarJar(project(":forge", "serviceConfig")) {
-        version {
-            strictly("[${MOD_VERSION},)")
-        }
-    }
-}
-
 tasks.jar {
     val main = project.project(":common").sourceSets.getByName("main")
     from(main.output.classesDirs) {
