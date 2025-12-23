@@ -45,6 +45,8 @@ public class ForgeEvents implements Events {
     }
 
     private void preInitClient(final FMLClientSetupEvent event) {
+        // Initialize VoxelMap now that Minecraft resources are available
+        VoxelConstants.lateInit();
         map.onConfigurationInit();
     }
 

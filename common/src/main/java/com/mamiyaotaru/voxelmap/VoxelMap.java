@@ -77,7 +77,7 @@ public class VoxelMap implements PreparableReloadListener {
             this.radarSimple = null;
         }
 
-        VoxelConstants.getEvents().initEvents(this);
+        // Event listeners are now registered separately during mod construction
         this.map = new Map();
         this.settingsAndLightingChangeNotifier = new SettingsAndLightingChangeNotifier();
         this.worldUpdateListener = new WorldUpdateListener();
