@@ -30,7 +30,7 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
     private final HashMap<KeyMapping, Component> duplicateKeys = new HashMap<>();
 
     public GuiButtonRowListKeys(GuiMinimapControls parentScreen) {
-        super(VoxelConstants.getMinecraft(), parentScreen.getWidth(), parentScreen.getHeight() - 114, 40, 20);
+        super(VoxelConstants.getMinecraft(), parentScreen.getWidth(), parentScreen.getHeight(), 40, parentScreen.getHeight() - 114, 20);
         this.parentGui = parentScreen;
         this.options = VoxelConstants.getVoxelMapInstance().getMapOptions();
         for (int i = 0; i < this.options.keyBindings.length; ++i) {
@@ -137,9 +137,9 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
         }
 
         @Override
-        public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             if (this.button != null && this.buttonReset != null) {
-                guiGraphics.drawString(this.parentGui.getFont(), Component.translatable(this.keyMapping.getName()), getX() + 5, getY() + 5, 0xFFFFFFFF);
+                guiGraphics.drawString(this.parentGui.font, Component.translatable(this.keyMapping.getName()), left + 5, top + 5, 0xFFFFFFFF);
 
                 Component tooltip = null;
 
@@ -164,13 +164,13 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
                 }
 
                 this.button.setMessage(keyText);
-                this.button.setX(getX() + getWidth() - 135);
-                this.button.setY(getY());
+                this.button.setX(left + width - 135);
+                this.button.setY(top);
                 this.button.render(guiGraphics, mouseX, mouseY, tickDelta);
 
                 this.buttonReset.active = !this.keyMapping.isDefault();
-                this.buttonReset.setX(getX() + getWidth() - 55);
-                this.buttonReset.setY(getY());
+                this.buttonReset.setX(left + width - 55);
+                this.buttonReset.setY(top);
                 this.buttonReset.render(guiGraphics, mouseX, mouseY, tickDelta);
             }
         }

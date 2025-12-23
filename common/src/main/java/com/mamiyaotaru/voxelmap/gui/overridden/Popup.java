@@ -87,15 +87,15 @@ public class Popup {
     }
 
     public void drawPopup(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().pushPose();
         // background
         float renderedTextureSize = 32.0F;
         float umin = this.x / renderedTextureSize;
         float umax = (this.x + this.w) / renderedTextureSize;
         float vmin = this.y / renderedTextureSize;
         float vmax = (this.y + this.h) / renderedTextureSize;
-       
-        VoxelMapGuiGraphics.blitFloat(guiGraphics, null, VoxelConstants.getOptionsBackgroundTexture(), x, y, w, h, umin, umax, vmin, vmax, 0xff404040);
+
+        VoxelMapGuiGraphics.blitFloat(guiGraphics, VoxelConstants.getOptionsBackgroundTexture(), x, y, w, h, umin, umax, vmin, vmax, 0xff404040);
         VoxelMapGuiGraphics.fillGradient(guiGraphics, x, y, x + w, y + 4, 0xff000000, 0xff000000, 0x00000000, 0x00000000);
         VoxelMapGuiGraphics.fillGradient(guiGraphics, x, y + h - 4, x + w, y + h, 0x00000000, 0x00000000, 0xff000000, 0xff000000);
 
@@ -112,7 +112,7 @@ public class Popup {
             int color = !this.entries[t].enabled ? 0xFFA0A0A0 : (hover ? 0xFFFFFFA0 : 0xFFE0E0E0);
             guiGraphics.drawString(this.fontRendererObj, this.entries[t].name, (this.x + this.padding), (this.y + this.padding + t * 20), color);
         }
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
     }
 
     public static class PopupEntry {

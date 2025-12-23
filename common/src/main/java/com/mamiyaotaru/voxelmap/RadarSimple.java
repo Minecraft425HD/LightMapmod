@@ -163,8 +163,8 @@ public class RadarSimple implements IRadar {
 
             if (inRange) {
                 try {
-                    guiGraphics.pose().pushMatrix();
-                    guiGraphics.pose().scale(scaleProj, scaleProj);
+                    guiGraphics.pose().pushPose();
+                    guiGraphics.pose().scale(scaleProj, scaleProj, 1.0f);
                     float contactFacing = contact.entity.getYHeadRot();
                     if (this.minimapOptions.rotates) {
                         contactFacing -= this.direction;
@@ -172,11 +172,11 @@ public class RadarSimple implements IRadar {
                         contactFacing += 90.0F;
                     }
 
-                    guiGraphics.pose().translate(x, y);
-                    guiGraphics.pose().rotate(-contact.angle * Mth.DEG_TO_RAD);
-                    guiGraphics.pose().translate(0.0f, (float) -contact.distance);
-                    guiGraphics.pose().rotate((contact.angle + contactFacing) * Mth.DEG_TO_RAD);
-                    guiGraphics.pose().translate(-x, -y);
+                    guiGraphics.pose().translate(x, y, 0.0f);
+                    guiGraphics.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(-contact.angle));
+                    guiGraphics.pose().translate(0.0f, (float) -contact.distance, 0.0f);
+                    guiGraphics.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(contact.angle + contactFacing));
+                    guiGraphics.pose().translate(-x, -y, 0.0f);
 
                     this.textureAtlas.getAtlasSprite("contact").blit(guiGraphics, VoxelMapPipelines.GUI_TEXTURED_LESS_OR_EQUAL_DEPTH_PIPELINE, x - 4, y - 4, 8, 8, color);
                     if (this.options.showFacing) {
@@ -185,7 +185,7 @@ public class RadarSimple implements IRadar {
                 } catch (Exception e) {
                     VoxelConstants.getLogger().error("Error rendering mob icon! " + e.getLocalizedMessage() + " contact type " + BuiltInRegistries.ENTITY_TYPE.getKey(contact.entity.getType()));
                 } finally {
-                    guiGraphics.pose().popMatrix();
+                    guiGraphics.pose().popPose();
                 }
             }
         }

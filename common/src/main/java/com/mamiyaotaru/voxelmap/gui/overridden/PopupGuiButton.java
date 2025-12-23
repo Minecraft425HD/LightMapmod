@@ -15,12 +15,12 @@ public class PopupGuiButton extends Button {
     }
 
     @Override
-    public void renderContents(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         boolean canHover = this.parentScreen.overPopup(mouseX, mouseY);
         if (!canHover) {
             mouseX = 0;
             mouseY = 0;
         }
-        super.renderContents(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 }

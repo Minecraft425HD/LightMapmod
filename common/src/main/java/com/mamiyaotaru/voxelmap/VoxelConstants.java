@@ -50,7 +50,7 @@ public final class VoxelConstants {
     public static boolean isRealmServer() {
         ClientPacketListener playNetworkHandler = getMinecraft().getConnection();
         ServerData serverInfo = playNetworkHandler != null ? getMinecraft().getConnection().getServerData() : null;
-        return serverInfo != null && serverInfo.isRealm();
+        return serverInfo != null && serverInfo.type == ServerData.Type.REALM;
     }
 
     @NotNull

@@ -42,8 +42,8 @@ public class GuiMobs extends GuiScreenMinimap {
     public void init() {
         this.screenTitle = Component.translatable("options.minimap.mobs.title");
         this.mobsList = new GuiSlotMobs(this);
-        int filterStringWidth = this.getFont().width(I18n.get("minimap.waypoints.filter") + ":");
-        this.filter = new EditBox(this.getFont(), this.getWidth() / 2 - 153 + filterStringWidth + 5, this.getHeight() - 56, 305 - filterStringWidth - 5, 20, null);
+        int filterStringWidth = this.font.width(I18n.get("minimap.waypoints.filter") + ":");
+        this.filter = new EditBox(this.font, this.getWidth() / 2 - 153 + filterStringWidth + 5, this.getHeight() - 56, 305 - filterStringWidth - 5, 20, null);
         this.filter.setMaxLength(35);
         this.addRenderableWidget(this.filter);
         this.addRenderableWidget(this.buttonEnable = new Button.Builder(Component.translatable("options.minimap.mobs.enable"), button -> this.setMobEnabled(this.selectedMobId, true)).bounds(this.getWidth() / 2 - 154, this.getHeight() - 28, 100, 20).build());
@@ -102,11 +102,11 @@ public class GuiMobs extends GuiScreenMinimap {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (mouseY >= this.mobsList.getY() && mouseY < this.mobsList.getBottom()) {
-            return this.mobsList.mouseScrolled(mouseX, mouseY, 0, amount);
+            return this.mobsList.mouseScrolled(mouseX, mouseY, amount);
         }
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, amount);
+        return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
     protected void setSelectedMob(ResourceLocation id) {
@@ -133,12 +133,12 @@ public class GuiMobs extends GuiScreenMinimap {
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         this.tooltip = null;
         this.mobsList.render(drawContext, mouseX, mouseY, delta);
-        drawContext.drawCenteredString(this.getFont(), this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
+        drawContext.drawCenteredString(this.font, this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
         boolean isSomethingSelected = this.selectedMobId != null;
         this.buttonEnable.active = isSomethingSelected && !this.isMobEnabled(this.selectedMobId);
         this.buttonDisable.active = isSomethingSelected && this.isMobEnabled(this.selectedMobId);
         super.render(drawContext, mouseX, mouseY, delta);
-        drawContext.drawString(this.getFont(), I18n.get("minimap.waypoints.filter") + ":", this.getWidth() / 2 - 153, this.getHeight() - 51, 0xFFA0A0A0);
+        drawContext.drawString(this.font, I18n.get("minimap.waypoints.filter") + ":", this.getWidth() / 2 - 153, this.getHeight() - 51, 0xFFA0A0A0);
         this.filter.render(drawContext, mouseX, mouseY, delta);
         if (this.tooltip != null) {
             this.renderTooltip(drawContext, this.tooltip, mouseX, mouseY);

@@ -220,7 +220,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
 
         this.addRenderableWidget(new PopupGuiButton(this.sideMargin + 3 * (this.buttonWidth + this.buttonSeparation), this.getHeight() - 28, this.buttonWidth, 20, Component.translatable("menu.options"), button -> minecraft.setScreen(new GuiMinimapOptions(this)), this));
         this.addRenderableWidget(new PopupGuiButton(this.sideMargin + 4 * (this.buttonWidth + this.buttonSeparation), this.getHeight() - 28, this.buttonWidth, 20, Component.translatable("gui.done"), button -> minecraft.setScreen(parent), this));
-        this.coordinates = new EditBox(this.getFont(), this.sideMargin, 10, 140, 20, null);
+        this.coordinates = new EditBox(this.font, this.sideMargin, 10, 140, 20, null);
         this.top = 32;
         this.bottom = this.getHeight() - 32;
         this.centerX = this.getWidth() / 2;
@@ -284,10 +284,10 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
         }
 
         this.worldNameDisplay = worldNameBuilder.toString();
-        this.worldNameDisplayLength = this.getFont().width(this.worldNameDisplay);
+        this.worldNameDisplayLength = this.font.width(this.worldNameDisplay);
 
-        for (this.maxWorldNameDisplayLength = this.getWidth() / 2 - this.getFont().width(this.screenTitle) / 2 - this.sideMargin * 2; this.worldNameDisplayLength > this.maxWorldNameDisplayLength
-                && worldName.get().length() > 5; this.worldNameDisplayLength = this.getFont().width(this.worldNameDisplay)) {
+        for (this.maxWorldNameDisplayLength = this.getWidth() / 2 - this.font.width(this.screenTitle) / 2 - this.sideMargin * 2; this.worldNameDisplayLength > this.maxWorldNameDisplayLength
+                && worldName.get().length() > 5; this.worldNameDisplayLength = this.font.width(this.worldNameDisplay)) {
             worldName.set(worldName.get().substring(0, worldName.get().length() - 1));
             worldNameBuilder = new StringBuilder(worldName.get());
             worldNameBuilder.append("...");
@@ -305,7 +305,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
                 subworldName = subworldName.substring(0, subworldName.length() - 1);
                 worldNameBuilder.append(" - ").append(subworldName);
                 this.worldNameDisplay = worldNameBuilder.toString();
-                this.worldNameDisplayLength = this.getFont().width(this.worldNameDisplay);
+                this.worldNameDisplayLength = this.font.width(this.worldNameDisplay);
             }
         }
 
@@ -317,7 +317,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         this.timeOfLastMouseInput = System.currentTimeMillis();
         this.switchToMouseInput();
         float mouseDirectX = (float) minecraft.mouseHandler.xpos();
@@ -505,7 +505,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().pushPose();
         this.buttonWaypoints.active = VoxelMap.mapOptions.waypointsAllowed;
         this.zoomGoal = this.bindZoom(this.zoomGoal);
         if (this.mouseX != mouseX || this.mouseY != mouseY) {
@@ -649,21 +649,21 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
 
         this.backGroundImageInfo = this.waypointManager.getBackgroundImageInfo();
         if (this.backGroundImageInfo != null) {
-           
-            guiGraphics.blitSprite(null, backGroundImageInfo.getImageLocation(), backGroundImageInfo.left, backGroundImageInfo.top + 32, 0, 0, backGroundImageInfo.width, backGroundImageInfo.height, backGroundImageInfo.width, backGroundImageInfo.height);
+
+            guiGraphics.blitSprite(backGroundImageInfo.getImageLocation(), backGroundImageInfo.left, backGroundImageInfo.top + 32, 0, 0, backGroundImageInfo.width, backGroundImageInfo.height, backGroundImageInfo.width, backGroundImageInfo.height);
         }
 
-        guiGraphics.pose().translate(this.centerX - this.mapCenterX * this.mapToGui, (this.top + this.centerY) - this.mapCenterZ * this.mapToGui);
+        guiGraphics.pose().translate(this.centerX - this.mapCenterX * this.mapToGui, (this.top + this.centerY) - this.mapCenterZ * this.mapToGui, 0.0f);
         if (this.oldNorth) {
-            guiGraphics.pose().rotate(90.0F * Mth.DEG_TO_RAD);
+            guiGraphics.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(90.0F));
         }
 
         float cursorCoordZ = 0.0f;
         float cursorCoordX = 0.0f;
-        guiGraphics.pose().scale(this.mapToGui, this.mapToGui);
+        guiGraphics.pose().scale(this.mapToGui, this.mapToGui, 1.0f);
         if (VoxelMap.mapOptions.worldmapAllowed) {
             for (CachedRegion region : this.regions) {
-                Identifier resource = region.getTextureLocation();
+                ResourceLocation resource = region.getTextureLocation();
                 if (resource != null) {
                     guiGraphics.blit(VoxelMapPipelines.GUI_TEXTURED_LESS_OR_EQUAL_DEPTH_PIPELINE, resource, region.getX() * 256, region.getZ() * 256, 0, 0, region.getWidth(), region.getWidth(), region.getWidth(), region.getWidth());
                 }
@@ -704,11 +704,11 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
             }
 
             if (this.oldNorth) {
-                guiGraphics.pose().rotate(-90.0F * Mth.DEG_TO_RAD);
+                guiGraphics.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(-90.0F));
             }
 
-            guiGraphics.pose().scale(this.guiToMap, this.guiToMap);
-            guiGraphics.pose().translate(-(this.centerX - this.mapCenterX * this.mapToGui), -((this.top + this.centerY) - this.mapCenterZ * this.mapToGui));
+            guiGraphics.pose().scale(this.guiToMap, this.guiToMap, 1.0f);
+            guiGraphics.pose().translate(-(this.centerX - this.mapCenterX * this.mapToGui), -((this.top + this.centerY) - this.mapCenterZ * this.mapToGui), 0.0f);
             if (mapOptions.biomeOverlay != 0) {
                 float biomeScaleX = this.mapPixelsX / 760.0F;
                 float biomeScaleY = this.mapPixelsY / 360.0F;
@@ -787,7 +787,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
                 }
             }
         }
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
 
         if (VoxelMap.mapOptions.waypointsAllowed && this.options.showWaypoints) {
             for (Waypoint pt : this.waypointManager.getWaypoints()) {
@@ -821,23 +821,23 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
             float locate = (float) Math.atan2(wayX, wayY);
             float hypot = (float) Math.sqrt(wayX * wayX + wayY * wayY) * mapToGui;
 
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(x, y);
-            guiGraphics.pose().rotate(-locate);
-            guiGraphics.pose().translate(0.0F, -hypot);
-            guiGraphics.pose().rotate(locate);
-            guiGraphics.pose().translate(-x, -y);
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(x, y, 0.0f);
+            guiGraphics.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(-locate * Mth.RAD_TO_DEG));
+            guiGraphics.pose().translate(0.0F, -hypot, 0.0f);
+            guiGraphics.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(locate * Mth.RAD_TO_DEG));
+            guiGraphics.pose().translate(-x, -y, 0.0f);
 
             VoxelMapGuiGraphics.blitFloat(guiGraphics, VoxelMapPipelines.GUI_TEXTURED_LESS_OR_EQUAL_DEPTH_PIPELINE, voxelmapSkinLocation, x - width / 2, y - height / 2, width, height, 0, 1, 0, 1, 0xFFFFFFFF);
 
-            guiGraphics.pose().popMatrix();
+            guiGraphics.pose().popPose();
         }
 
         if (System.currentTimeMillis() - this.timeOfLastKBInput < 2000L) {
             int scWidth = minecraft.getWindow().getGuiScaledWidth();
             int scHeight = minecraft.getWindow().getGuiScaledHeight();
-           
-            guiGraphics.blit(null, crosshairResource, scWidth / 2 - 8, scHeight / 2 - 8, 0, 0, 15, 15, 15, 15);
+
+            guiGraphics.blit(crosshairResource, scWidth / 2 - 8, scHeight / 2 - 8, 0, 0, 15, 15, 15, 15);
         } else {
             this.switchToMouseInput();
         }
@@ -845,13 +845,13 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
         this.overlayBackground(guiGraphics, 0, this.top, 255, 255);
         this.overlayBackground(guiGraphics, this.bottom, this.getHeight(), 255, 255);
         if (VoxelMap.mapOptions.worldmapAllowed) {
-            guiGraphics.drawCenteredString(this.getFont(), this.screenTitle, this.getWidth() / 2, 16, 0xFFFFFFFF);
+            guiGraphics.drawCenteredString(this.font, this.screenTitle, this.getWidth() / 2, 16, 0xFFFFFFFF);
             int x = (int) Math.floor(cursorCoordX);
             int z = (int) Math.floor(cursorCoordZ);
             if (VoxelConstants.getVoxelMapInstance().getMapOptions().coords) {
                 if (!this.editingCoordinates) {
-                    guiGraphics.drawString(this.getFont(), "X: " + x, this.sideMargin, 16, 0xFFFFFFFF);
-                    guiGraphics.drawString(this.getFont(), "Z: " + z, this.sideMargin + 64, 16, 0xFFFFFFFF);
+                    guiGraphics.drawString(this.font, "X: " + x, this.sideMargin, 16, 0xFFFFFFFF);
+                    guiGraphics.drawString(this.font, "Z: " + z, this.sideMargin + 64, 16, 0xFFFFFFFF);
                 } else {
                     this.coordinates.render(guiGraphics, mouseX, mouseY, delta);
                 }
@@ -862,7 +862,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
                 this.buildWorldName();
             }
 
-            guiGraphics.drawString(this.getFont(), this.worldNameDisplay, this.getWidth() - this.sideMargin - this.worldNameDisplayLength, 16, 0xFFFFFF);
+            guiGraphics.drawString(this.font, this.worldNameDisplay, this.getWidth() - this.sideMargin - this.worldNameDisplayLength, 16, 0xFFFFFF);
             if (this.buttonMultiworld != null) {
                 if ((this.subworldName == null || this.subworldName.isEmpty()) && VoxelConstants.getVoxelMapInstance().getWaypointManager().isMultiworld()) {
                     if ((int) (System.currentTimeMillis() / 1000L % 2L) == 0) {
@@ -875,7 +875,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
                 }
             }
         } else {
-            guiGraphics.drawString(this.getFont(), Component.translatable("worldmap.disabled"), this.sideMargin, 16, 0xFFFFFFFF);
+            guiGraphics.drawString(this.font, Component.translatable("worldmap.disabled"), this.sideMargin, 16, 0xFFFFFFFF);
         }
         super.render(guiGraphics, mouseX, mouseY, delta);
     }
@@ -925,12 +925,12 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
         float locate = (float) Math.atan2(wayX, wayY);
         float hypot = (float) Math.sqrt(wayX * wayX + wayY * wayY) * mapToGui;
 
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(x, y);
-        guiGraphics.pose().rotate(-locate);
-        guiGraphics.pose().translate(0.0F, -hypot);
-        guiGraphics.pose().rotate(locate);
-        guiGraphics.pose().translate(-x, -y);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(x, y, 0.0f);
+        guiGraphics.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(-locate * Mth.RAD_TO_DEG));
+        guiGraphics.pose().translate(0.0F, -hypot, 0.0f);
+        guiGraphics.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(locate * Mth.RAD_TO_DEG));
+        guiGraphics.pose().translate(-x, -y, 0.0f);
 
         int color = pt.getUnifiedColor(!pt.enabled && !target && !hover ? 0.3F : 1.0F);
 
@@ -939,13 +939,13 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
         if (mapOptions.biomeOverlay == 0 && this.options.showWaypointNames || target || hover) {
             float fontScale = 1.0F;
             int halfWidth = this.chkLen(name) / 2;
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().scale(fontScale, fontScale);
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().scale(fontScale, fontScale, 1.0f);
             this.write(guiGraphics, name, x / fontScale - halfWidth, y / fontScale + iconsHeight / 2, !pt.enabled && !target && !hover ? 0x55FFFFFF : 0xFFFFFFFF);
-            guiGraphics.pose().popMatrix();
+            guiGraphics.pose().popPose();
         }
 
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
     }
 
     //private boolean isOnScreen(int x, int z) {
@@ -977,8 +977,8 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
         int colorStart = (startAlpha << 24) | colorBase;
         int colorEnd = (endAlpha << 24) | colorBase;
         float renderedTextureSize = 32.0F;
-       
-        VoxelMapGuiGraphics.blitFloatGradient(guiGraphics, null, VoxelConstants.getOptionsBackgroundTexture(), 0, startY, this.getWidth(), endY, 0, this.width / renderedTextureSize, 0, endY / renderedTextureSize, colorStart, colorEnd);
+
+        VoxelMapGuiGraphics.blitFloatGradient(guiGraphics, VoxelConstants.getOptionsBackgroundTexture(), 0, startY, this.getWidth(), endY, 0, this.width / renderedTextureSize, 0, endY / renderedTextureSize, colorStart, colorEnd);
     }
 
     @Override
@@ -1202,7 +1202,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
     }
 
     private int chkLen(String string) {
-        return this.getFont().width(string);
+        return this.font.width(string);
     }
 
     private void write(GuiGraphics drawContext, String string, float x, float y, int color) {

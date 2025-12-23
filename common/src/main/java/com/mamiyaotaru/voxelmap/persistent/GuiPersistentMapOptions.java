@@ -111,9 +111,9 @@ public class GuiPersistentMapOptions extends GuiScreenMinimap {
             }
         }
 
-        drawContext.drawCenteredString(this.getFont(), this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
-        drawContext.drawCenteredString(this.getFont(), this.cacheSettings, this.getWidth() / 2, this.getHeight() / 6 + 24, 0xFFFFFFFF);
-        drawContext.drawCenteredString(this.getFont(), this.warning, this.getWidth() / 2, this.getHeight() / 6 + 34, 0xFFFFFFFF);
+        drawContext.drawCenteredString(this.font, this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
+        drawContext.drawCenteredString(this.font, this.cacheSettings, this.getWidth() / 2, this.getHeight() / 6 + 24, 0xFFFFFFFF);
+        drawContext.drawCenteredString(this.font, this.warning, this.getWidth() / 2, this.getHeight() / 6 + 34, 0xFFFFFFFF);
         super.render(drawContext, mouseX, mouseY, delta);
     }
 }
