@@ -40,7 +40,7 @@ public class GuiSubworldEdit extends GuiScreenMinimap implements BooleanConsumer
     @Override
     public void init() {
         this.clearWidgets();
-        this.subworldNameField = new EditBox(this.getFont(), this.getWidth() / 2 - 100, this.getHeight() / 6 + 13, 200, 20, null);
+        this.subworldNameField = new EditBox(this.font, this.getWidth() / 2 - 100, this.getHeight() / 6 + 13, 200, 20, null);
         this.setFocused(this.subworldNameField);
         this.subworldNameField.setFocused(true);
         this.subworldNameField.setValue(this.originalSubworldName);
@@ -126,8 +126,8 @@ public class GuiSubworldEdit extends GuiScreenMinimap implements BooleanConsumer
 
     @Override
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        drawContext.drawCenteredString(this.getFont(), Component.translatable("worldmap.subworld.edit"), this.getWidth() / 2, 20, 0xFFFFFFFF);
-        drawContext.drawString(this.getFont(), Component.translatable("worldmap.subworld.name"), this.getWidth() / 2 - 100, this.getHeight() / 6, 0xFFA0A0A0);
+        drawContext.drawCenteredString(this.font, Component.translatable("worldmap.subworld.edit"), this.getWidth() / 2, 20, 0xFFFFFFFF);
+        drawContext.drawString(this.font, Component.translatable("worldmap.subworld.name"), this.getWidth() / 2 - 100, this.getHeight() / 6, 0xFFA0A0A0);
         this.subworldNameField.render(drawContext, mouseX, mouseY, delta);
         super.render(drawContext, mouseX, mouseY, delta);
     }

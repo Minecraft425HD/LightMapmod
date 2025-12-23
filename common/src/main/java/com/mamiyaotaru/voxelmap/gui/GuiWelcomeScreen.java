@@ -69,10 +69,10 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
             this.options.saveAll();
 
             minecraft.setScreen(null);
-        }, getFont()));
+        }, font));
 
         Component controls = Component.translatable("options.controls").withStyle(ChatFormatting.GRAY);
-        this.addRenderableWidget(this.controlsButton = new PlainTextButton(getWidth() / 2 + 10, getHeight() / 2, 100, 10, controls, button -> minecraft.setScreen(new GuiMinimapControls(this)), getFont()));
+        this.addRenderableWidget(this.controlsButton = new PlainTextButton(getWidth() / 2 + 10, getHeight() / 2, 100, 10, controls, button -> minecraft.setScreen(new GuiMinimapControls(this)), font));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
         int centerX = minecraft.getWindow().getGuiScaledWidth() / 2;
         int centerY = minecraft.getWindow().getGuiScaledHeight() / 2;
 
-        int lineHeight = getFont().lineHeight;
+        int lineHeight = font.lineHeight;
 
         int boxColor = ARGBCompat.color((int) (minecraft.options.textBackgroundOpacity().get().floatValue() * 255.0F), 0, 0, 0);
         int boxTop = centerY - ((this.welcomeTexts.size() * lineHeight) / 2);
@@ -88,18 +88,18 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
         // Main Box
         int boxWidth = 0;
         for (int i = 1; i < this.welcomeTexts.size(); ++i) {
-            boxWidth = Math.max(boxWidth, getFont().width(this.welcomeTexts.get(i)));
+            boxWidth = Math.max(boxWidth, font.width(this.welcomeTexts.get(i)));
         }
         this.drawBox(guiGraphics, centerX - (boxWidth / 2), boxTop, centerX + (boxWidth / 2), boxTop + lineHeight * (this.welcomeTexts.size() - 1), 4, 1, boxColor);
 
         for (int i = 1; i < this.welcomeTexts.size(); ++i) {
-            guiGraphics.drawString(getFont(), this.welcomeTexts.get(i), centerX - (boxWidth / 2), boxTop + lineHeight * (i - 1), 0xFFFFFFFF);
+            guiGraphics.drawString(font, this.welcomeTexts.get(i), centerX - (boxWidth / 2), boxTop + lineHeight * (i - 1), 0xFFFFFFFF);
         }
 
         // Title Box
-        boxWidth = getFont().width(this.welcomeTexts.getFirst());
+        boxWidth = font.width(this.welcomeTexts.getFirst());
         this.drawBox(guiGraphics, centerX - (boxWidth / 2), boxTop - lineHeight - 3, centerX + (boxWidth / 2), boxTop - 3, 4, 1, boxColor);
-        guiGraphics.drawCenteredString(getFont(), this.welcomeTexts.getFirst(), centerX, boxTop - lineHeight - 3, 0xFFFFFFFF);
+        guiGraphics.drawCenteredString(font, this.welcomeTexts.getFirst(), centerX, boxTop - lineHeight - 3, 0xFFFFFFFF);
 
         boxTop += lineHeight * this.welcomeTexts.size();
 

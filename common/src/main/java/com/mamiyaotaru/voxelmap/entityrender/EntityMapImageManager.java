@@ -309,7 +309,7 @@ public class EntityMapImageManager {
         AbstractTexture texture = minecraft.getTextureManager().getTexture(ResourceLocation);
         AbstractTexture texture2 = ResourceLocation2 == null ? null : minecraft.getTextureManager().getTexture(ResourceLocation2);
 
-        RenderSystem.getModelViewStack().pushMatrix();
+        RenderSystem.getModelViewStack().pushPose();
         RenderSystem.getModelViewStack().identity();
         GpuBufferSlice gpuBufferSlice = RenderSystem.getDynamicUniforms()
                 .writeTransform(
@@ -363,7 +363,7 @@ public class EntityMapImageManager {
             //         renderPass.drawIndexed(0, 0, meshData.drawState().indexCount(), 1);
             //     }
             // }
-            RenderSystem.getModelViewStack().popMatrix();
+            RenderSystem.getModelViewStack().popPose();
             RenderSystem.setProjectionMatrix(originalProjectionMatrix, originalProjectionType);
 
         }

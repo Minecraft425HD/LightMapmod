@@ -42,12 +42,12 @@ public class GuiSelectPlayer extends GuiScreenMinimap implements BooleanConsumer
     public void init() {
         this.screenTitle = this.sharingWaypoint ? SHARE_WAYPOINT : SHARE_COORDINATES;
         this.playerList = new GuiButtonRowListPlayers(this);
-        int messageStringWidth = this.getFont().width(I18n.get("minimap.waypointShare.shareMessage") + ":");
-        this.message = new EditBox(this.getFont(), this.getWidth() / 2 - 153 + messageStringWidth + 5, 34, 305 - messageStringWidth - 5, 20, null);
+        int messageStringWidth = this.font.width(I18n.get("minimap.waypointShare.shareMessage") + ":");
+        this.message = new EditBox(this.font, this.getWidth() / 2 - 153 + messageStringWidth + 5, 34, 305 - messageStringWidth - 5, 20, null);
         this.message.setMaxLength(78);
         this.addRenderableWidget(this.message);
-        int filterStringWidth = this.getFont().width(I18n.get("minimap.waypoints.filter") + ":");
-        this.filter = new EditBox(this.getFont(), this.getWidth() / 2 - 153 + filterStringWidth + 5, this.getHeight() - 55, 305 - filterStringWidth - 5, 20, null);
+        int filterStringWidth = this.font.width(I18n.get("minimap.waypoints.filter") + ":");
+        this.filter = new EditBox(this.font, this.getWidth() / 2 - 153 + filterStringWidth + 5, this.getHeight() - 55, 305 - filterStringWidth - 5, 20, null);
         this.filter.setMaxLength(35);
         this.addRenderableWidget(this.filter);
         this.addRenderableWidget(new Button.Builder(Component.translatable("gui.cancel"), button -> VoxelConstants.getMinecraft().setScreen(this.parentScreen)).bounds(this.width / 2 - 100, this.height - 28, 200, 20).build());
@@ -138,12 +138,12 @@ public class GuiSelectPlayer extends GuiScreenMinimap implements BooleanConsumer
     @Override
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         this.playerList.render(drawContext, mouseX, mouseY, delta);
-        drawContext.drawCenteredString(this.getFont(), this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
+        drawContext.drawCenteredString(this.font, this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
         super.render(drawContext, mouseX, mouseY, delta);
-        drawContext.drawString(this.getFont(), SHARE_MESSAGE, this.getWidth() / 2 - 153, 39, 0xFFA0A0A0);
+        drawContext.drawString(this.font, SHARE_MESSAGE, this.getWidth() / 2 - 153, 39, 0xFFA0A0A0);
         this.message.render(drawContext, mouseX, mouseY, delta);
-        drawContext.drawCenteredString(this.getFont(), SHARE_WITH, this.getWidth() / 2, 75, 0xFFFFFFFF);
-        drawContext.drawString(this.getFont(), I18n.get("minimap.waypoints.filter") + ":", this.getWidth() / 2 - 153, this.getHeight() - 50, 0xFFA0A0A0);
+        drawContext.drawCenteredString(this.font, SHARE_WITH, this.getWidth() / 2, 75, 0xFFFFFFFF);
+        drawContext.drawString(this.font, I18n.get("minimap.waypoints.filter") + ":", this.getWidth() / 2 - 153, this.getHeight() - 50, 0xFFA0A0A0);
         this.filter.render(drawContext, mouseX, mouseY, delta);
 
     }
