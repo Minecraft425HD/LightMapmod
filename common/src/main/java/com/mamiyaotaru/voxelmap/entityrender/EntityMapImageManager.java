@@ -49,7 +49,7 @@ import net.minecraft.client.model.WitherBossModel;
 import net.minecraft.client.model.LavaSlimeModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
-import net.minecraft.client.resources.MinecraftProfileTexture;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.SlimeRenderer;
