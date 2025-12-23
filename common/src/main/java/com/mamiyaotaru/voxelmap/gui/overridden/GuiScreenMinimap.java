@@ -32,12 +32,13 @@ public class GuiScreenMinimap extends Screen {
 //        ClientTooltipComponent clientTooltipComponent = ClientTooltipComponent.create(text.getVisualOrderText());
 //        drawContext.renderTooltip(VoxelConstants.getMinecraft().font, List.of(clientTooltipComponent), x, y, DefaultTooltipPositioner.INSTANCE, null);
 
+        // 1.20.1: setTooltipForNextFrame() doesn't exist, use renderTooltip directly
         Tooltip tooltip = Tooltip.create(text);
-        drawContext.setTooltipForNextFrame(this.getFont(), tooltip.toCharSequence(VoxelConstants.getMinecraft()), x, y);
+        drawContext.renderTooltip(this.font, tooltip.toCharSequence(VoxelConstants.getMinecraft()), x, y);
     }
 
-    @Override
-    public Font getFont() { return super.getFont(); }
+    // 1.20.1: Removed @Override and getFont() method - doesn't exist in superclass, use inherited font field
+    // public Font getFont() { return super.getFont(); }
 
     @Override
     public List<? extends GuiEventListener> children() { return super.children(); }

@@ -35,7 +35,8 @@ public class DefaultEntityVariantDataFactory implements EntityVariantDataFactory
     @Override
     public EntityVariantData createVariantData(Entity entity, EntityRenderer renderer, int size, boolean addBorder) {
         if (renderer instanceof EnderDragonRenderer) {
-            return new DefaultEntityVariantData(type, AccessorEnderDragonRenderer.getTextureLocation(), secondaryTexture, size, addBorder);
+            // TODO: 1.20.1 Port - AccessorEnderDragonRenderer doesn't exist, needs alternative implementation
+            return null;
         }
 
         // 1.20.1: getTextureLocation() takes Entity, not LivingEntityRenderState
@@ -45,7 +46,8 @@ public class DefaultEntityVariantDataFactory implements EntityVariantDataFactory
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static EntityVariantData createSimpleVariantData(Entity entity, EntityRenderer renderer, int size, boolean addBorder) {
         if (renderer instanceof EnderDragonRenderer) {
-            return new DefaultEntityVariantData(entity.getType(), AccessorEnderDragonRenderer.getTextureLocation(), null, size, addBorder);
+            // TODO: 1.20.1 Port - AccessorEnderDragonRenderer doesn't exist, needs alternative implementation
+            return null;
         }
 
         // 1.20.1: getTextureLocation() takes Entity, not LivingEntityRenderState

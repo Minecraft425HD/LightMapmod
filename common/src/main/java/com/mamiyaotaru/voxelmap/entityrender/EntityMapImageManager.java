@@ -49,6 +49,7 @@ import net.minecraft.client.model.WitherBossModel;
 import net.minecraft.client.model.LavaSlimeModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
+import net.minecraft.client.resources.MinecraftProfileTexture;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.SlimeRenderer;
@@ -72,6 +73,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -181,7 +183,10 @@ public class EntityMapImageManager {
         // 1.20.1: EntityRenderState doesn't exist, work directly with entities
         if (entity instanceof AbstractClientPlayer player) {
             // 1.20.1: Use getInsecureSkinInformation() instead of getInsecureSkin()
-            return new DefaultEntityVariantData(entity.getType(), minecraft.getSkinManager().getInsecureSkinInformation(player.getGameProfile()).texture(), null, size, addBorder);
+            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> skinMap = minecraft.getSkinManager().getInsecureSkinInformation(player.getGameProfile());
+            MinecraftProfileTexture skinTexture = skinMap.get(MinecraftProfileTexture.Type.SKIN);
+            ResourceLocation skinLocation = skinTexture != null ? minecraft.getSkinManager().registerTexture(skinTexture, MinecraftProfileTexture.Type.SKIN) : null;
+            return new DefaultEntityVariantData(entity.getType(), skinLocation, null, size, addBorder);
         }
 
         // 1.20.1: createRenderState() doesn't exist in 1.20.1, skip the state creation

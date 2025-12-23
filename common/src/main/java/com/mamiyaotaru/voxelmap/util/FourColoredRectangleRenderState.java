@@ -54,7 +54,8 @@ public record FourColoredRectangleRenderState(
 
     @Nullable
     private static ScreenRectangle getBounds(float i, float j, float k, float l, Matrix3x2f matrix3x2f, @Nullable ScreenRectangle screenRectangle) {
-        ScreenRectangle screenRectangle2 = new ScreenRectangle(Mth.floor(i), Mth.floor(j), Mth.ceil(k - i), Mth.ceil(l - j)).transformMaxBounds(matrix3x2f);
+        // TODO: 1.20.1 Port - transformMaxBounds() doesn't exist in 1.20.1
+        ScreenRectangle screenRectangle2 = new ScreenRectangle(Mth.floor(i), Mth.floor(j), Mth.ceil(k - i), Mth.ceil(l - j)); // .transformMaxBounds(matrix3x2f);
         return screenRectangle != null ? screenRectangle.intersection(screenRectangle2) : screenRectangle2;
     }
 }

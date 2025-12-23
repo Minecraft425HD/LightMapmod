@@ -599,7 +599,7 @@ public class ColorManager {
                             }
 
                             if (biome == null) {
-                                biome = world.registryAccess().registryOrThrow(Registries.BIOME).get(Biomes.PLAINS).get().value();
+                                biome = world.registryAccess().registryOrThrow(Registries.BIOME).get(Biomes.PLAINS);
                             }
                             int biomeID = world.registryAccess().registryOrThrow(Registries.BIOME).getId(biome);
                             int biomeTint = tints[biomeID][loopBlockPos.y / 8];
@@ -1079,7 +1079,7 @@ public class ColorManager {
     }
 
     private int parseBiomeName(String name) {
-        Biome biome = this.world.registryAccess().registryOrThrow(Registries.BIOME).get(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(name))).get().value();
+        Biome biome = this.world.registryAccess().registryOrThrow(Registries.BIOME).get(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(name)));
         return biome != null ? this.world.registryAccess().registryOrThrow(Registries.BIOME).getId(biome) : -1;
     }
 

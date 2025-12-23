@@ -65,6 +65,6 @@ public class DynamicMoveableTexture extends DynamicTexture {
         byte g = (byte) ((color24 >> 8 & 0xFF) * alpha / 255);
         byte b = (byte) ((color24 >> 16 & 0xFF) * alpha / 255);
         int color = (a & 255) << 24 | (r & 255) << 16 | (g & 255) << 8 | b & 255;
-        this.getPixels().setPixel(x, y, color);
+        this.getPixels().setPixelRGBA(x, y, color);
     }
 }

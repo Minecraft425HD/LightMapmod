@@ -267,11 +267,11 @@ public class PersistentMap implements IChangeObserver {
                 surfaceHeight = transparentHeight;
                 surfaceBlockState = transparentBlockState;
                 VoxelShape voxelShape;
-                boolean hasOpacity = transparentBlockState.getLightBlock() > 0;
+                boolean hasOpacity = transparentBlockState.getLightBlock(chunk, pos) > 0;
                 if (!hasOpacity && transparentBlockState.canOcclude() && transparentBlockState.useShapeForLightOcclusion()) {
-                    voxelShape = transparentBlockState.getFaceOcclusionShape(Direction.DOWN);
+                    voxelShape = transparentBlockState.getFaceOcclusionShape(chunk, pos, Direction.DOWN);
                     hasOpacity = Shapes.faceShapeOccludes(voxelShape, Shapes.empty());
-                    voxelShape = transparentBlockState.getFaceOcclusionShape(Direction.UP);
+                    voxelShape = transparentBlockState.getFaceOcclusionShape(chunk, pos, Direction.UP);
                     hasOpacity = hasOpacity || Shapes.faceShapeOccludes(Shapes.empty(), voxelShape);
                 }
 
@@ -284,11 +284,11 @@ public class PersistentMap implements IChangeObserver {
                         surfaceBlockState = fluidState.createLegacyBlock();
                     }
 
-                    hasOpacity = surfaceBlockState.getLightBlock() > 0;
+                    hasOpacity = surfaceBlockState.getLightBlock(chunk, pos) > 0;
                     if (!hasOpacity && surfaceBlockState.canOcclude() && surfaceBlockState.useShapeForLightOcclusion()) {
-                        voxelShape = surfaceBlockState.getFaceOcclusionShape(Direction.DOWN);
+                        voxelShape = surfaceBlockState.getFaceOcclusionShape(chunk, pos, Direction.DOWN);
                         hasOpacity = Shapes.faceShapeOccludes(voxelShape, Shapes.empty());
-                        voxelShape = surfaceBlockState.getFaceOcclusionShape(Direction.UP);
+                        voxelShape = surfaceBlockState.getFaceOcclusionShape(chunk, pos, Direction.UP);
                         hasOpacity = hasOpacity || Shapes.faceShapeOccludes(Shapes.empty(), voxelShape);
                     }
                 }
@@ -318,7 +318,7 @@ public class PersistentMap implements IChangeObserver {
                 if (material == Blocks.WATER || material == Blocks.ICE) {
                     seafloorHeight = surfaceHeight;
 
-                    for (seafloorBlockState = chunk.getBlockState(pos.withXYZ(startX + imageX, surfaceHeight - 1, startZ + imageY)); seafloorBlockState.getLightBlock() < 5 && !(seafloorBlockState.getBlock() instanceof LeavesBlock) && seafloorHeight > bottomY + 1; seafloorBlockState = chunk.getBlockState(pos.withXYZ(startX + imageX, seafloorHeight - 1, startZ + imageY))) {
+                    for (seafloorBlockState = chunk.getBlockState(pos.withXYZ(startX + imageX, surfaceHeight - 1, startZ + imageY)); seafloorBlockState.getLightBlock(chunk, pos) < 5 && !(seafloorBlockState.getBlock() instanceof LeavesBlock) && seafloorHeight > bottomY + 1; seafloorBlockState = chunk.getBlockState(pos.withXYZ(startX + imageX, seafloorHeight - 1, startZ + imageY))) {
                         material = seafloorBlockState.getBlock();
                         if (transparentHeight == bottomY && material != Blocks.ICE && material != Blocks.WATER && seafloorBlockState.blocksMotion()) {
                             transparentHeight = seafloorHeight;
@@ -388,12 +388,12 @@ public class PersistentMap implements IChangeObserver {
         int y = 80;
         this.blockPos.setXYZ(x, y, z);
         BlockState blockState = chunk.getBlockState(this.blockPos);
-        if (blockState.getLightBlock() == 0 && blockState.getBlock() != Blocks.LAVA) {
+        if (blockState.getLightBlock(chunk, this.blockPos) == 0 && blockState.getBlock() != Blocks.LAVA) {
             while (y > bottomY) {
                 --y;
                 this.blockPos.setXYZ(x, y, z);
                 blockState = chunk.getBlockState(this.blockPos);
-                if (blockState.getLightBlock() > 0 || blockState.getBlock() == Blocks.LAVA) {
+                if (blockState.getLightBlock(chunk, this.blockPos) > 0 || blockState.getBlock() == Blocks.LAVA) {
                     return y + 1;
                 }
             }
@@ -404,7 +404,7 @@ public class PersistentMap implements IChangeObserver {
                 ++y;
                 this.blockPos.setXYZ(x, y, z);
                 blockState = chunk.getBlockState(this.blockPos);
-                if (blockState.getLightBlock() == 0 && blockState.getBlock() != Blocks.LAVA) {
+                if (blockState.getLightBlock(chunk, this.blockPos) == 0 && blockState.getBlock() != Blocks.LAVA) {
                     return y;
                 }
             }
@@ -935,7 +935,7 @@ public class PersistentMap implements IChangeObserver {
                 VoxelConstants.getLogger().info("  Foilage: " + data.getFoliageHeight(localx, localz) + " Block: " + data.getFoliageBlockstate(localx, localz) + " Light: " + Integer.toHexString(data.getFoliageLight(localx, localz)));
                 VoxelConstants.getLogger().info("  Ocean Floor: " + data.getOceanFloorHeight(localx, localz) + " Block: " + data.getOceanFloorBlockstate(localx, localz) + " Light: " + Integer.toHexString(data.getOceanFloorLight(localx, localz)));
                 VoxelConstants.getLogger().info("  Transparent: " + data.getTransparentHeight(localx, localz) + " Block: " + data.getTransparentBlockstate(localx, localz) + " Light: " + Integer.toHexString(data.getTransparentLight(localx, localz)));
-                VoxelConstants.getLogger().info("  Biome: " + world.registryAccess().lookupOrThrow(Registries.BIOME).getKey(data.getBiome(localx, localz)) + " (" + data.getBiomeId(localx, localz) + ")");
+                VoxelConstants.getLogger().info("  Biome: " + world.registryAccess().registryOrThrow(Registries.BIOME).getKey(data.getBiome(localx, localz)) + " (" + data.getBiomeId(localx, localz) + ")");
             }
         }
     }

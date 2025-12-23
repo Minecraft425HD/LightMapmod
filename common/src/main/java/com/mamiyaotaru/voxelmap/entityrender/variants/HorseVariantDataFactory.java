@@ -19,15 +19,15 @@ public class HorseVariantDataFactory extends DefaultEntityVariantDataFactory {
     // 1.20.1: Markings renamed to Variant in 1.20.1
     private static final Map<Variant, ResourceLocation> LOCATION_BY_VARIANT = Maps.newEnumMap(
             Map.of(
-                    Variant.NONE,
+                    Variant.values()[0],
                     INVISIBLE_TEXTURE,
-                    Variant.WHITE,
+                    Variant.values()[1],
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_white.png"),
-                    Variant.WHITE_FIELD,
+                    Variant.values()[2],
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_whitefield.png"),
-                    Variant.WHITE_DOTS,
+                    Variant.values()[3],
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_whitedots.png"),
-                    Variant.BLACK_DOTS,
+                    Variant.values()[4],
                     new ResourceLocation("minecraft", "textures/entity/horse/horse_markings_blackdots.png")));
 
     public HorseVariantDataFactory(EntityType<?> type) {

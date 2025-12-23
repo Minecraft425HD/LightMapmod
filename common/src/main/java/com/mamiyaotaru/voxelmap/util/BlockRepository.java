@@ -79,7 +79,7 @@ public class BlockRepository {
         acaciaLeaves = Blocks.ACACIA_LEAVES;
         darkOakLeaves = Blocks.DARK_OAK_LEAVES;
         mangroveLeaves = Blocks.MANGROVE_LEAVES;
-        grass = Blocks.SHORT_GRASS;
+        grass = Blocks.GRASS; // 1.20.1: SHORT_GRASS doesn't exist, using GRASS
         fern = Blocks.FERN;
         tallGrass = Blocks.TALL_GRASS;
         largeFern = Blocks.LARGE_FERN;
@@ -94,7 +94,9 @@ public class BlockRepository {
         barrier = Blocks.BARRIER;
         chorusPlant = Blocks.CHORUS_PLANT;
         chorusFlower = Blocks.CHORUS_FLOWER;
-        leafLitter = Blocks.LEAF_LITTER;
+        // 1.20.1: LEAF_LITTER doesn't exist in 1.20.1
+        // leafLitter = Blocks.LEAF_LITTER;
+        leafLitter = null;
         biomeBlocksArray = new Block[]{grassBlock, oakLeaves, spruceLeaves, birchLeaves, jungleLeaves, acaciaLeaves, darkOakLeaves, mangroveLeaves, grass, fern, tallGrass, largeFern, reeds, vine, lilypad, tallFlower, water, leafLitter};
         biomeBlocks = new HashSet<>(Arrays.asList(biomeBlocksArray));
         shapedBlocksArray = new Block[]{ladder, vine};

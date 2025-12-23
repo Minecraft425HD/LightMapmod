@@ -57,7 +57,8 @@ public record FloatBlitRenderState(
     }
 
     private static ScreenRectangle getBounds(float x0, float y0, float x1, float y1, Matrix3x2f matrix3x2f, ScreenRectangle screenRectangle) {
-        ScreenRectangle screenRectangle2 = new ScreenRectangle(Mth.floor(x0), Mth.floor(y0), Mth.ceil(x1 - x0), Mth.ceil(y1 - y0)).transformMaxBounds(matrix3x2f);
+        // TODO: 1.20.1 Port - transformMaxBounds() doesn't exist in 1.20.1
+        ScreenRectangle screenRectangle2 = new ScreenRectangle(Mth.floor(x0), Mth.floor(y0), Mth.ceil(x1 - x0), Mth.ceil(y1 - y0)); // .transformMaxBounds(matrix3x2f);
         return screenRectangle != null ? screenRectangle.intersection(screenRectangle2) : screenRectangle2;
     }
 }

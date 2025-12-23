@@ -57,10 +57,12 @@ public final class CommandUtils {
 
                 MutableComponent clickableWaypoint = Component.literal(waypointString);
                 Style chatStyle = clickableWaypoint.getStyle();
-                chatStyle = chatStyle.withClickEvent(new ClickEvent.RunCommand("/newWaypoint " + waypointString.substring(1, waypointString.length() - 1)));
+                // 1.20.1: ClickEvent.RunCommand doesn't exist, use new ClickEvent(Action.RUN_COMMAND, ...)
+                chatStyle = chatStyle.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/newWaypoint " + waypointString.substring(1, waypointString.length() - 1)));
                 chatStyle = chatStyle.withColor(ChatFormatting.AQUA);
                 Component hover = Component.literal(I18n.get("minimap.waypointShare.tooltip1") + "\n" + I18n.get("minimap.waypointShare.tooltip2"));
-                chatStyle = chatStyle.withHoverEvent(new HoverEvent.ShowText(hover));
+                // 1.20.1: HoverEvent.ShowText doesn't exist, use new HoverEvent(Action.SHOW_TEXT, ...)
+                chatStyle = chatStyle.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
                 clickableWaypoint.setStyle(chatStyle);
                 textComponents.add(clickableWaypoint);
                 count = waypointStringLocation + waypointString.length();
@@ -182,8 +184,9 @@ public final class CommandUtils {
     }
 
     public static void waypointClicked(String command) {
-        boolean control = InputConstants.isKeyDown(VoxelConstants.getMinecraft().getWindow(), InputConstants.getKey("key.keyboard.left.control").getValue())
-                || InputConstants.isKeyDown(VoxelConstants.getMinecraft().getWindow(), InputConstants.getKey("key.keyboard.right.control").getValue());
+        // 1.20.1: InputConstants.isKeyDown expects long window handle, use window.getWindow()
+        boolean control = InputConstants.isKeyDown(VoxelConstants.getMinecraft().getWindow().getWindow(), InputConstants.getKey("key.keyboard.left.control").getValue())
+                || InputConstants.isKeyDown(VoxelConstants.getMinecraft().getWindow().getWindow(), InputConstants.getKey("key.keyboard.right.control").getValue());
         String details = command.substring(NEW_WAYPOINT_COMMAND_LENGTH);
         Waypoint newWaypoint = createWaypointFromChat(details);
         if (newWaypoint != null) {
@@ -209,7 +212,8 @@ public final class CommandUtils {
     }
 
     public static void sendWaypoint(Waypoint waypoint) {
-        ResourceLocation Identifier = VoxelConstants.getVoxelMapInstance().getDimensionManager().getDimensionContainerByWorld(VoxelConstants.getPlayer().level()).Identifier;
+        // 1.20.1: DimensionContainer.Identifier → DimensionContainer.resourceLocation (property name changed)
+        ResourceLocation Identifier = VoxelConstants.getVoxelMapInstance().getDimensionManager().getDimensionContainerByWorld(VoxelConstants.getPlayer().level()).resourceLocation;
         int color = ((int) (waypoint.red * 255.0F) & 0xFF) << 16 | ((int) (waypoint.green * 255.0F) & 0xFF) << 8 | (int) (waypoint.blue * 255.0F) & 0xFF;
         StringBuilder hexColor = new StringBuilder(Integer.toHexString(color));
 

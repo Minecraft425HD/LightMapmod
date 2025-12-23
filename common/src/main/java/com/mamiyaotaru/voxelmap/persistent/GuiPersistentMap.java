@@ -162,7 +162,14 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
     }
 
     private void getSkin() {
-        BufferedImage skinImage = ImageUtils.createBufferedImageFromIdentifier(VoxelConstants.getMinecraft().getSkinManager().getInsecureSkin(VoxelConstants.getPlayer().getGameProfile()).texture());
+        // 1.20.1: Use getInsecureSkinInformation() instead of getInsecureSkin()
+        java.util.Map<com.mojang.authlib.minecraft.MinecraftProfileTexture.Type, com.mojang.authlib.minecraft.MinecraftProfileTexture> skinMap =
+            VoxelConstants.getMinecraft().getSkinManager().getInsecureSkinInformation(VoxelConstants.getPlayer().getGameProfile());
+        com.mojang.authlib.minecraft.MinecraftProfileTexture skinTexture = skinMap.get(com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN);
+        ResourceLocation skinLocation = skinTexture != null ?
+            VoxelConstants.getMinecraft().getSkinManager().registerTexture(skinTexture, com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN) : null;
+
+        BufferedImage skinImage = ImageUtils.createBufferedImageFromIdentifier(skinLocation);
 
         if (skinImage == null) {
             if (VoxelConstants.DEBUG) {
@@ -482,7 +489,8 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
     private void switchToMouseInput() {
         this.timeOfLastKBInput = 0L;
         if (!this.mouseCursorShown) {
-            GLFW.glfwSetInputMode(minecraft.getWindow().handle(), 208897, 212993);
+            // 1.20.1: window.handle() doesn't exist, use window.getWindow() instead
+            GLFW.glfwSetInputMode(minecraft.getWindow().getWindow(), 208897, 212993);
         }
 
         this.mouseCursorShown = true;
@@ -491,7 +499,8 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
     private void switchToKeyboardInput() {
         this.timeOfLastKBInput = System.currentTimeMillis();
         this.mouseCursorShown = false;
-        GLFW.glfwSetInputMode(minecraft.getWindow().handle(), 208897, 212995);
+        // 1.20.1: window.handle() doesn't exist, use window.getWindow() instead
+        GLFW.glfwSetInputMode(minecraft.getWindow().getWindow(), 208897, 212995);
     }
 
     @Override
@@ -871,7 +880,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
         super.render(guiGraphics, mouseX, mouseY, delta);
     }
 
-    @Override
+    // 1.20.1: This method signature doesn't exist in superclass, removed @Override
     public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float delta) {
         // nothing
     }
