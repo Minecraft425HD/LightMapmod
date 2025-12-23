@@ -41,6 +41,10 @@ tasks {
     jar {
         from(rootDir.resolve("LICENSE.md"))
     }
+
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
 }
 
 // This trick hides common tasks in the IDEA list.
