@@ -17,6 +17,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.GameShuttingDownEvent;
 
 import java.util.Optional;
@@ -77,9 +78,18 @@ public class ForgeEvents implements Events {
         }
 
         @SubscribeEvent
-        public void onRenderGui(RenderGuiOverlayEvent.Pre event) {
-            // In 1.20.1, render on all overlays or check specific overlay name
-            VoxelConstants.renderOverlay(event.getGuiGraphics());
+        public void onClientTick(TickEvent.ClientTickEvent event) {
+            if (event.phase == TickEvent.Phase.END) {
+                VoxelConstants.clientTick();
+            }
+        }
+
+        @SubscribeEvent
+        public void onRenderGui(RenderGuiOverlayEvent.Post event) {
+            // In 1.20.1, only render after the hotbar to avoid rendering multiple times per frame
+            if (event.getOverlay() == VanillaGuiOverlay.HOTBAR) {
+                VoxelConstants.renderOverlay(event.getGuiGraphics());
+            }
         }
 
         @SubscribeEvent
