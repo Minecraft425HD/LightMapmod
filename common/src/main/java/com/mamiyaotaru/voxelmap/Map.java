@@ -1645,8 +1645,6 @@ public class Map implements Runnable, IChangeObserver {
         // if (((saved++) % 1000) == 0)
         // ImageUtils.saveImage("minimap_" + saved, fboTexture);
 
-        guiGraphics.pose().popPose();
-
         // TODO: 1.20.1 Port - fboTextureView depends on GPU rendering APIs that don't exist in 1.20.1
         // VoxelMapGuiGraphics.blitFloat(guiGraphics, null, fboTextureView, x - 32, y - 32, 64, 64, 0, 1, 0, 1, 0xffffffff);
 
