@@ -10,51 +10,72 @@ The game was crashing with `IllegalStateException: Already building!` and missin
 ```
 
 ## Root Cause
-The VoxelMap texture resources exist in `common/src/main/resources/assets/voxelmap/images/` but were not being copied to the build output directories (`common/build/resources/main/` and `forge/build/resources/main/`) during the Gradle build process.
+The VoxelMap texture resources exist in `common/src/main/resources/assets/voxelmap/images/` but were not being loaded at runtime during development. This is because Forge requires resource root marker files (`.mcassetsroot`) to properly identify resource directories during development runs.
 
 ## Solution
+
+### Step 1: Add Resource Root Markers
+The `.mcassetsroot` files have been added to mark the resource directories:
+- `common/src/main/resources/.mcassetsroot`
+- `forge/src/main/resources/.mcassetsroot`
+
+These empty marker files tell ForgeGradle that these directories contain mod resources.
+
+### Step 2: Clean and Rebuild
 Run a clean build to ensure all resources are properly processed:
 
 ```bash
 ./gradlew clean build
 ```
 
-Or manually ensure resources are processed:
-```bash
-./gradlew :common:processResources :forge:processResources
-```
-
-Then run the client:
+### Step 3: Run the Client
 ```bash
 ./gradlew :forge:runClient
 ```
 
 ## Verification
-After building, verify that resources exist in the build output:
-```bash
-ls -la common/build/resources/main/assets/voxelmap/images/
-ls -la forge/build/resources/main/
-```
+The resources should now be loaded correctly. You can verify by checking:
 
-You should see all the texture files including:
-- mmarrow.png
-- squaremap.png
-- roundmap.png
-- colorpicker.png
-- radar/*.png files
-- waypoints/*.png files
+1. **Source resources exist:**
+   ```bash
+   ls common/src/main/resources/assets/voxelmap/images/
+   ```
+
+2. **Build resources are copied:**
+   ```bash
+   ls common/build/resources/main/assets/voxelmap/images/
+   ```
+
+3. **Runtime loads without errors** - no `FileNotFoundException` messages in the logs
 
 ## What Was Fixed
-The resources are properly configured in `forge/build.gradle.kts`:
-```kotlin
-tasks.jar {
-    val main = project.project(":common").sourceSets.getByName("main")
-    from(main.output.classesDirs) {
-        exclude("/voxelmap.refmap.json")
-    }
-    from(main.output.resourcesDir)  // This copies common resources to forge jar
-    ...
-}
-```
 
-The issue was simply that the `processResources` task hadn't been run or the build output directories were stale. A clean build resolves this.
+1. **Added `.mcassetsroot` markers** to `common/src/main/resources/` and `forge/src/main/resources/` directories. These files tell Forge's development environment where to find mod resources.
+
+2. **Build configuration already correct** in `forge/build.gradle.kts`:
+   ```kotlin
+   tasks.jar {
+       val main = project.project(":common").sourceSets.getByName("main")
+       from(main.output.classesDirs) {
+           exclude("/voxelmap.refmap.json")
+       }
+       from(main.output.resourcesDir)  // Copies common resources
+       ...
+   }
+
+   minecraft {
+       runs {
+           create("client") {
+               mods {
+                   create("voxelmap") {
+                       source(sourceSets.main.get())
+                       source(project.project(":common").sourceSets.main.get())  // Includes common resources
+                   }
+               }
+           }
+       }
+   }
+   ```
+
+## Technical Details
+In a multi-loader project setup (common + forge), resources in the `common` module need to be properly marked for the ForgeGradle development environment. While the JAR packaging works correctly, the development run configuration requires `.mcassetsroot` marker files to identify resource directories.
