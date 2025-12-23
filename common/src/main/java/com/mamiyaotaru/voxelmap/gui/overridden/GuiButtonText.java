@@ -22,12 +22,12 @@ public class GuiButtonText extends Button {
 
 
     @Override
-    public void renderContents(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (editing) {
             textField.render(drawContext, mouseX, mouseY, delta);
             return;
         }
-        super.renderContents(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 
     // 1.20.1: Input event system changed - mouseClicked uses primitive parameters

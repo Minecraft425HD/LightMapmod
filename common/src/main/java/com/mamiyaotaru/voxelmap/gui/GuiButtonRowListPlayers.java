@@ -71,10 +71,11 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
         return 400;
     }
 
-    @Override
-    protected int scrollBarX() {
-        return super.scrollBarX() + 32;
-    }
+    // TODO: 1.20.1 Port - scrollBarX() doesn't exist in AbstractSelectionList
+    // @Override
+    // protected int scrollBarX() {
+    //     return super.scrollBarX() + 32;
+    // }
 
     protected void sort() {
         this.players.sort((player1, player2) -> {
@@ -146,10 +147,10 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
         }
 
         @Override
-        public void renderContent(GuiGraphics drawContext, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            this.drawButton(drawContext, this.button, this.id, 0, getX(), getY(), getRowWidth(), defaultEntryHeight, mouseX, mouseY, hovered, tickDelta);
-            this.drawButton(drawContext, this.button1, this.id1, 0, getX(), getY(), getRowWidth(), defaultEntryHeight, mouseX, mouseY, hovered, tickDelta);
-            this.drawButton(drawContext, this.button2, this.id2, 0, getX(), getY(), getRowWidth(), defaultEntryHeight, mouseX, mouseY, hovered, tickDelta);
+        public void render(GuiGraphics drawContext, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            this.drawButton(drawContext, this.button, this.id, 0, left, top, width, height, mouseX, mouseY, hovered, tickDelta);
+            this.drawButton(drawContext, this.button1, this.id1, 0, left, top, width, height, mouseX, mouseY, hovered, tickDelta);
+            this.drawButton(drawContext, this.button2, this.id2, 0, left, top, width, height, mouseX, mouseY, hovered, tickDelta);
         }
 
         private void drawButton(GuiGraphics drawContext, Button button, int id, int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
@@ -167,13 +168,18 @@ public class GuiButtonRowListPlayers extends AbstractSelectionList<GuiButtonRowL
             PlayerInfo networkPlayerInfo = GuiButtonRowListPlayers.this.playersFiltered.get(id);
             GameProfile gameProfile = networkPlayerInfo.getProfile();
             Player entityPlayer = VoxelConstants.getPlayer().level().getPlayerByUUID(gameProfile.getId());
-            // 1.20.1: getSkinManager().getInsecureSkin() returns ResourceLocation directly, not PlayerSkin
-            ResourceLocation skinIdentifier = VoxelConstants.getMinecraft().getSkinManager().getInsecureSkin(gameProfile);
-           
-            drawContext.blit(null, skinIdentifier, button.getX() + 6, button.getY() + 6, 8.0F, 8.0F, 8, 8, 8, 8, 64, 64);
+            // 1.20.1: getSkinManager().getInsecureSkinInformation() returns Map, need to get texture from it
+            java.util.Map<com.mojang.authlib.minecraft.MinecraftProfileTexture.Type, com.mojang.authlib.minecraft.MinecraftProfileTexture> skinMap =
+                VoxelConstants.getMinecraft().getSkinManager().getInsecureSkinInformation(gameProfile);
+            com.mojang.authlib.minecraft.MinecraftProfileTexture texture = skinMap.get(com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN);
+            ResourceLocation skinIdentifier = texture != null ?
+                VoxelConstants.getMinecraft().getSkinManager().registerTexture(texture, com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN) :
+                net.minecraft.client.resources.DefaultPlayerSkin.getDefaultSkin(gameProfile.getId());
+
+            drawContext.blit(skinIdentifier, button.getX() + 6, button.getY() + 6, 8.0F, 8.0F, 8, 8, 8, 8, 64, 64);
             if (entityPlayer != null && entityPlayer.isModelPartShown(PlayerModelPart.HAT)) {
-               
-                drawContext.blit(null, skinIdentifier, button.getX() + 6, button.getY() + 6, 40.0F, 8.0F, 8, 8, 8, 8, 64, 64);
+
+                drawContext.blit(skinIdentifier, button.getX() + 6, button.getY() + 6, 40.0F, 8.0F, 8, 8, 8, 8, 64, 64);
             }
         }
 

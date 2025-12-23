@@ -155,7 +155,7 @@ public class CompressibleMapData extends AbstractMapData {
     public Biome getBiome(int x, int z) {
         int biomeId = getBiomeId(x, z);
         if (biomeId == 0 && getHeight(x, z) != Short.MIN_VALUE) {
-            return MINECRAFT.level.registryAccess().registryOrThrow(Registries.BIOME).get(Biomes.PLAINS).get().value();
+            return MINECRAFT.level.registryAccess().registryOrThrow(Registries.BIOME).get(Biomes.PLAINS);
         }
         return this.getBiomeFromID(biomeId);
     }
@@ -587,7 +587,7 @@ public class CompressibleMapData extends AbstractMapData {
         if (biome != null) {
             return biome;
         }
-        return world.registryAccess().registryOrThrow(Registries.BIOME).get(Biomes.PLAINS).get().value();
+        return world.registryAccess().registryOrThrow(Registries.BIOME).get(Biomes.PLAINS);
     }
 
     public BiMap<Biome, Integer> getBiomeToInt() {
@@ -605,7 +605,7 @@ public class CompressibleMapData extends AbstractMapData {
                 if (oldID != 0) {
                     Biome biome = oldMap.inverse().get(oldID);
                     if (biome == null) {
-                        biome = world.registryAccess().registryOrThrow(Registries.BIOME).get(Biomes.PLAINS).get().value();
+                        biome = world.registryAccess().registryOrThrow(Registries.BIOME).get(Biomes.PLAINS);
                     }
                     Integer id = newMap.get(biome);
                     if (id == null && biome != null) {

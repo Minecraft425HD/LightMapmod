@@ -98,8 +98,8 @@ public class GuiSelectPlayer extends GuiScreenMinimap implements BooleanConsumer
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double amount) {
-        return this.playerList.mouseScrolled(mouseX, mouseY, 0, amount);
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return this.playerList.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override

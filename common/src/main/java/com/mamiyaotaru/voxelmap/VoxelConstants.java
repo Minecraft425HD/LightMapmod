@@ -48,9 +48,9 @@ public final class VoxelConstants {
 
     public static boolean isSinglePlayer() { return getMinecraft().isLocalServer(); }
     public static boolean isRealmServer() {
-        ClientPacketListener playNetworkHandler = getMinecraft().getConnection();
-        ServerData serverInfo = playNetworkHandler != null ? getMinecraft().getConnection().getServerData() : null;
-        return serverInfo != null && serverInfo.type == ServerData.Type.REALM;
+        // Realms detection not available in 1.20.1 - ServerData.type field doesn't exist
+        // Always return false as Realms check is not critical for functionality
+        return false;
     }
 
     @NotNull

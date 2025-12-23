@@ -43,7 +43,7 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
     private final TextureAtlas textureAtlas;
 
     GuiSlotWaypoints(GuiWaypoints par1GuiWaypoints) {
-        super(VoxelConstants.getMinecraft(), par1GuiWaypoints.getWidth(), par1GuiWaypoints.getHeight() - 140, 54, 18);
+        super(VoxelConstants.getMinecraft(), par1GuiWaypoints.getWidth(), par1GuiWaypoints.getHeight(), 54, par1GuiWaypoints.getHeight() - 140, 18);
         this.parentGui = par1GuiWaypoints;
         this.waypoints = new ArrayList<>();
 
@@ -70,7 +70,7 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
         super.setSelected(entry);
         if (this.getSelected() instanceof WaypointItem) {
             GameNarrator narratorManager = new GameNarrator(VoxelConstants.getMinecraft());
-            narratorManager.sayChatQueued(Component.translatable("narrator.select", this.getSelected().waypoint.name)); // FIXME 1.21.6 narrator?
+            narratorManager.sayNow(Component.translatable("narrator.select", this.getSelected().waypoint.name)); // FIXME 1.21.6 narrator?
         }
 
         this.parentGui.setSelectedWaypoint(entry.waypoint);
@@ -151,11 +151,11 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
         }
 
         @Override
-        public void renderContent(GuiGraphics drawContext, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            int x = getX();
-            int y = getY();
-            int entryHeight = getHeight();
-            drawContext.drawCenteredString(this.parentGui.font, this.waypoint.name, this.parentGui.getWidth() / 2, y + 5, this.waypoint.getUnifiedColor());
+        public void render(GuiGraphics drawContext, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            int x = left;
+            int y = top;
+            int entryHeight = height;
+            drawContext.drawCenteredString(((net.minecraft.client.gui.screens.Screen)this.parentGui).font, this.waypoint.name, this.parentGui.getWidth() / 2, y + 5, this.waypoint.getUnifiedColor());
             byte padding = 3;
             byte iconWidth = 16;
             if (mouseX >= x - padding && mouseY >= y && mouseX <= x + 215 + padding && mouseY <= y + entryHeight) {
@@ -178,14 +178,14 @@ class GuiSlotWaypoints extends AbstractSelectionList<GuiSlotWaypoints.WaypointIt
                     GuiWaypoints.setTooltip(GuiSlotWaypoints.this.parentGui, tooltip);
                 }
             }
-           
-            drawContext.blit(null, this.waypoint.enabled ? GuiSlotWaypoints.this.visibleIconIdentifier : GuiSlotWaypoints.this.invisibleIconIdentifier, x + 198, y, 0.0F, 0.0F, 18, 18, 18, 18);
-           
+
+            drawContext.blit(this.waypoint.enabled ? GuiSlotWaypoints.this.visibleIconIdentifier : GuiSlotWaypoints.this.invisibleIconIdentifier, x + 198, y, 0.0F, 0.0F, 18, 18, 18, 18);
+
             textureAtlas.getAtlasSprite("voxelmap:images/waypoints/waypoint" + waypoint.imageSuffix + ".png").blit(drawContext, null, x, y, 18, 18, waypoint.getUnifiedColor());
 
             if (this.waypoint == this.parentGui.highlightedWaypoint) {
-               
-                drawContext.blit(null, targetIconLocation, x, y, 0.0F, 1.0F, 18, 18, 18, 18, 0xFFFF0000);
+
+                drawContext.blit(targetIconLocation, x, y, 0.0F, 1.0F, 18, 18, 18, 18, 0xFFFF0000);
             }
         }
 

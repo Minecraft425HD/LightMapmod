@@ -57,7 +57,7 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
                 this.welcomeTexts.add(keyText);
             } else {
                 int lastIndex = this.welcomeTexts.size() - 1;
-                this.welcomeTexts.set(lastIndex, this.welcomeTexts.getLast().copy().append(", ").append(keyText));
+                this.welcomeTexts.set(lastIndex, this.welcomeTexts.get(this.welcomeTexts.size() - 1).copy().append(", ").append(keyText));
             }
 
             ++count;
@@ -97,9 +97,9 @@ public class GuiWelcomeScreen extends GuiScreenMinimap {
         }
 
         // Title Box
-        boxWidth = font.width(this.welcomeTexts.getFirst());
+        boxWidth = font.width(this.welcomeTexts.get(0));
         this.drawBox(guiGraphics, centerX - (boxWidth / 2), boxTop - lineHeight - 3, centerX + (boxWidth / 2), boxTop - 3, 4, 1, boxColor);
-        guiGraphics.drawCenteredString(font, this.welcomeTexts.getFirst(), centerX, boxTop - lineHeight - 3, 0xFFFFFFFF);
+        guiGraphics.drawCenteredString(font, this.welcomeTexts.get(0), centerX, boxTop - lineHeight - 3, 0xFFFFFFFF);
 
         boxTop += lineHeight * this.welcomeTexts.size();
 

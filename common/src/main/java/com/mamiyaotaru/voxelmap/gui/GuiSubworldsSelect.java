@@ -46,7 +46,8 @@ public class GuiSubworldsSelect extends GuiScreenMinimap implements BooleanConsu
         // TODO: 1.20.1 Port - Input.EMPTY doesn't exist, needs replacement with appropriate 1.20.1 API
         this.camera = new LocalPlayer(VoxelConstants.getMinecraft(), clientWorld, VoxelConstants.getMinecraft().getConnection(), this.thePlayer.getStats(), new ClientRecipeBook(), false, false);
         this.camera.input = new KeyboardInput(VoxelConstants.getMinecraft().options);
-        this.camera.moveOrInterpolateTo(new Vec3(this.thePlayer.getX(), this.thePlayer.getY() + 0.35, this.thePlayer.getZ()), this.thePlayer.getYRot(), 0.0F);
+        // TODO: 1.20.1 Port - moveOrInterpolateTo() doesn't exist in 1.20.1
+        // this.camera.moveOrInterpolateTo(new Vec3(this.thePlayer.getX(), this.thePlayer.getY() + 0.35, this.thePlayer.getZ()), this.thePlayer.getYRot(), 0.0F);
         this.yaw = this.thePlayer.getYRot();
         this.thirdPersonViewOrig = VoxelConstants.getMinecraft().options.getCameraType();
         this.waypointManager = VoxelConstants.getVoxelMapInstance().getWaypointManager();

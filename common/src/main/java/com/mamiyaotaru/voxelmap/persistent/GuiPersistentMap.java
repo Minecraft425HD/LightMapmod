@@ -650,7 +650,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
         this.backGroundImageInfo = this.waypointManager.getBackgroundImageInfo();
         if (this.backGroundImageInfo != null) {
 
-            guiGraphics.blitSprite(backGroundImageInfo.getImageLocation(), backGroundImageInfo.left, backGroundImageInfo.top + 32, 0, 0, backGroundImageInfo.width, backGroundImageInfo.height, backGroundImageInfo.width, backGroundImageInfo.height);
+            guiGraphics.blitSprite(backGroundImageInfo.getImageLocation(), backGroundImageInfo.left, backGroundImageInfo.top + 32, backGroundImageInfo.width, backGroundImageInfo.height);
         }
 
         guiGraphics.pose().translate(this.centerX - this.mapCenterX * this.mapToGui, (this.top + this.centerY) - this.mapCenterZ * this.mapToGui, 0.0f);
@@ -665,7 +665,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
             for (CachedRegion region : this.regions) {
                 ResourceLocation resource = region.getTextureLocation();
                 if (resource != null) {
-                    guiGraphics.blit(VoxelMapPipelines.GUI_TEXTURED_LESS_OR_EQUAL_DEPTH_PIPELINE, resource, region.getX() * 256, region.getZ() * 256, 0, 0, region.getWidth(), region.getWidth(), region.getWidth(), region.getWidth());
+                    guiGraphics.blit(resource, region.getX() * 256, region.getZ() * 256, 0, 0, region.getWidth(), region.getWidth(), region.getWidth(), region.getWidth());
                 }
             }
 
@@ -978,7 +978,7 @@ public class GuiPersistentMap extends PopupGuiScreen implements IGuiWaypoints {
         int colorEnd = (endAlpha << 24) | colorBase;
         float renderedTextureSize = 32.0F;
 
-        VoxelMapGuiGraphics.blitFloatGradient(guiGraphics, VoxelConstants.getOptionsBackgroundTexture(), 0, startY, this.getWidth(), endY, 0, this.width / renderedTextureSize, 0, endY / renderedTextureSize, colorStart, colorEnd);
+        VoxelMapGuiGraphics.blitFloatGradient(guiGraphics, null, VoxelConstants.getOptionsBackgroundTexture(), 0, startY, this.getWidth(), endY, 0, this.width / renderedTextureSize, 0, endY / renderedTextureSize, colorStart, colorEnd);
     }
 
     @Override

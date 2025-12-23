@@ -233,8 +233,8 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double amount) {
-        return !this.popupOpen() && super.mouseScrolled(mouseX, mouseY, horizontalAmount, amount);
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return !this.popupOpen() && super.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
@@ -271,22 +271,22 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
         waypointManager.getTextureAtlasChooser().getAtlasSprite("voxelmap:images/waypoints/waypoint" + this.waypoint.imageSuffix + ".png").blit(drawContext, null, this.getWidth() / 2 - 25, buttonListY + 48 + 2, 16, 16, color);
 
         if (this.choosingColor || this.choosingIcon) {
-            this.renderTransparentBackground(drawContext);
+            this.renderBackground(drawContext, 0, 0, 0);
 
             if (this.choosingColor) {
                 int anchorX = this.getWidth() / 2 - colorPickerWidth / 2;
                 int anchorY = this.getHeight() / 2 - colorPickerHeight / 2;
 
-               
-                drawContext.blit(null, PICKER, anchorX, anchorY, 0f, 0f, colorPickerWidth, colorPickerHeight, colorPickerWidth, colorPickerHeight);
+
+                drawContext.blit(PICKER, anchorX, anchorY, 0f, 0f, colorPickerWidth, colorPickerHeight, colorPickerWidth, colorPickerHeight);
 
                 int pickedColor = pickColor(colorPickerWidth, colorPickerHeight, mouseX, mouseY);
                 if (pickedColor != -1) {
                     int red = ARGBCompat.red(pickedColor);
                     int green = ARGBCompat.green(pickedColor);
                     int blue = ARGBCompat.blue(pickedColor);
-                   
-                    drawContext.blit(null, TARGET, mouseX - 8, mouseY - 8, 0f, 0f, 16, 16, 16, 16);
+
+                    drawContext.blit(TARGET, mouseX - 8, mouseY - 8, 0f, 0f, 16, 16, 16, 16);
                     drawContext.drawCenteredString(this.font, "R: " + red + ", G: " + green + ", B: " + blue, this.getWidth() / 2, this.getHeight() / 2 + colorPickerHeight / 2 + 8, pickedColor);
                 }
             }
@@ -297,8 +297,8 @@ public class GuiAddWaypoint extends GuiScreenMinimap implements IPopupGuiScreen 
                 int anchorX = (int) (this.getWidth() / 2.0F - chooser.getWidth() / 2.0F);
                 int anchorY = (int) (this.getHeight() / 2.0F - chooser.getHeight() / 2.0F);
 
-               
-                drawContext.blit(null, WaypointManager.resourceTextureAtlasWaypointChooser, anchorX, anchorY, 0f, 0f, chooser.getWidth(), chooser.getHeight(), chooser.getWidth(), chooser.getHeight(), 0xFFC8C8C8);
+
+                drawContext.blit(WaypointManager.resourceTextureAtlasWaypointChooser, anchorX, anchorY, 0f, 0f, chooser.getWidth(), chooser.getHeight(), chooser.getWidth(), chooser.getHeight(), 0xFFC8C8C8);
 
                 Sprite pickedIcon = pickIcon(mouseX, mouseY);
                 if (pickedIcon != chooser.getMissingImage()) {
