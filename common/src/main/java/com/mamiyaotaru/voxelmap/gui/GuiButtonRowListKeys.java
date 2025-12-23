@@ -143,7 +143,7 @@ public class GuiButtonRowListKeys extends AbstractSelectionList<GuiButtonRowList
         @Override
         public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             if (this.button != null && this.buttonReset != null) {
-                guiGraphics.drawString(this.parentGui.font, Component.translatable(this.keyMapping.getName()), left + 5, top + 5, 0xFFFFFFFF);
+                guiGraphics.drawString(this.parentGui.getFont(), Component.translatable(this.keyMapping.getName()), left + 5, top + 5, 0xFFFFFFFF);
 
                 Component tooltip = null;
 

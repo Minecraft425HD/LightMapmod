@@ -134,7 +134,7 @@ class GuiSlotMobs extends AbstractSelectionList<GuiSlotMobs.MobItem> {
             int red = isHostile ? 255 : 0;
             int green = isNeutral ? 255 : 0;
             int color = 0xFF000000 + (red << 16) + (green << 8);
-            drawContext.drawCenteredString(this.parentGui.font, this.name, this.parentGui.getWidth() / 2, top + 5, color);
+            drawContext.drawCenteredString(this.parentGui.getFont(), this.name, this.parentGui.getWidth() / 2, top + 5, color);
             byte padding = 3;
             if (mouseX >= left - padding && mouseY >= top && mouseX <= left + 215 + padding && mouseY <= top + GuiSlotMobs.this.itemHeight) {
                 Component tooltip;

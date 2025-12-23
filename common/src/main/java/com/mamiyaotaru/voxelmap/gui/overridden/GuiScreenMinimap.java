@@ -37,8 +37,8 @@ public class GuiScreenMinimap extends Screen {
         drawContext.renderTooltip(this.font, tooltip.toCharSequence(VoxelConstants.getMinecraft()), x, y);
     }
 
-    // 1.20.1: Removed @Override and getFont() method - doesn't exist in superclass, use inherited font field
-    // public Font getFont() { return super.getFont(); }
+    // 1.20.1: Public accessor for protected font field
+    public Font getFont() { return this.font; }
 
     @Override
     public List<? extends GuiEventListener> children() { return super.children(); }
