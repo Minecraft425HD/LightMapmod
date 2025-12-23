@@ -78,6 +78,10 @@ public class ImageUtils {
     }
 
     public static NativeImage nativeImageFromBufferedImage(BufferedImage image) {
+        if (image == null) {
+            VoxelConstants.getLogger().warn("Cannot convert null BufferedImage to NativeImage");
+            return null;
+        }
         int width = image.getWidth();
         int height = image.getHeight();
         NativeImage nativeImage = new NativeImage(width, height, false);

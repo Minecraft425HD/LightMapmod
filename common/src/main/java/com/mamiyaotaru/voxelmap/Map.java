@@ -248,14 +248,29 @@ public class Map implements Runnable, IChangeObserver {
         this.projection = new VoxelMapCachedOrthoProjectionMatrixBuffer("VoxelMap Map To Screen Proj", -256.0F, 256.0F, 256.0F, -256.0F, 1000.0F, 21000.0F);
 
         try {
-            DynamicTexture arrowTexture = new DynamicTexture(NativeImage.read(Minecraft.getInstance().getResourceManager().getResource(resourceArrow).get().open()));
-            minecraft.getTextureManager().register(resourceArrow, arrowTexture);
+            var arrowResourceOpt = Minecraft.getInstance().getResourceManager().getResource(resourceArrow);
+            if (arrowResourceOpt.isPresent()) {
+                DynamicTexture arrowTexture = new DynamicTexture(NativeImage.read(arrowResourceOpt.get().open()));
+                minecraft.getTextureManager().register(resourceArrow, arrowTexture);
+            } else {
+                VoxelConstants.getLogger().warn("Arrow texture not found: " + resourceArrow);
+            }
 
-            DynamicTexture squareMapTexture = new DynamicTexture(NativeImage.read(Minecraft.getInstance().getResourceManager().getResource(resourceSquareMap).get().open()));
-            minecraft.getTextureManager().register(resourceSquareMap, squareMapTexture);
+            var squareMapResourceOpt = Minecraft.getInstance().getResourceManager().getResource(resourceSquareMap);
+            if (squareMapResourceOpt.isPresent()) {
+                DynamicTexture squareMapTexture = new DynamicTexture(NativeImage.read(squareMapResourceOpt.get().open()));
+                minecraft.getTextureManager().register(resourceSquareMap, squareMapTexture);
+            } else {
+                VoxelConstants.getLogger().warn("Square map texture not found: " + resourceSquareMap);
+            }
 
-            DynamicTexture roundMapTexture = new DynamicTexture(NativeImage.read(Minecraft.getInstance().getResourceManager().getResource(resourceRoundMap).get().open()));
-            minecraft.getTextureManager().register(resourceRoundMap, roundMapTexture);
+            var roundMapResourceOpt = Minecraft.getInstance().getResourceManager().getResource(resourceRoundMap);
+            if (roundMapResourceOpt.isPresent()) {
+                DynamicTexture roundMapTexture = new DynamicTexture(NativeImage.read(roundMapResourceOpt.get().open()));
+                minecraft.getTextureManager().register(resourceRoundMap, roundMapTexture);
+            } else {
+                VoxelConstants.getLogger().warn("Round map texture not found: " + resourceRoundMap);
+            }
         } catch (Exception exception) {
             VoxelConstants.getLogger().error("Failed getting map images " + exception.getLocalizedMessage(), exception);
         }
