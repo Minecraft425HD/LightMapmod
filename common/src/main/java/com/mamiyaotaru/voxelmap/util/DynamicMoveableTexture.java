@@ -25,36 +25,59 @@ public class DynamicMoveableTexture extends DynamicTexture {
 
     public void moveX(int offset) {
         synchronized (this.bufferLock) {
-            // TODO: 1.20.1 Port - getPointer() may not exist in 1.20.1 NativeImage API
-            // This method needs to be rewritten for 1.20.1 compatibility
-            // For now, commenting out to allow compilation
-            /* Commented out for compilation - needs 1.20.1 compatible implementation
-            long pointer = this.getPixelsRGBA().getPointer();
-            int size = this.getWidth() * this.getHeight() * 4;
+            if (offset == 0) return;
+
+            // 1.20.1 Port: Use NativeImage pixel operations instead of direct memory access
+            int width = this.getPixels().getWidth();
+            int height = this.getPixels().getHeight();
+
             if (offset > 0) {
-                MemoryUtil.memCopy(pointer + (offset * 4L), pointer, size - offset * 4L);
+                // Shift right: copy pixels from left to right
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width - offset; x++) {
+                        int pixel = this.getPixels().getPixelRGBA(x + offset, y);
+                        this.getPixels().setPixelRGBA(x, y, pixel);
+                    }
+                }
             } else if (offset < 0) {
-                MemoryUtil.memCopy(pointer, pointer - (offset * 4L), size + offset * 4L);
+                // Shift left: copy pixels from right to left
+                int absOffset = -offset;
+                for (int y = 0; y < height; y++) {
+                    for (int x = width - 1; x >= absOffset; x--) {
+                        int pixel = this.getPixels().getPixelRGBA(x - absOffset, y);
+                        this.getPixels().setPixelRGBA(x, y, pixel);
+                    }
+                }
             }
-            */
         }
     }
 
     public void moveY(int offset) {
         synchronized (this.bufferLock) {
-            // TODO: 1.20.1 Port - getPointer() may not exist in 1.20.1 NativeImage API
-            // This method needs to be rewritten for 1.20.1 compatibility
-            // For now, commenting out to allow compilation
-            /* Commented out for compilation - needs 1.20.1 compatible implementation
-            long pointer = this.getPixelsRGBA().getPointer();
-            int size = this.getPixelsRGBA().getHeight() * this.getPixelsRGBA().getWidth() * 4;
-            int width = this.getPixelsRGBA().getWidth();
+            if (offset == 0) return;
+
+            // 1.20.1 Port: Use NativeImage pixel operations instead of direct memory access
+            int width = this.getPixels().getWidth();
+            int height = this.getPixels().getHeight();
+
             if (offset > 0) {
-                MemoryUtil.memCopy(pointer + ((long) offset * width * 4), pointer, size - (long) offset * width * 4);
+                // Shift down: copy pixels from top to bottom
+                for (int y = 0; y < height - offset; y++) {
+                    for (int x = 0; x < width; x++) {
+                        int pixel = this.getPixels().getPixelRGBA(x, y + offset);
+                        this.getPixels().setPixelRGBA(x, y, pixel);
+                    }
+                }
             } else if (offset < 0) {
-                MemoryUtil.memCopy(pointer, pointer - ((long) offset * width * 4), size + (long) offset * width * 4);
+                // Shift up: copy pixels from bottom to top
+                int absOffset = -offset;
+                for (int y = height - 1; y >= absOffset; y--) {
+                    for (int x = 0; x < width; x++) {
+                        int pixel = this.getPixels().getPixelRGBA(x, y - absOffset);
+                        this.getPixels().setPixelRGBA(x, y, pixel);
+                    }
+                }
             }
-            */
         }
     }
 
