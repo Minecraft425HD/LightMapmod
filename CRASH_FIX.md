@@ -87,13 +87,15 @@ The resources should now be loaded correctly. You can verify by checking:
 
 2. **Fixed BufferBuilder crash** in `common/src/main/java/com/mamiyaotaru/voxelmap/Map.java` (lines 1568-1613) - Replaced incomplete rendering code that was calling `BufferBuilder.begin()` without a matching `end()` with proper GuiGraphics.blit() implementation using 1.20.1 rendering API.
 
-3. **Fixed black minimap issue** - The rendering code was hardcoded to render 256x256 textures (zoom level 3 only), but VoxelMap uses different texture sizes for each zoom level (32x32, 64x64, 128x128, 256x256, 512x512). Changed both minimap and full map rendering to dynamically calculate texture size based on zoom level: `textureSize = 32 * 2^zoom`. This ensures the correct texture is rendered at any zoom level.
+3. **Fixed black minimap - texture shifting not working** - **THIS WAS THE MAIN ISSUE!** The `moveX()` and `moveY()` methods in `DynamicMoveableTexture.java` were completely commented out. These methods are critical for map updates - they shift the texture data when the player moves so only new edges need to be recalculated. Without them working, the map couldn't update properly. Implemented 1.20.1 compatible versions using NativeImage pixel operations.
 
-4. **Fixed PoseStack balance** - Removed extra `popPose()` call at line 1648 that was causing `NoSuchElementException` crashes.
+4. **Fixed black minimap - wrong texture sizes** - The rendering code was hardcoded to render 256x256 textures (zoom level 3 only), but VoxelMap uses different texture sizes for each zoom level (32x32, 64x64, 128x128, 256x256, 512x512). Changed both minimap and full map rendering to dynamically calculate texture size based on zoom level: `textureSize = 32 * 2^zoom`. This ensures the correct texture is rendered at any zoom level.
 
-5. **Added `.mcassetsroot` markers** to `common/src/main/resources/` and `forge/src/main/resources/` directories. These files tell Forge's development environment where to find mod resources.
+5. **Fixed PoseStack balance** - Removed extra `popPose()` call at line 1648 that was causing `NoSuchElementException` crashes.
 
-6. **Build configuration already correct** in `forge/build.gradle.kts`:
+6. **Added `.mcassetsroot` markers** to `common/src/main/resources/` and `forge/src/main/resources/` directories. These files tell Forge's development environment where to find mod resources.
+
+7. **Build configuration already correct** in `forge/build.gradle.kts`:
    ```kotlin
    tasks.jar {
        val main = project.project(":common").sourceSets.getByName("main")
@@ -164,6 +166,47 @@ float offsetMultiplier = textureSize / 64.0F;  // Correct player movement offset
 ```
 
 This ensures the rendering code works correctly at any zoom level.
+
+### Texture Shifting (moveX/moveY) - THE CRITICAL FIX
+**This was the root cause of the black minimap!**
+
+VoxelMap uses an optimization technique to avoid recalculating the entire map texture every frame:
+1. When the player moves, shift the existing texture data in the movement direction
+2. Only calculate new pixels along the edges that come into view
+3. This is much faster than recalculating all pixels
+
+For example, if the player moves 3 blocks east:
+- Shift the entire texture 3 pixels left (moveX(-3))
+- Calculate only the 3-pixel-wide strip on the right edge
+- Instead of recalculating 256×256 = 65,536 pixels, only 256×3 = 768 pixels!
+
+**The Issue:** The `moveX()` and `moveY()` methods in `DynamicMoveableTexture.java` were completely commented out because they used direct memory access APIs (`getPointer()`) that don't exist in 1.20.1:
+
+```java
+// Broken code - commented out
+long pointer = this.getPixelsRGBA().getPointer();  // Doesn't exist in 1.20.1!
+MemoryUtil.memCopy(pointer + offset, pointer, size);
+```
+
+Without these methods working:
+- The texture never shifts when the player moves
+- Only edge pixels get calculated, but written to wrong positions
+- After the initial render, the map becomes stale/black
+- Moving around doesn't update the minimap
+
+**The Fix:** Reimplemented using NativeImage's pixel operations which are available in 1.20.1:
+
+```java
+// Working 1.20.1 code
+for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width - offset; x++) {
+        int pixel = this.getPixels().getPixelRGBA(x + offset, y);
+        this.getPixels().setPixelRGBA(x, y, pixel);
+    }
+}
+```
+
+This is slower than direct memory copy, but it works correctly and the performance difference is negligible on modern systems.
 
 ### Multi-Loader Project Setup
 In a multi-loader project setup (common + forge), resources in the `common` module need to be properly configured:
