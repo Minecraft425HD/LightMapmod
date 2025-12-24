@@ -1583,7 +1583,8 @@ public class Map implements Runnable, IChangeObserver {
         guiGraphics.pose().scale(64.0f / 256.0f, 64.0f / 256.0f, 1.0f);
 
         // Apply offset based on player movement within the map
-        guiGraphics.pose().translate(-this.percentX * 16.0F, this.percentY * 16.0F, 0.0f);
+        // percentX/Y are in map coordinates, multiply by 256/64 = 4 to convert to texture pixels
+        guiGraphics.pose().translate(-this.percentX * 4.0F, this.percentY * 4.0F, 0.0f);
 
         // Render the full 256x256 map texture, which will be scaled to 64x64 by the transforms above
         guiGraphics.blit(mapResources[this.zoom], -128, -128, 0, 0, 256, 256, 256, 256);
