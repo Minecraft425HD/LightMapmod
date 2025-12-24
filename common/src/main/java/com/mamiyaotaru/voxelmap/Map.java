@@ -1579,11 +1579,14 @@ public class Map implements Runnable, IChangeObserver {
             guiGraphics.pose().scale(scale, scale, 1.0f);
         }
 
-        // Apply offset based on player movement within the map
-        guiGraphics.pose().translate(-this.percentX * 4.0F, this.percentY * 4.0F, 0.0f);
+        // Scale the 256x256 texture down to 64x64 for the minimap
+        guiGraphics.pose().scale(64.0f / 256.0f, 64.0f / 256.0f, 1.0f);
 
-        // Render the map texture centered at the minimap position (64x64 size, so -32 to center)
-        guiGraphics.blit(mapResources[this.zoom], -32, -32, 0, 0, 64, 64, 256, 256);
+        // Apply offset based on player movement within the map
+        guiGraphics.pose().translate(-this.percentX * 16.0F, this.percentY * 16.0F, 0.0f);
+
+        // Render the full 256x256 map texture, which will be scaled to 64x64 by the transforms above
+        guiGraphics.blit(mapResources[this.zoom], -128, -128, 0, 0, 256, 256, 256, 256);
 
         guiGraphics.pose().popPose();
 
