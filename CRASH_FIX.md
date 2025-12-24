@@ -85,11 +85,15 @@ The resources should now be loaded correctly. You can verify by checking:
    - `pack_format: 15` for Minecraft 1.20.1
    - A description for the resource pack
 
-2. **Fixed BufferBuilder crash** in `common/src/main/java/com/mamiyaotaru/voxelmap/Map.java` (lines 1568-1613) - Commented out incomplete rendering code that was calling `BufferBuilder.begin()` without a matching `end()`. This was leaving the BufferBuilder in a "building" state and causing the `IllegalStateException: Already building!` crash.
+2. **Fixed BufferBuilder crash** in `common/src/main/java/com/mamiyaotaru/voxelmap/Map.java` (lines 1568-1613) - Replaced incomplete rendering code that was calling `BufferBuilder.begin()` without a matching `end()` with proper GuiGraphics.blit() implementation using 1.20.1 rendering API.
 
-3. **Added `.mcassetsroot` markers** to `common/src/main/resources/` and `forge/src/main/resources/` directories. These files tell Forge's development environment where to find mod resources.
+3. **Fixed black minimap issue** - The rendering code was hardcoded to render 256x256 textures (zoom level 3 only), but VoxelMap uses different texture sizes for each zoom level (32x32, 64x64, 128x128, 256x256, 512x512). Changed both minimap and full map rendering to dynamically calculate texture size based on zoom level: `textureSize = 32 * 2^zoom`. This ensures the correct texture is rendered at any zoom level.
 
-4. **Build configuration already correct** in `forge/build.gradle.kts`:
+4. **Fixed PoseStack balance** - Removed extra `popPose()` call at line 1648 that was causing `NoSuchElementException` crashes.
+
+5. **Added `.mcassetsroot` markers** to `common/src/main/resources/` and `forge/src/main/resources/` directories. These files tell Forge's development environment where to find mod resources.
+
+6. **Build configuration already correct** in `forge/build.gradle.kts`:
    ```kotlin
    tasks.jar {
        val main = project.project(":common").sourceSets.getByName("main")
@@ -134,7 +138,32 @@ Minecraft's rendering system uses a `BufferBuilder` to batch vertex data before 
 
 **The Issue:** The incomplete 1.20.1 port code in `Map.renderMap()` called `begin()` but the corresponding rendering code that would have called `end()` was commented out. This left the BufferBuilder in a "building" state, causing all subsequent rendering operations (including vanilla Minecraft GUI rendering) to crash with `IllegalStateException: Already building!`.
 
-**The Fix:** Comment out the entire incomplete rendering section to prevent the BufferBuilder from being left in an inconsistent state.
+**The Fix:** Replace the incomplete rendering code with proper GuiGraphics.blit() calls using the 1.20.1 rendering API.
+
+### Zoom Level Texture Sizes
+VoxelMap uses different texture resolutions for each zoom level to optimize memory and rendering performance:
+- **Zoom 0** (furthest out): 32x32 texture
+- **Zoom 1**: 64x64 texture
+- **Zoom 2**: 128x128 texture (1:1 scale)
+- **Zoom 3**: 256x256 texture
+- **Zoom 4** (closest): 512x512 texture
+
+The texture size follows the formula: `textureSize = 32 * 2^zoom`
+
+**The Issue:** The rendering code in both `renderMap()` (minimap) and `renderMapFull()` (full map) was hardcoded to render 256x256 textures, assuming zoom level 3. When using other zoom levels, this caused:
+- Wrong texture dimensions being passed to `guiGraphics.blit()`
+- Incorrect scaling calculations
+- Black minimap because the texture data didn't match the rendering dimensions
+
+**The Fix:** Calculate texture size dynamically based on the current zoom level:
+```java
+int textureSize = 32 * (int) Math.pow(2.0, this.zoom);
+int halfTextureSize = textureSize / 2;
+float textureScale = 64.0f / textureSize;  // Scale to 64x64 minimap size
+float offsetMultiplier = textureSize / 64.0F;  // Correct player movement offset
+```
+
+This ensures the rendering code works correctly at any zoom level.
 
 ### Multi-Loader Project Setup
 In a multi-loader project setup (common + forge), resources in the `common` module need to be properly configured:
