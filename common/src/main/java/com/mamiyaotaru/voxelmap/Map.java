@@ -1579,15 +1579,22 @@ public class Map implements Runnable, IChangeObserver {
             guiGraphics.pose().scale(scale, scale, 1.0f);
         }
 
-        // Scale the 256x256 texture down to 64x64 for the minimap
-        guiGraphics.pose().scale(64.0f / 256.0f, 64.0f / 256.0f, 1.0f);
+        // Get the texture size for the current zoom level
+        // Zoom 0: 32x32, Zoom 1: 64x64, Zoom 2: 128x128, Zoom 3: 256x256, Zoom 4: 512x512
+        int textureSize = 32 * (int) Math.pow(2.0, this.zoom);
+        int halfTextureSize = textureSize / 2;
+
+        // Scale the texture down to 64x64 for the minimap
+        float textureScale = 64.0f / textureSize;
+        guiGraphics.pose().scale(textureScale, textureScale, 1.0f);
 
         // Apply offset based on player movement within the map
-        // percentX/Y are in map coordinates, multiply by 256/64 = 4 to convert to texture pixels
-        guiGraphics.pose().translate(-this.percentX * 4.0F, this.percentY * 4.0F, 0.0f);
+        // percentX/Y are in map coordinates, multiply by textureSize/64 to convert to texture pixels
+        float offsetMultiplier = textureSize / 64.0F;
+        guiGraphics.pose().translate(-this.percentX * offsetMultiplier, this.percentY * offsetMultiplier, 0.0f);
 
-        // Render the full 256x256 map texture, which will be scaled to 64x64 by the transforms above
-        guiGraphics.blit(mapResources[this.zoom], -128, -128, 0, 0, 256, 256, 256, 256);
+        // Render the full map texture, which will be scaled to 64x64 by the transforms above
+        guiGraphics.blit(mapResources[this.zoom], -halfTextureSize, -halfTextureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
 
         guiGraphics.pose().popPose();
 
@@ -1828,10 +1835,14 @@ public class Map implements Runnable, IChangeObserver {
         matrixStack.translate(scWidth / 2.0F, scHeight / 2.0F, 0.0f);
         matrixStack.mulPose(Axis.ZP.rotationDegrees(this.northRotate));
         matrixStack.translate(-(scWidth / 2.0F), -(scHeight / 2.0F), 0.0f);
-        int left = scWidth / 2 - 128;
-        int top = scHeight / 2 - 128;
 
-        guiGraphics.blit(mapResources[this.zoom], left, top, 0, 0, 256, 256, 256, 256);
+        // Get the texture size for the current zoom level
+        int textureSize = 32 * (int) Math.pow(2.0, this.zoom);
+        int halfTextureSize = textureSize / 2;
+        int left = scWidth / 2 - halfTextureSize;
+        int top = scHeight / 2 - halfTextureSize;
+
+        guiGraphics.blit(mapResources[this.zoom], left, top, 0, 0, textureSize, textureSize, textureSize, textureSize);
         matrixStack.popPose();
 
         if (this.options.biomeOverlay != 0) {
@@ -1848,7 +1859,7 @@ public class Map implements Runnable, IChangeObserver {
                     float x = (float) (o.x * factor);
                     float z = (float) (o.z * factor);
                     if (this.options.oldNorth) {
-                        this.write(guiGraphics, name, (left + 256) - z - (nameWidth / 2f), top + x - 3.0F, 0xFFFFFFFF);
+                        this.write(guiGraphics, name, (left + textureSize) - z - (nameWidth / 2f), top + x - 3.0F, 0xFFFFFFFF);
                     } else {
                         this.write(guiGraphics, name, left + x - (nameWidth / 2f), top + z - 3.0F, 0xFFFFFFFF);
                     }
