@@ -27,26 +27,32 @@ public class DynamicMoveableTexture extends DynamicTexture {
         synchronized (this.bufferLock) {
             if (offset == 0) return;
 
-            // 1.20.1 Port: Use NativeImage pixel operations instead of direct memory access
+            // 1.20.1 Port: Use bulk memory copy for performance
             int width = this.getPixels().getWidth();
             int height = this.getPixels().getHeight();
+            long pointer = this.getPixels().pixels;
+
+            if (pointer == 0L) return;
+
+            int bytesPerPixel = 4; // RGBA
+            int rowBytes = width * bytesPerPixel;
 
             if (offset > 0) {
-                // Shift right: copy pixels from left to right
+                // Shift right: copy pixels from right to left to avoid overlap
                 for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width - offset; x++) {
-                        int pixel = this.getPixels().getPixelRGBA(x + offset, y);
-                        this.getPixels().setPixelRGBA(x, y, pixel);
-                    }
+                    long srcAddr = pointer + (y * width + offset) * bytesPerPixel;
+                    long dstAddr = pointer + (y * width) * bytesPerPixel;
+                    int copyBytes = (width - offset) * bytesPerPixel;
+                    MemoryUtil.memCopy(srcAddr, dstAddr, copyBytes);
                 }
             } else if (offset < 0) {
-                // Shift left: copy pixels from right to left
+                // Shift left: copy pixels from left to right to avoid overlap
                 int absOffset = -offset;
                 for (int y = 0; y < height; y++) {
-                    for (int x = width - 1; x >= absOffset; x--) {
-                        int pixel = this.getPixels().getPixelRGBA(x - absOffset, y);
-                        this.getPixels().setPixelRGBA(x, y, pixel);
-                    }
+                    long srcAddr = pointer + (y * width) * bytesPerPixel;
+                    long dstAddr = pointer + (y * width + absOffset) * bytesPerPixel;
+                    int copyBytes = (width - absOffset) * bytesPerPixel;
+                    MemoryUtil.memCopy(srcAddr, dstAddr, copyBytes);
                 }
             }
         }
@@ -56,26 +62,30 @@ public class DynamicMoveableTexture extends DynamicTexture {
         synchronized (this.bufferLock) {
             if (offset == 0) return;
 
-            // 1.20.1 Port: Use NativeImage pixel operations instead of direct memory access
+            // 1.20.1 Port: Use bulk memory copy for performance
             int width = this.getPixels().getWidth();
             int height = this.getPixels().getHeight();
+            long pointer = this.getPixels().pixels;
+
+            if (pointer == 0L) return;
+
+            int bytesPerPixel = 4; // RGBA
+            int rowBytes = width * bytesPerPixel;
 
             if (offset > 0) {
-                // Shift down: copy pixels from top to bottom
+                // Shift down: copy rows from bottom to top to avoid overlap
                 for (int y = 0; y < height - offset; y++) {
-                    for (int x = 0; x < width; x++) {
-                        int pixel = this.getPixels().getPixelRGBA(x, y + offset);
-                        this.getPixels().setPixelRGBA(x, y, pixel);
-                    }
+                    long srcAddr = pointer + (y + offset) * rowBytes;
+                    long dstAddr = pointer + y * rowBytes;
+                    MemoryUtil.memCopy(srcAddr, dstAddr, rowBytes);
                 }
             } else if (offset < 0) {
-                // Shift up: copy pixels from bottom to top
+                // Shift up: copy rows from top to bottom to avoid overlap
                 int absOffset = -offset;
                 for (int y = height - 1; y >= absOffset; y--) {
-                    for (int x = 0; x < width; x++) {
-                        int pixel = this.getPixels().getPixelRGBA(x, y - absOffset);
-                        this.getPixels().setPixelRGBA(x, y, pixel);
-                    }
+                    long srcAddr = pointer + (y - absOffset) * rowBytes;
+                    long dstAddr = pointer + y * rowBytes;
+                    MemoryUtil.memCopy(srcAddr, dstAddr, rowBytes);
                 }
             }
         }
