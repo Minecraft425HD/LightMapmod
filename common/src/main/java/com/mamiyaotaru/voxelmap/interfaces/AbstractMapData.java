@@ -28,15 +28,18 @@ public abstract class AbstractMapData {
         this.points = new Point[this.width][this.height];
         this.segments = new ArrayList<>();
 
-        for (int x = 0; x < this.width; ++x) {
-            for (int z = 0; z < this.height; ++z) {
+        // OPTIMIZED: Z outer, X inner for sequential biome array access
+        // biomes[x + z * width] - as x increases, index increases by 1 (cache-friendly!)
+        for (int z = 0; z < this.height; ++z) {
+            for (int x = 0; x < this.width; ++x) {
                 this.points[x][z] = new Point(x, z, this.getBiome(x, z));
             }
         }
 
         synchronized (this.dataLock) {
-            for (int x = 0; x < this.width; ++x) {
-                for (int z = 0; z < this.height; ++z) {
+            // OPTIMIZED: Z outer, X inner for sequential points array access
+            for (int z = 0; z < this.height; ++z) {
+                for (int x = 0; x < this.width; ++x) {
                     if (!this.points[x][z].inSegment) {
                         long startTime = System.nanoTime();
                         if (this.points[x][z].biomeID == null) {

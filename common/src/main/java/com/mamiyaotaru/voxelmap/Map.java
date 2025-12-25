@@ -154,6 +154,7 @@ public class Map implements Runnable, IChangeObserver {
     private int lastImageX;
     private int lastImageZ;
     private boolean lastFullscreen;
+    private int biomeSegmentationCounter = 0;
     private float direction;
     private float percentX;
     private float percentY;
@@ -885,9 +886,15 @@ public class Map implements Runnable, IChangeObserver {
             }
         }
 
+        // OPTIMIZED: Throttle biome segmentation - only run every 4 pixels of movement
+        // Running on EVERY pixel movement was causing massive stuttering on N/S movement!
         if ((full || offsetX != 0 || offsetZ != 0 || !this.lastFullscreen) && this.fullscreenMap && this.options.biomeOverlay != 0) {
-            this.mapData[zoom].segmentBiomes();
-            this.mapData[zoom].findCenterOfSegments(!this.options.oldNorth);
+            biomeSegmentationCounter += Math.abs(offsetX) + Math.abs(offsetZ);
+            if (full || !this.lastFullscreen || biomeSegmentationCounter >= 4) {
+                this.mapData[zoom].segmentBiomes();
+                this.mapData[zoom].findCenterOfSegments(!this.options.oldNorth);
+                biomeSegmentationCounter = 0;
+            }
         }
 
         this.lastFullscreen = this.fullscreenMap;
