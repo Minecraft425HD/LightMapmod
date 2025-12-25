@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Livello di zoom:",
-  "minimap.ui.otherOptions": "Altre opzioni",
   "options.minimap.title": "Opzioni della minimappa",
-  "options.minimap.oldNorth": "Vecchio Nord",
   "options.minimap.location": "Luogo",
   "options.minimap.location.topLeft": "In alto a sinistra",
   "options.minimap.location.topRight": "In alto a destra",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Piccola",
   "options.minimap.size.medium": "Normale",
   "options.minimap.size.large": "Grande",
-  "key.category.voxelmap.controls.title": "Controlli della minimappa",
-  "controls.minimap.unbind1": "Per deselezionare un tasto, selezionarlo e premere 'Escape'.",
-  "controls.minimap.unbind2": "(Eccetto per il Tasto Menu - non può essere deselezionato)",
   "key.minimap.zoom": "Zoom",
   "key.minimap.toggleFullscreen": "Seleziona mappa a tutto schermo",
   "key.minimap.menu": "Menu",

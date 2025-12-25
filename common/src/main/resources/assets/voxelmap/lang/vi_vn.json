@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Mức độ phóng đại:",
-  "minimap.ui.otherOptions": "Tùy chọn khác",
   "options.minimap.title": "Tùy chọn cho bản đồ",
-  "options.minimap.oldNorth": "Phía bắc kiểu cũ",
   "options.minimap.location": "Vị trí",
   "options.minimap.location.topLeft": "Trên - Trái",
   "options.minimap.location.topRight": "Trên - Phải",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Nhỏ",
   "options.minimap.size.medium": "Thường",
   "options.minimap.size.large": "Lớn",
-  "key.category.voxelmap.controls.title": "Điều khiển bản đồ",
-  "controls.minimap.unbind1": "Để hủy gán một phím, chọn nó và ấn phím \"ESC\".",
-  "controls.minimap.unbind2": "(Ngoại trừ phím Menu - Nó không thể bị hủy gán)",
   "key.minimap.zoom": "Phóng đại",
   "key.minimap.toggleFullscreen": "Chuyển đổi bản đồ toàn màn hình",
   "key.minimap.voxelmapMenu": "VoxelMap Menu",

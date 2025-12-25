@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Pritraukimo Lygis:",
-  "minimap.ui.otherOptions": "Kitos Parinktys",
   "options.minimap.title": "Žemėlapio Parinktys",
-  "options.minimap.oldNorth": "Sena Šiaurė",
   "options.minimap.location": "Vieta",
   "options.minimap.location.topLeft": "Viršui kairėje",
   "options.minimap.location.topRight": "Viršui dešinėje",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Mažas",
   "options.minimap.size.medium": "Įprastas",
   "options.minimap.size.large": "Didlelis",
-  "key.category.voxelmap.controls.title": "Žemėlapio Kontrolė",
-  "controls.minimap.unbind1": "Kad atrinktum mygtuką, Pasarink jį ir spausk'Escape'.",
-  "controls.minimap.unbind2": "(To negalima padaryti su Menu Mygtuku - nes jis neatrinkamas)",
   "key.minimap.zoom": "Pritraukimas",
   "key.minimap.toggleFullscreen": "Pasirinkti žemėlapi per visą ekraną",
   "key.minimap.menu": "Menių",

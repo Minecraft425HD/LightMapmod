@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Poziom przybliżenia:",
-  "minimap.ui.otherOptions": "Opcje dodatkowe",
   "options.minimap.title": "Opcje minimapy",
-  "options.minimap.oldNorth": "Stare kierunki świata",
   "options.minimap.location": "Pozycja mapy",
   "options.minimap.location.topLeft": "Górny lewy róg",
   "options.minimap.location.topRight": "Górny prawy róg",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Mały",
   "options.minimap.size.medium": "Średni",
   "options.minimap.size.large": "Duży",
-  "key.category.voxelmap.controls.title": "Sterowanie",
-  "controls.minimap.unbind1": "Jeśli nie chcesz używać klawisza, wybierz go i naciśnij 'Esc'.",
-  "controls.minimap.unbind2": "(za wyjątkiem klawisza Menu)",
   "key.minimap.zoom": "Przybliżanie",
   "key.minimap.toggleFullscreen": "Tryb pełnoekranowy",
   "key.minimap.menu": "Menu",

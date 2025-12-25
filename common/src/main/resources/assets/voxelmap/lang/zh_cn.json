@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "缩放等级:",
-  "minimap.ui.otherOptions": "其他选项",
   "options.minimap.title": "小地图选项",
-  "options.minimap.oldNorth": "日落北方",
   "options.minimap.location": "地图位置",
   "options.minimap.location.topLeft": "左上角",
   "options.minimap.location.topRight": "右上角",
@@ -15,23 +13,10 @@
   "options.minimap.size.xl": "XL",
   "options.minimap.size.xxl": "XXL",
   "options.minimap.size.xxxl": "XXXL",
-  "options.minimap.teleportCommand": "传送命令",
-  "options.minimap.moveScoreboardBelowMap": "移动计分板至小地图下",
-  "options.minimap.moveMapBelowStatusEffectIcons": "移动小地图至状态效果图标下",
-  "key.category.voxelmap.controls.title": "小地图按键选项",
-  "controls.minimap.unbind1": "要解除一个按键的绑定，先选择它，然后按下Escape键",
-  "controls.minimap.unbind2": "(除了菜单键 - 它不能被解除绑定)",
   "key.minimap.zoom": "缩放",
   "key.minimap.toggleFullscreen": "切换大地图",
   "key.minimap.voxelmapMenu": "VoxelMap菜单",
   "key.minimap.menu": "菜单",
   "minimap.waypoints.teleportTo": "传送到该导航点",
-  "options.minimap.worldmap": "世界地图…",
-  "worldmap.title": "VoxelMap",
-  "options.worldmap.title": "世界地图选项",
-  "options.worldmap.cacheSettings": "缩放/缓存设置",
-  "options.worldmap.warning": "(修改风险自负)",
-  "options.worldmap.minZoom": "最小缩放等级",
-  "options.worldmap.maxZoom": "最大缩放等级",
-  "options.worldmap.cacheSize": "区域缓存大小"
+  "worldmap.title": "VoxelMap"
 }

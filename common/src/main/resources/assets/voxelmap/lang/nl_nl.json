@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Zoomniveau:",
-  "minimap.ui.otherOptions": "Andere Opties",
   "options.minimap.title": "Minimap Opties",
-  "options.minimap.oldNorth": "Oude Noorden",
   "options.minimap.location": "Plaats",
   "options.minimap.location.topLeft": "Linksboven",
   "options.minimap.location.topRight": "Rechtsboven",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Klein",
   "options.minimap.size.medium": "Normaal",
   "options.minimap.size.large": "Groot",
-  "key.category.voxelmap.controls.title": "Minimap Controles",
-  "controls.minimap.unbind1": "Om een toets te ontbinden, selecteer het en druk op \"Escape\".",
-  "controls.minimap.unbind2": "(Behalve de menu-toets - dat kan niet worden ongebonden)",
   "key.minimap.zoom": "Zoom",
   "key.minimap.toggleFullscreen": "Schakel volledig scerm kaart.",
   "key.minimap.menu": "Menu",

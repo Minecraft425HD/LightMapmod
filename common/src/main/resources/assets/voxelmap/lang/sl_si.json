@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Velikost zooma:",
-  "minimap.ui.otherOptions": "Ostale nastavitve",
   "options.minimap.title": "Nastavitve Mini-zemljevida",
-  "options.minimap.oldNorth": "Stari sever",
   "options.minimap.location": "Lokacija",
   "options.minimap.location.topLeft": "Zgoraj Levo",
   "options.minimap.location.topRight": "Zgoraj Desno",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Majhna",
   "options.minimap.size.medium": "Standardna",
   "options.minimap.size.large": "Velika",
-  "key.category.voxelmap.controls.title": "Kontrole mini-zemljevida",
-  "controls.minimap.unbind1": "Da izbrišeš bližnjico, jo izberi in pritisni 'Escape'.",
-  "controls.minimap.unbind2": "(Razen za tipko za meni - te ne moreš spremeniti)",
   "key.minimap.zoom": "Približaj",
   "key.minimap.toggleFullscreen": "Priključi ali izključi celozaslonski zemljevid",
   "key.minimap.menu": "Meni",

@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Zoom Level:",
-  "minimap.ui.otherOptions": "Annað Valkostir",
   "options.minimap.title": "minimap Valkostir",
-  "options.minimap.oldNorth": "Old North",
   "options.minimap.location": "Staðsetning",
   "options.minimap.location.topLeft": "Top Vinstri",
   "options.minimap.location.topRight": "Top Right",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Small",
   "options.minimap.size.medium": "Venjulegur",
   "options.minimap.size.large": "Large",
-  "key.category.voxelmap.controls.title": "minimap Stýrir",
-  "controls.minimap.unbind1": "Til unbind lykil, velja það og ýta á 'Escape'.",
-  "controls.minimap.unbind2": "(Nema fyrir á Valmynd takkann - það getur ekki verið óbundið)",
   "key.minimap.zoom": "Zoom",
   "key.minimap.toggleFullscreen": "Víxla Fullscreen Kort",
   "key.minimap.menu": "Valmynd",

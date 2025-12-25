@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Nagyítási szint",
-  "minimap.ui.otherOptions": "Egyéb beállítások",
   "options.minimap.title": "Minitérkép beállítások",
-  "options.minimap.oldNorth": "Régi Észak",
   "options.minimap.location": "Elhelyezés",
   "options.minimap.location.topLeft": "Bal felső",
   "options.minimap.location.topRight": "Jobb felső",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Kicsi",
   "options.minimap.size.medium": "Közepes",
   "options.minimap.size.large": "Nagy",
-  "key.category.voxelmap.controls.title": "Minitérkép kezelés",
-  "controls.minimap.unbind1": "Törléshez válasszd ki a gombot, es nyomj 'ESC'-et.",
-  "controls.minimap.unbind2": "(Kivéve a Menü-gomb, az nem változtatható)",
   "key.minimap.zoom": "Nagyítás",
   "key.minimap.toggleFullscreen": "Teljes képernyős térkép",
   "key.minimap.menu": "Menü",

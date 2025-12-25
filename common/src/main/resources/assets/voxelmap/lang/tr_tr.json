@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Zoom seviyesi:",
-  "minimap.ui.otherOptions": "Diğer ayarlar",
   "options.minimap.title": "Miniharita Ayarları",
-  "options.minimap.oldNorth": "Eski Kuzey",
   "options.minimap.location": "Konum",
   "options.minimap.location.topLeft": "Sol Üst",
   "options.minimap.location.topRight": "Sağ Üst",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Küçük",
   "options.minimap.size.medium": "Orta",
   "options.minimap.size.large": "Büyük",
-  "key.category.voxelmap.controls.title": "Miniharita Kontrolleri",
-  "controls.minimap.unbind1": "Bir tuşun bağlantısını kaldırmak için,tuşu seçin ve \"ESC\" tuşuna basın.",
-  "controls.minimap.unbind2": "(Menü butonu dışında-onun bağlantısı kaldırılamaz)",
   "key.minimap.zoom": "Zoom",
   "key.minimap.toggleFullscreen": "Tam Ekran Haritayı Aç/Kapa",
   "key.minimap.menu": "Menü",

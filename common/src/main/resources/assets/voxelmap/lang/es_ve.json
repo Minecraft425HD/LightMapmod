@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Nivel de Zoom:",
-  "minimap.ui.otherOptions": "Otras Opciones",
   "options.minimap.title": "Opciones de Mapa",
-  "options.minimap.oldNorth": "Norte viejo",
   "options.minimap.location": "Ubicación",
   "options.minimap.location.topLeft": "Superior Izquierdo",
   "options.minimap.location.topRight": "Superior Derecho",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Pequeño",
   "options.minimap.size.medium": "Medio",
   "options.minimap.size.large": "Grande",
-  "key.category.voxelmap.controls.title": "Controles de Minimapa",
-  "controls.minimap.unbind1": "Para desasociar una clave, pulse 'Escape'.",
-  "controls.minimap.unbind2": "(Excepto por la clave de Menú - No la puede desasociar)",
   "key.minimap.zoom": "Zoom de Minimapa",
   "key.minimap.toggleFullscreen": "Mostrar mapa en pantalla completa",
   "key.minimap.voxelmapMenu": "Menú de Minimapa",

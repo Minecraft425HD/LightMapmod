@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Επίπεδο Ζουμ:",
-  "minimap.ui.otherOptions": "Άλλες επιλογές",
   "options.minimap.title": "Μικρός Επιλογές",
-  "options.minimap.oldNorth": "Old North",
   "options.minimap.location": "Τοποθεσία",
   "options.minimap.location.topLeft": "Top Αριστερά",
   "options.minimap.location.topRight": "Πάνωδεξιά",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Μικρό",
   "options.minimap.size.medium": "τακτική",
   "options.minimap.size.large": "Large",
-  "key.category.voxelmap.controls.title": "Μικρός ελέγχου",
-  "controls.minimap.unbind1": "Για να αποσυνδέσετε ένα κλειδί, επιλέξτε το και πατήστε «Escape».",
-  "controls.minimap.unbind2": "(Εκτός από το πλήκτρο μενού - δεν μπορεί να είναι λυμένο)",
   "key.minimap.zoom": "Zoom",
   "key.minimap.toggleFullscreen": "Εναλλαγή Fullscreen Χάρτης",
   "key.minimap.menu": "Μενού",

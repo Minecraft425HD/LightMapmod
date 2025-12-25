@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Ниво зумирања:",
-  "minimap.ui.otherOptions": "Остала Подешавања",
   "options.minimap.title": "Подешавања Минимапе",
-  "options.minimap.oldNorth": "Стари Северoptions.",
   "options.minimap.location": "Локација",
   "options.minimap.location.topLeft": "Горе Лево",
   "options.minimap.location.topRight": "Горе Десно",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Мало",
   "options.minimap.size.medium": "Нормално",
   "options.minimap.size.large": "Велико",
-  "key.category.voxelmap.controls.title": "Контроле Минимапе",
-  "controls.minimap.unbind1": "Дa раскорачите дугме, изаберите га и притисните 'Escape'.",
-  "controls.minimap.unbind2": "(Осим за Мени дугме - не може се раскорачити)",
   "key.minimap.zoom": "Зумирај",
   "key.minimap.toggleFullscreen": "Омогући мапу преко целог екрана",
   "key.minimap.menu": "Мени",

@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "ズームレベル：",
-  "minimap.ui.otherOptions": "その他のオプション",
   "options.minimap.title": "ミニマップのオプション",
-  "options.minimap.oldNorth": "旧バージョンの北",
   "options.minimap.location": "場所",
   "options.minimap.location.topLeft": "左上",
   "options.minimap.location.topRight": "右上",
@@ -15,21 +13,10 @@
   "options.minimap.size.xl": "XL",
   "options.minimap.size.xxl": "XXL",
   "options.minimap.size.xxxl": "XXXL",
-  "options.minimap.teleportCommand": "テレポートコマンド",
-  "key.category.voxelmap.controls.title": "ミニマップコントロール",
-  "controls.minimap.unbind1": "キーバインドを解除するには、それを選択して\"Escキー\"を押してください。",
-  "controls.minimap.unbind2": "(メニューキーを除く - それはアンバインドできません)",
   "key.minimap.zoom": "ズーム",
   "key.minimap.toggleFullscreen": "フルスクリーンマップを切り替える",
   "key.minimap.voxelmapMenu": "VoxelMap メニュー",
   "key.minimap.menu": "メニュー",
   "minimap.waypoints.teleportTo": "にテレポート",
-  "options.minimap.worldmap": "ワールドマップ...",
-  "worldmap.title": "VoxelMap",
-  "options.worldmap.title": "ワールドマップオプション",
-  "options.worldmap.cacheSettings": "ズームとキャッシュの設定",
-  "options.worldmap.warning": "(ご自身の責任で編集してください)",
-  "options.worldmap.minZoom": "最小ズーム",
-  "options.worldmap.maxZoom": "最大ズーム",
-  "options.worldmap.cacheSize": "Regionのキャッシュサイズ"
+  "worldmap.title": "VoxelMap"
 }

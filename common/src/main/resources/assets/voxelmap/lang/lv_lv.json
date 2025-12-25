@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Pietuvināšanas līmenis: ",
-  "minimap.ui.otherOptions": "Citi uzstādijumi",
   "options.minimap.title": "Minimapes uzstādijumi ",
-  "options.minimap.oldNorth": "\"Vecie ziemeļi\" ",
   "options.minimap.location": "Atrašanās vieta ",
   "options.minimap.location.topLeft": "Augšējā kreisajā ",
   "options.minimap.location.topRight": "Augšējā labajā",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Mazs",
   "options.minimap.size.medium": "Vidējs ",
   "options.minimap.size.large": "Liels ",
-  "key.category.voxelmap.controls.title": "Minimapes kontroles ",
-  "controls.minimap.unbind1": "Lai atbindotu taustiņu, izvēlaties to un spiežat 'Escape'. ",
-  "controls.minimap.unbind2": "(Izņemot izvēlnes taustiņu - to nevar atbindot) ",
   "key.minimap.zoom": "Pietuvināt ",
   "key.minimap.toggleFullscreen": "Iespējot pilnekrāna karti ",
   "key.minimap.menu": "Izvēlne ",

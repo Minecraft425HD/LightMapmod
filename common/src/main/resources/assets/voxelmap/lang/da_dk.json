@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Zoom Niveau:",
-  "minimap.ui.otherOptions": "Andre Indstillinger",
   "options.minimap.title": "Minimap Indstillinger",
-  "options.minimap.oldNorth": "Gammel Nord",
   "options.minimap.location": "Lokation",
   "options.minimap.location.topLeft": "Øverste venstre hjørne",
   "options.minimap.location.topRight": "Øverste højre hjørne",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Lille",
   "options.minimap.size.medium": "Normal",
   "options.minimap.size.large": "Stor",
-  "key.category.voxelmap.controls.title": "Minimap Styring",
-  "controls.minimap.unbind1": "For at ubinde en Tast, vælg den og tryk på 'Escape'.",
-  "controls.minimap.unbind2": "(Undtagen for Menu Tasten - den kan ikke blive ubundet)",
   "key.minimap.zoom": "Zoom",
   "key.minimap.toggleFullscreen": "Sæt Fullscreen Map til/fra",
   "key.minimap.menu": "Menu",

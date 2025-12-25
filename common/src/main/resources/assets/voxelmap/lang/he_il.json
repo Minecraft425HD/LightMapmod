@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "רמת זום:",
-  "minimap.ui.otherOptions": "אפשרויות אחרות",
   "options.minimap.title": "אפשרויות מפה",
-  "options.minimap.oldNorth": "צפון ישן",
   "options.minimap.location": "מיקום",
   "options.minimap.location.topLeft": "פינה שמאלית למעלה",
   "options.minimap.location.topRight": "פינה ימנית למעלה",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "קטן",
   "options.minimap.size.medium": "רגיל",
   "options.minimap.size.large": "גדול",
-  "key.category.voxelmap.controls.title": "לחצני מפה",
-  "controls.minimap.unbind1": ".'Escape' בשביל התרת מקש, יש לבחור בו וללחוץ",
-  "controls.minimap.unbind2": "(חוץ ממקש התפריט - הוא בלתי-אפשרי לביטול)",
   "key.minimap.zoom": "זום",
   "key.minimap.toggleFullscreen": "הפעל מפה במסך מלא",
   "key.minimap.voxelmapMenu": "VoxelMap תפריט",

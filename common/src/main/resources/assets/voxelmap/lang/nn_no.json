@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Zoomnivå:",
-  "minimap.ui.otherOptions": "Andre instillingar",
   "options.minimap.title": "Minimap-Instillingar",
-  "options.minimap.oldNorth": "Gammal Nord",
   "options.minimap.location": "Plassering",
   "options.minimap.size": "Storleik",
   "options.minimap.location.topLeft": "Topp Venstre",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Liten",
   "options.minimap.size.medium": "Standard",
   "options.minimap.size.large": "Stor",
-  "key.category.voxelmap.controls.title": "Minimap-Kontroller",
-  "controls.minimap.unbind1": "For å lauskople ein tast, vel den og trykk 'Escape'.",
-  "controls.minimap.unbind2": "(Unntak for Menyknappen - den kan ikkje bli lauskopla)",
   "key.minimap.zoom": "Zoom",
   "key.minimap.toggleFullscreen": "Fullskjermkart av/på",
   "key.minimap.menu": "Meny",

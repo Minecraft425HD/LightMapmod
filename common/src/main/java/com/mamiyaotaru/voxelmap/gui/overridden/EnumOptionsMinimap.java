@@ -4,12 +4,7 @@ public enum EnumOptionsMinimap {
     OLD_NORTH("options.minimap.oldNorth", false, true, false),
     ZOOM("option.minimapZoom", false, true, false),
     LOCATION("options.minimap.location", false, false, true),
-    SIZE("options.minimap.size", false, false, true),
-    MIN_ZOOM("options.worldmap.minZoom", true, false, false),
-    MAX_ZOOM("options.worldmap.maxZoom", true, false, false),
-    CACHE_SIZE("options.worldmap.cacheSize", true, false, false),
-    MOVE_MAP_DOWN_WHILE_STATUS_EFFECT("options.minimap.moveMapBelowStatusEffectIcons", false, true, false),
-    MOVE_SCOREBOARD_DOWN("options.minimap.moveScoreboardBelowMap", false, true, false);
+    SIZE("options.minimap.size", false, false, true);
 
     private final boolean isFloat;
     private final boolean isBoolean;

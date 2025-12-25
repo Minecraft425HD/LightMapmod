@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Ниво на zoom:",
-  "minimap.ui.otherOptions": "Други опции",
   "options.minimap.title": "Опции на минимапа",
-  "options.minimap.oldNorth": "Old North",
   "options.minimap.location": "Местоположение",
   "options.minimap.location.topLeft": "Горно ляво",
   "options.minimap.location.topRight": "Горно дясно",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Малък",
   "options.minimap.size.medium": "Нормален",
   "options.minimap.size.large": "Голям",
-  "key.category.voxelmap.controls.title": "Минимап контроли",
-  "controls.minimap.unbind1": "За да премахнете копче, изберете го и натиснете \"Escape\".",
-  "controls.minimap.unbind2": "(С изключение на клавиша за менюто - той не може да няма бутон)",
   "key.minimap.zoom": "Zoom",
   "key.minimap.toggleFullscreen": "Голяма карта",
   "key.minimap.menu": "Меню",

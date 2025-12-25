@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "مستوى التكبير:",
-  "minimap.ui.otherOptions": "خيارات أخرى",
   "options.minimap.title": "خيارات الخريطة",
-  "options.minimap.oldNorth": "قدم الشمال",
   "options.minimap.location": "موقع الخريطة",
   "options.minimap.location.topLeft": "أعلى اليسار",
   "options.minimap.location.topRight": "أعلى اليمين",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "صغير",
   "options.minimap.size.medium": "متوسط",
   "options.minimap.size.large": "كبير",
-  "key.category.voxelmap.controls.title": "تحكم الخريطة",
-  "controls.minimap.unbind1": "لتوثيق مفتاح، حدده ثم اضغط على 'Esc'.",
-  "controls.minimap.unbind2": "(باستثناء مفتاح القائمة - لا يمكن أن يكون موجود)",
   "key.minimap.zoom": "تكبير",
   "key.minimap.toggleFullscreen": "تبديل الخريطة كامل الشاشة.",
   "key.minimap.menu": "القائمة",

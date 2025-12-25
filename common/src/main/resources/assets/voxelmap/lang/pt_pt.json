@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Nível de Zoom:",
-  "minimap.ui.otherOptions": "Outras Opções",
   "options.minimap.title": "Opções de Minimapa",
-  "options.minimap.oldNorth": "Norte velho",
   "options.minimap.location": "Localização",
   "options.minimap.location.topLeft": "Superior Esquerdo",
   "options.minimap.location.topRight": "Superior Direito",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Pequeno",
   "options.minimap.size.medium": "Médio",
   "options.minimap.size.large": "Grande",
-  "key.category.voxelmap.controls.title": "Controlos do Minimapa",
-  "controls.minimap.unbind1": "Para desassociar uma tecla, seleciona-a e prime 'Esc'.",
-  "controls.minimap.unbind2": "(Exceto a tecla de menu - Essa não pode ser desassociada)",
   "key.minimap.zoom": "Zoom",
   "key.minimap.toggleFullscreen": "Mostrar mapa de ecrã inteiro",
   "key.minimap.menu": "Menu",

@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Úroveň měřítka:",
-  "minimap.ui.otherOptions": "Další možnosti",
   "options.minimap.title": "Možnosti Minimapy",
-  "options.minimap.oldNorth": "Starý sever",
   "options.minimap.location": "Umístění",
   "options.minimap.location.topLeft": "Vlevo nahoře",
   "options.minimap.location.topRight": "Vpravo nahoře",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Malá",
   "options.minimap.size.medium": "Běžná",
   "options.minimap.size.large": "Velká",
-  "key.category.voxelmap.controls.title": "Ovládání Minimapy",
-  "controls.minimap.unbind1": "Pro odpojení klávesy ji vyber a stiskni 'Escape'.",
-  "controls.minimap.unbind2": "(Vyjma klávesy pro Nabídku - ta nemůže být odpojena)",
   "key.minimap.zoom": "Změna měřítka",
   "key.minimap.toggleFullscreen": "Přepínání na celou obrazovku",
   "key.minimap.menu": "Nabídka",

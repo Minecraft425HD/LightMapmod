@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Tingkat Perbesaran:",
-  "minimap.ui.otherOptions": "Pengaturan Lainnya",
   "options.minimap.title": "Pengaturan Minimap",
-  "options.minimap.oldNorth": "Utara Lama",
   "options.minimap.location": "Lokasi",
   "options.minimap.location.topLeft": "Kiri Atas",
   "options.minimap.location.topRight": "Kanan Atas",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Kecil",
   "options.minimap.size.medium": "Biasa",
   "options.minimap.size.large": "Besar",
-  "key.category.voxelmap.controls.title": "Kontrol Minimap",
-  "controls.minimap.unbind1": "Untuk mengubah penanda tombol, pilih dan tekan 'Escape/Esc'.",
-  "controls.minimap.unbind2": "(Terkecuali untuk tombol Menu, tidak bisa diubah)",
   "key.minimap.zoom": "Perbesar",
   "key.minimap.toggleFullscreen": "Beralih ke Peta Layar Penuh",
   "key.minimap.menu": "Menu",

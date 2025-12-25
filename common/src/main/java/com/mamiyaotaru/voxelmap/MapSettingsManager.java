@@ -49,8 +49,8 @@ public class MapSettingsManager implements ISettingsManager {
     public boolean worldmapAllowed = true;
     public boolean minimapAllowed = true;
 
-    public boolean moveMapDownWhileStatusEffect = true;
-    public boolean moveScoreBoardDown = true;
+    public final boolean moveMapDownWhileStatusEffect = true;
+    public final boolean moveScoreBoardDown = true;
     protected boolean realTimeTorches;
     public KeyMapping keyBindZoom;
     public KeyMapping keyBindFullscreen;
@@ -95,9 +95,6 @@ public class MapSettingsManager implements ISettingsManager {
                         case "Zoom Key" -> this.bindKey(this.keyBindZoom, curLine[1]);
                         case "Fullscreen Key" -> this.bindKey(this.keyBindFullscreen, curLine[1]);
                         case "Menu Key" -> this.bindKey(this.keyBindMenu, curLine[1]);
-                        case "Teleport Command" -> this.teleportCommand = curLine[1];
-                        case "Move Map Down While Status Effect" -> this.moveMapDownWhileStatusEffect = Boolean.parseBoolean(curLine[1]);
-                        case "Move ScoreBoard Down" -> this.moveScoreBoardDown = Boolean.parseBoolean(curLine[1]);
                     }
                 }
                 KeyMapping.resetMapping();
@@ -141,9 +138,6 @@ public class MapSettingsManager implements ISettingsManager {
             out.println("Zoom Key:" + this.keyBindZoom.saveString());
             out.println("Fullscreen Key:" + this.keyBindFullscreen.saveString());
             out.println("Menu Key:" + this.keyBindMenu.saveString());
-            out.println("Teleport Command:" + this.teleportCommand);
-            out.println("Move Map Down While Status Effect:" + this.moveMapDownWhileStatusEffect);
-            out.println("Move ScoreBoard Down:" + this.moveScoreBoardDown);
 
             for (ISubSettingsManager subSettingsManager : this.subSettingsManagers) {
                 subSettingsManager.saveAll(out);
@@ -188,8 +182,6 @@ public class MapSettingsManager implements ISettingsManager {
     public boolean getOptionBooleanValue(EnumOptionsMinimap par1EnumOptions) {
         return switch (par1EnumOptions) {
             case OLD_NORTH -> this.oldNorth;
-            case MOVE_MAP_DOWN_WHILE_STATUS_EFFECT -> this.moveMapDownWhileStatusEffect;
-            case MOVE_SCOREBOARD_DOWN -> this.moveScoreBoardDown;
             default -> throw new IllegalArgumentException("Add code to handle EnumOptionMinimap: " + par1EnumOptions.getName() + ". (possibly not a boolean applicable to minimap)");
         };
     }
@@ -243,8 +235,6 @@ public class MapSettingsManager implements ISettingsManager {
     public void setOptionValue(EnumOptionsMinimap par1EnumOptions) {
         switch (par1EnumOptions) {
             case OLD_NORTH -> this.oldNorth = !this.oldNorth;
-            case MOVE_MAP_DOWN_WHILE_STATUS_EFFECT -> this.moveMapDownWhileStatusEffect = !this.moveMapDownWhileStatusEffect;
-            case MOVE_SCOREBOARD_DOWN -> this.moveScoreBoardDown = !this.moveScoreBoardDown;
             case LOCATION -> this.mapCorner = this.mapCorner >= 3 ? 0 : this.mapCorner + 1;
             case SIZE -> this.sizeModifier = this.sizeModifier >= 4 ? -1 : this.sizeModifier + 1;
             default ->

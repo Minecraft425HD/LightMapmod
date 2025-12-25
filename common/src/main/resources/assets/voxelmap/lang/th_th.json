@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "ระดับการซูม: ",
-  "minimap.ui.otherOptions": "ตัวเลือกอื่นๆ ",
   "options.minimap.title": "ตัวเลือกแผนที่ขนาดย่อ ",
-  "options.minimap.oldNorth": "ทิศเหนือเก่า",
   "options.minimap.location": "ตำแหน่ง",
   "options.minimap.location.topLeft": "บนซ้าย ",
   "options.minimap.location.topRight": "บนขวา ",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "เล็ก ",
   "options.minimap.size.medium": "ปกติ ",
   "options.minimap.size.large": "ใหม่ ",
-  "key.category.voxelmap.controls.title": "ควบคุมแผนที่ขนาดเล็ก ",
-  "controls.minimap.unbind1": "หากต้องการนำปุ่มออก เลือกมันและกดปุ่ม 'Escape'",
-  "controls.minimap.unbind2": "(ยกเว้นปุ่มเมนูเพราะมันไม่สามารถนำออกได้) ",
   "key.minimap.zoom": "ซูม ",
   "key.minimap.toggleFullscreen": "สลับเป็นแผนที่เต็มหน้าจอ ",
   "key.minimap.menu": "เมนู ",

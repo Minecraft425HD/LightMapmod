@@ -2,11 +2,9 @@ package com.mamiyaotaru.voxelmap.gui;
 
 import com.mamiyaotaru.voxelmap.MapSettingsManager;
 import com.mamiyaotaru.voxelmap.VoxelConstants;
-import com.mamiyaotaru.voxelmap.VoxelMap;
 import com.mamiyaotaru.voxelmap.gui.overridden.EnumOptionsMinimap;
 import com.mamiyaotaru.voxelmap.gui.overridden.GuiOptionButtonMinimap;
 import com.mamiyaotaru.voxelmap.gui.overridden.GuiScreenMinimap;
-import com.mamiyaotaru.voxelmap.persistent.GuiPersistentMapOptions;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -27,7 +25,7 @@ public class GuiMinimapOptions extends GuiScreenMinimap {
 
     @Override
     public void init() {
-        EnumOptionsMinimap[] relevantOptions = { EnumOptionsMinimap.LOCATION, EnumOptionsMinimap.SIZE, EnumOptionsMinimap.MOVE_MAP_DOWN_WHILE_STATUS_EFFECT, EnumOptionsMinimap.MOVE_SCOREBOARD_DOWN };
+        EnumOptionsMinimap[] relevantOptions = { EnumOptionsMinimap.LOCATION, EnumOptionsMinimap.SIZE };
         this.screenTitle = I18n.get("options.minimap.title");
 
         for (int i = 0; i < relevantOptions.length; i++) {
@@ -36,10 +34,6 @@ public class GuiMinimapOptions extends GuiScreenMinimap {
             this.addRenderableWidget(optionButton);
         }
 
-        this.addRenderableWidget(new Button.Builder(Component.translatable("options.controls"), button -> VoxelConstants.getMinecraft().setScreen(new GuiMinimapControls(this))).bounds(this.getWidth() / 2 - 155, this.getHeight() / 6 + 135 - 6, 150, 20).build());
-        Button worldMapButton = new Button.Builder(Component.translatable("options.minimap.worldmap"), button -> VoxelConstants.getMinecraft().setScreen(new GuiPersistentMapOptions(this))).bounds(this.getWidth() / 2 + 5, this.getHeight() / 6 + 159 - 6, 150, 20).build();
-        worldMapButton.active = VoxelMap.mapOptions.worldmapAllowed;
-        this.addRenderableWidget(worldMapButton);
         this.addRenderableWidget(new Button.Builder(Component.translatable("gui.done"), button -> VoxelConstants.getMinecraft().setScreen(this.parent)).bounds(this.getWidth() / 2 - 100, this.getHeight() - 28, 200, 20).build());
     }
 

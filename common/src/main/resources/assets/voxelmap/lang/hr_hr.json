@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Nivo zumiranja:",
-  "minimap.ui.otherOptions": "Ostala Podešavanja",
   "options.minimap.title": "Podešavanja Minimape",
-  "options.minimap.oldNorth": "Stari Sever",
   "options.minimap.location": "Lokacija",
   "options.minimap.location.topLeft": "Gore Levo",
   "options.minimap.location.topRight": "Gore Desno",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Malo",
   "options.minimap.size.medium": "Normalno",
   "options.minimap.size.large": "Veliko",
-  "key.category.voxelmap.controls.title": "Kontrole Minimape",
-  "controls.minimap.unbind1": "Da raskoraćite dugme, izaberite ga i pritisnite 'Escape'.",
-  "controls.minimap.unbind2": "(Osim za Meni dugme - ne može se raskoračiti)",
   "key.minimap.zoom": "Zumiraj",
   "key.minimap.toggleFullscreen": "Omogući Mapu Preko Celog Ekrana",
   "key.minimap.menu": "Meni",

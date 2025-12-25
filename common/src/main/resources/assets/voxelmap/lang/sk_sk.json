@@ -1,8 +1,6 @@
 {
   "minimap.ui.zoomLevel": "Priblíženie:",
-  "minimap.ui.otherOptions": "Ostatné Nastavenia",
   "options.minimap.title": "Možnosti Minimapy",
-  "options.minimap.oldNorth": "Starý Sever",
   "options.minimap.location": "Umiestnenie",
   "options.minimap.location.topLeft": "Vľavo Hore",
   "options.minimap.location.topRight": "Vpravo Hore",
@@ -12,9 +10,6 @@
   "options.minimap.size.small": "Malá",
   "options.minimap.size.medium": "Stredná",
   "options.minimap.size.large": "Veľká",
-  "key.category.voxelmap.controls.title": "Ovládanie Minimapy",
-  "controls.minimap.unbind1": "Pre zrušenie nastavenej klávesy stlačte 'Escape'.",
-  "controls.minimap.unbind2": "(S výnimkou klávesy Menu, ktorá nejde zrušiť)",
   "key.minimap.zoom": "Priblíženie",
   "key.minimap.toggleFullscreen": "Prepnúť mapu na celú obrazovku",
   "key.minimap.menu": "Menu",
