@@ -857,17 +857,17 @@ public class Map implements Runnable, IChangeObserver {
 
             // Optimized X movement (E/W): recalculate new columns
             if (offsetX != 0) {
-                int startX, endX;
+                int colStartX, colEndX;
                 if (offsetX > 0) {
                     // Moved east: recalculate right columns
-                    startX = 32 * multi - offsetX;
-                    endX = 32 * multi;
+                    colStartX = 32 * multi - offsetX;
+                    colEndX = 32 * multi;
                 } else {
                     // Moved west: recalculate left columns
-                    startX = 0;
-                    endX = -offsetX;
+                    colStartX = 0;
+                    colEndX = -offsetX;
                 }
-                for (int imageX = startX; imageX < endX; ++imageX) {
+                for (int imageX = colStartX; imageX < colEndX; ++imageX) {
                     for (int imageY = 0; imageY < 32 * multi; ++imageY) {
                         color24 = this.getPixelColor(true, true, true, true, nether, caves, world, zoom, multi, startX, startZ, imageX, imageY);
                         this.mapImages[zoom].setRGB(imageX, imageY, color24);
