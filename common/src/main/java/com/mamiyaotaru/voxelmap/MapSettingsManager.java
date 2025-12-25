@@ -28,9 +28,9 @@ public class MapSettingsManager implements ISettingsManager {
     public boolean showUnderMenus;
     private final int availableProcessors = Runtime.getRuntime().availableProcessors();
     public final boolean multicore = this.availableProcessors > 1;
-    public boolean lightmap = true;
-    public boolean heightmap = this.multicore;
-    public boolean slopemap = true;
+    public final boolean lightmap = true;
+    public final boolean heightmap = true;
+    public final boolean slopemap = true;
     public boolean filtering;
     public boolean waterTransparency = this.multicore;
     public boolean blockTransparency = this.multicore;
@@ -90,9 +90,6 @@ public class MapSettingsManager implements ISettingsManager {
                     String[] curLine = sCurrentLine.split(":");
                     switch (curLine[0]) {
                         case "Zoom Level" -> this.zoom = Math.max(0, Math.min(4, Integer.parseInt(curLine[1])));
-                        case "Dynamic Lighting" -> this.lightmap = Boolean.parseBoolean(curLine[1]);
-                        case "Height Map" -> this.heightmap = Boolean.parseBoolean(curLine[1]);
-                        case "Slope Map" -> this.slopemap = Boolean.parseBoolean(curLine[1]);
                         case "Blur" -> this.filtering = Boolean.parseBoolean(curLine[1]);
                         case "Water Transparency" -> this.waterTransparency = Boolean.parseBoolean(curLine[1]);
                         case "Block Transparency" -> this.blockTransparency = Boolean.parseBoolean(curLine[1]);
@@ -150,9 +147,6 @@ public class MapSettingsManager implements ISettingsManager {
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.settingsFile), StandardCharsets.UTF_8.newEncoder())));
             out.println("Zoom Level:" + this.zoom);
-            out.println("Dynamic Lighting:" + this.lightmap);
-            out.println("Height Map:" + this.heightmap);
-            out.println("Slope Map:" + this.slopemap);
             out.println("Blur:" + this.filtering);
             out.println("Water Transparency:" + this.waterTransparency);
             out.println("Block Transparency:" + this.blockTransparency);
@@ -215,7 +209,6 @@ public class MapSettingsManager implements ISettingsManager {
 
     public boolean getOptionBooleanValue(EnumOptionsMinimap par1EnumOptions) {
         return switch (par1EnumOptions) {
-            case DYNAMIC_LIGHTING -> this.lightmap;
             case SQUARE_MAP -> this.squareMap;
             case ROTATES -> this.rotates;
             case OLD_NORTH -> this.oldNorth;
@@ -234,16 +227,6 @@ public class MapSettingsManager implements ISettingsManager {
 
     public String getOptionListValue(EnumOptionsMinimap par1EnumOptions) {
         switch (par1EnumOptions) {
-            case TERRAIN_DEPTH -> {
-                if (this.slopemap && this.heightmap) {
-                    return I18n.get("options.minimap.terrain.both");
-                } else if (this.heightmap) {
-                    return I18n.get("options.minimap.terrain.height");
-                } else if (this.slopemap) {
-                    return I18n.get("options.minimap.terrain.slope");
-                }
-                return I18n.get("options.off");
-            }
             case LOCATION -> {
                 if (this.mapCorner == 0) {
                     return I18n.get("options.minimap.location.topLeft");
@@ -303,7 +286,6 @@ public class MapSettingsManager implements ISettingsManager {
 
     public void setOptionValue(EnumOptionsMinimap par1EnumOptions) {
         switch (par1EnumOptions) {
-            case DYNAMIC_LIGHTING -> this.lightmap = !this.lightmap;
             case SQUARE_MAP -> this.squareMap = !this.squareMap;
             case ROTATES -> this.rotates = !this.rotates;
             case OLD_NORTH -> this.oldNorth = !this.oldNorth;
@@ -316,19 +298,6 @@ public class MapSettingsManager implements ISettingsManager {
             case WORLD_BORDER -> this.worldborder = !this.worldborder;
             case MOVE_MAP_DOWN_WHILE_STATUS_EFFECT -> this.moveMapDownWhileStatusEffect = !this.moveMapDownWhileStatusEffect;
             case MOVE_SCOREBOARD_DOWN -> this.moveScoreBoardDown = !this.moveScoreBoardDown;
-            case TERRAIN_DEPTH -> {
-                if (this.slopemap && this.heightmap) {
-                    this.slopemap = false;
-                    this.heightmap = false;
-                } else if (this.slopemap) {
-                    this.slopemap = false;
-                    this.heightmap = true;
-                } else if (this.heightmap) {
-                    this.slopemap = true;
-                } else {
-                    this.slopemap = true;
-                }
-            }
             case LOCATION -> this.mapCorner = this.mapCorner >= 3 ? 0 : this.mapCorner + 1;
             case SIZE -> this.sizeModifier = this.sizeModifier >= 4 ? -1 : this.sizeModifier + 1;
             case BIOME_OVERLAY -> {

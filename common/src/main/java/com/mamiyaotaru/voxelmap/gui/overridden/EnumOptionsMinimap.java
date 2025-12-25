@@ -1,8 +1,6 @@
 package com.mamiyaotaru.voxelmap.gui.overridden;
 
 public enum EnumOptionsMinimap {
-    DYNAMIC_LIGHTING("options.minimap.dynamicLighting", false, true, false),
-    TERRAIN_DEPTH("options.minimap.terrainDepth", false, false, true),
     SQUARE_MAP("options.minimap.squareMap", false, true, false),
     ROTATES("options.minimap.rotation", false, true, false),
     OLD_NORTH("options.minimap.oldNorth", false, true, false),
