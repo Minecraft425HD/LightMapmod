@@ -169,12 +169,12 @@ public class DynamicMoveableTexture extends DynamicTexture {
     }
 
     public void setRGB(int x, int y, int color24) {
-        int alpha = color24 >> 24 & 0xFF;
-        byte a = -1;
-        byte r = (byte) ((color24 & 0xFF) * alpha / 255);
-        byte g = (byte) ((color24 >> 8 & 0xFF) * alpha / 255);
-        byte b = (byte) ((color24 >> 16 & 0xFF) * alpha / 255);
-        int color = (a & 255) << 24 | (r & 255) << 16 | (g & 255) << 8 | b & 255;
+        // Fast path: extract RGB and repack to ABGR format for NativeImage
+        // Format conversion: ARGB (color24) -> ABGR (NativeImage)
+        int r = color24 & 0xFF;
+        int g = (color24 >> 8) & 0xFF;
+        int b = (color24 >> 16) & 0xFF;
+        int color = 0xFF000000 | (b << 16) | (g << 8) | r;  // ABGR with full alpha
         this.getPixels().setPixelRGBA(x, y, color);
     }
 }
