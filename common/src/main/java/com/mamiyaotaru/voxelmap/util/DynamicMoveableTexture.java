@@ -27,32 +27,35 @@ public class DynamicMoveableTexture extends DynamicTexture {
         synchronized (this.bufferLock) {
             if (offset == 0) return;
 
-            // 1.20.1 Port: Use bulk memory copy for performance
+            // 1.20.1 Port: Use row-based buffer for better performance than pixel-by-pixel
             int width = this.getPixels().getWidth();
             int height = this.getPixels().getHeight();
-            long pointer = this.getPixels().pixels;
-
-            if (pointer == 0L) return;
-
-            int bytesPerPixel = 4; // RGBA
-            int rowBytes = width * bytesPerPixel;
+            int[] rowBuffer = new int[width];
 
             if (offset > 0) {
-                // Shift right: copy pixels from right to left to avoid overlap
+                // Shift right: copy each row
                 for (int y = 0; y < height; y++) {
-                    long srcAddr = pointer + (y * width + offset) * bytesPerPixel;
-                    long dstAddr = pointer + (y * width) * bytesPerPixel;
-                    int copyBytes = (width - offset) * bytesPerPixel;
-                    MemoryUtil.memCopy(srcAddr, dstAddr, copyBytes);
+                    // Read the row into buffer
+                    for (int x = 0; x < width; x++) {
+                        rowBuffer[x] = this.getPixels().getPixelRGBA(x, y);
+                    }
+                    // Write shifted row back
+                    for (int x = 0; x < width - offset; x++) {
+                        this.getPixels().setPixelRGBA(x, y, rowBuffer[x + offset]);
+                    }
                 }
             } else if (offset < 0) {
-                // Shift left: copy pixels from left to right to avoid overlap
+                // Shift left: copy each row
                 int absOffset = -offset;
                 for (int y = 0; y < height; y++) {
-                    long srcAddr = pointer + (y * width) * bytesPerPixel;
-                    long dstAddr = pointer + (y * width + absOffset) * bytesPerPixel;
-                    int copyBytes = (width - absOffset) * bytesPerPixel;
-                    MemoryUtil.memCopy(srcAddr, dstAddr, copyBytes);
+                    // Read the row into buffer
+                    for (int x = 0; x < width; x++) {
+                        rowBuffer[x] = this.getPixels().getPixelRGBA(x, y);
+                    }
+                    // Write shifted row back
+                    for (int x = absOffset; x < width; x++) {
+                        this.getPixels().setPixelRGBA(x, y, rowBuffer[x - absOffset]);
+                    }
                 }
             }
         }
@@ -62,30 +65,35 @@ public class DynamicMoveableTexture extends DynamicTexture {
         synchronized (this.bufferLock) {
             if (offset == 0) return;
 
-            // 1.20.1 Port: Use bulk memory copy for performance
+            // 1.20.1 Port: Use row-based buffer for better performance than pixel-by-pixel
             int width = this.getPixels().getWidth();
             int height = this.getPixels().getHeight();
-            long pointer = this.getPixels().pixels;
-
-            if (pointer == 0L) return;
-
-            int bytesPerPixel = 4; // RGBA
-            int rowBytes = width * bytesPerPixel;
+            int[] rowBuffer = new int[width];
 
             if (offset > 0) {
-                // Shift down: copy rows from bottom to top to avoid overlap
+                // Shift down: copy rows from top to bottom
                 for (int y = 0; y < height - offset; y++) {
-                    long srcAddr = pointer + (y + offset) * rowBytes;
-                    long dstAddr = pointer + y * rowBytes;
-                    MemoryUtil.memCopy(srcAddr, dstAddr, rowBytes);
+                    // Read source row into buffer
+                    for (int x = 0; x < width; x++) {
+                        rowBuffer[x] = this.getPixels().getPixelRGBA(x, y + offset);
+                    }
+                    // Write to destination row
+                    for (int x = 0; x < width; x++) {
+                        this.getPixels().setPixelRGBA(x, y, rowBuffer[x]);
+                    }
                 }
             } else if (offset < 0) {
-                // Shift up: copy rows from top to bottom to avoid overlap
+                // Shift up: copy rows from bottom to top
                 int absOffset = -offset;
                 for (int y = height - 1; y >= absOffset; y--) {
-                    long srcAddr = pointer + (y - absOffset) * rowBytes;
-                    long dstAddr = pointer + y * rowBytes;
-                    MemoryUtil.memCopy(srcAddr, dstAddr, rowBytes);
+                    // Read source row into buffer
+                    for (int x = 0; x < width; x++) {
+                        rowBuffer[x] = this.getPixels().getPixelRGBA(x, y - absOffset);
+                    }
+                    // Write to destination row
+                    for (int x = 0; x < width; x++) {
+                        this.getPixels().setPixelRGBA(x, y, rowBuffer[x]);
+                    }
                 }
             }
         }
