@@ -645,8 +645,6 @@ public class Map implements Runnable, IChangeObserver {
             this.drawDirections(drawContext, mapX, mapY, scaleProj);
             this.drawArrow(drawContext, mapX, mapY, scaleProj);
         }
-
-        this.showCoords(drawContext, mapX, mapY, scaleProj);
     }
 
     private void checkForChanges() {
@@ -726,34 +724,20 @@ public class Map implements Runnable, IChangeObserver {
         }
 
         boolean nether = false;
-        boolean caves = false;
-        boolean netherPlayerInOpen;
         MutableBlockPos blockPos = MutableBlockPosCache.get();
         blockPos.setXYZ(this.lastX, Math.max(Math.min(GameVariableAccessShim.yCoord(), world.getMaxBuildHeight() - 1), world.getMinBuildHeight()), this.lastZ);
         if (VoxelConstants.getPlayer().level().dimensionType().hasCeiling()) {
-
-            netherPlayerInOpen = world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
             nether = currentY < 126;
-            if (this.options.cavesAllowed && currentY >= 126 && !netherPlayerInOpen) {
-                caves = true;
-            }
-        } else if (!world.dimensionType().hasCeiling() && !world.dimensionType().hasSkyLight()) {
-            boolean endPlayerInOpen = world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
-            if (this.options.cavesAllowed && !endPlayerInOpen) {
-                caves = true;
-            }
-        } else if (this.options.cavesAllowed && world.getBrightness(LightLayer.SKY, blockPos) <= 0) {
-            caves = true;
         }
         MutableBlockPosCache.release(blockPos);
 
-        boolean beneathRendering = caves || nether;
+        boolean beneathRendering = nether;
         if (this.lastBeneathRendering != beneathRendering) {
             full = true;
         }
 
         this.lastBeneathRendering = beneathRendering;
-        needHeightAndID = needHeightMap && (nether || caves);
+        needHeightAndID = needHeightMap && nether;
         int color24;
         synchronized (this.coordinateLock) {
             if (!full) {
@@ -862,24 +846,11 @@ public class Map implements Runnable, IChangeObserver {
 
     private void rectangleCalc(int left, int top, int right, int bottom) {
         boolean nether = false;
-        boolean caves = false;
-        boolean netherPlayerInOpen;
         MutableBlockPos blockPos = MutableBlockPosCache.get();
         blockPos.setXYZ(this.lastX, Math.max(Math.min(GameVariableAccessShim.yCoord(), world.getMaxBuildHeight()), world.getMinBuildHeight()), this.lastZ);
         int currentY = GameVariableAccessShim.yCoord();
         if (VoxelConstants.getPlayer().level().dimensionType().hasCeiling()) {
-            netherPlayerInOpen = this.world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
             nether = currentY < 126;
-            if (this.options.cavesAllowed && currentY >= 126 && !netherPlayerInOpen) {
-                caves = true;
-            }
-        } else if (!world.dimensionType().hasCeiling() && !world.dimensionType().hasSkyLight()) {
-            boolean endPlayerInOpen = this.world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
-            if (this.options.cavesAllowed && !endPlayerInOpen) {
-                caves = true;
-            }
-        } else if (this.options.cavesAllowed && this.world.getBrightness(LightLayer.SKY, blockPos) <= 0) {
-            caves = true;
         }
         MutableBlockPosCache.release(blockPos);
 
@@ -1762,73 +1733,6 @@ public class Map implements Runnable, IChangeObserver {
         poseStack.popPose();
 
         poseStack.popPose();
-    }
-
-    private void showCoords(GuiGraphics drawContext, int x, int y, float scaleProj) {
-        PoseStack matrixStack = drawContext.pose();
-        int textStart;
-        if (y > this.scHeight - 37 - 32 - 4 - 15) {
-            textStart = y - 32 - 4 - 9;
-        } else {
-            textStart = y + 32 + 4;
-        }
-
-        matrixStack.pushPose();
-        matrixStack.scale(scaleProj, scaleProj, 1.0f);
-
-        if (!this.fullscreenMap) {
-            boolean unicode = minecraft.options.forceUnicodeFont().get();
-            float scale = unicode ? 0.65F : 0.5F;
-            matrixStack.pushPose();
-            matrixStack.scale(scale, scale, 1.0f);
-            String xy = this.dCoord(GameVariableAccessShim.xCoord()) + ", " + this.dCoord(GameVariableAccessShim.zCoord());
-            int m = this.textWidth(xy) / 2;
-            this.write(drawContext, xy, x / scale - m, textStart / scale, 0xFFFFFFFF); // X, Z
-            xy = this.dCoord(GameVariableAccessShim.yCoord());
-            m = this.textWidth(xy) / 2;
-            this.write(drawContext, xy, x / scale - m, textStart / scale + 10.0F, 0xFFFFFFFF); // Y
-            if (this.ztimer > 0) {
-                m = this.textWidth(this.error) / 2;
-                this.write(drawContext, this.error, x / scale - m, textStart / scale + 19.0F, 0xFFFFFFFF); // WORLD NAME
-            }
-
-            matrixStack.popPose();
-        } else {
-            int heading = (int) (this.direction + this.northRotate);
-            if (heading > 360) {
-                heading -= 360;
-            }
-            String ns = "";
-            String ew = "";
-            if (heading > 360 - 67.5 || heading <= 67.5) {
-                ns = "N";
-            } else if (heading > 180 - 67.5 && heading <= 180 + 67.5) {
-                ns = "S";
-            }
-            if (heading > 90 - 67.5 && heading <= 90 + 67.5) {
-                ew = "E";
-            } else if (heading > 270 - 67.5 && heading <= 270 + 67.5) {
-                ew = "W";
-            }
-
-            String stats = "(" + this.dCoord(GameVariableAccessShim.xCoord()) + ", " + GameVariableAccessShim.yCoord() + ", " + this.dCoord(GameVariableAccessShim.zCoord()) + ") " + heading + "' " + ns + ew;
-            int m = this.textWidth(stats) / 2;
-            this.write(drawContext, stats, (this.scWidth / 2f - m), 5.0F, 0xFFFFFFFF);
-            if (this.ztimer > 0) {
-                m = this.textWidth(this.error) / 2;
-                this.write(drawContext, this.error, (this.scWidth / 2f - m), 15.0F, 0xFFFFFFFF);
-            }
-        }
-
-        matrixStack.popPose();
-    }
-
-    private String dCoord(int paramInt1) {
-        if (paramInt1 < 0) {
-            return "-" + Math.abs(paramInt1);
-        } else {
-            return paramInt1 > 0 ? "+" + paramInt1 : " " + paramInt1;
-        }
     }
 
     private int textWidth(String string) {

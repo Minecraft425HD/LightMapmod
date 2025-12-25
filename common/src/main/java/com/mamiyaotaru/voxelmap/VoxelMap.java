@@ -98,18 +98,7 @@ public class VoxelMap implements PreparableReloadListener {
     }
 
     public static void checkPermissionMessages(Component message) {
-        String msg = TextUtils.asFormattedString(message);
-        msg = msg.replaceAll("§r", "");
-
-        if (msg.contains("§3 §6 §3 §6 §3 §6 §d")) {
-            mapOptions.cavesAllowed = false;
-            VoxelConstants.getLogger().info("Server disabled cavemapping.");
-        }
-
-        if (msg.contains("§3 §6 §3 §6 §3 §6 §f")) {
-            mapOptions.cavesAllowed = true;
-            VoxelConstants.getLogger().info("Server enabled cavemapping.");
-        }
+        // Cave mode removed - no permission messages to check
     }
 
     public MapSettingsManager getMapOptions() {
@@ -141,7 +130,7 @@ public class VoxelMap implements PreparableReloadListener {
     }
 
     public void setPermissions(boolean hasCavemodePermission) {
-        mapOptions.cavesAllowed = hasCavemodePermission;
+        // Cave mode removed - no permissions to set
     }
 
     public void sendPlayerMessageOnMainThread(String s) {
@@ -153,7 +142,6 @@ public class VoxelMap implements PreparableReloadListener {
     }
 
     public void clearServerSettings() {
-        mapOptions.cavesAllowed = true;
         mapOptions.serverTeleportCommand = null;
         mapOptions.worldmapAllowed = true;
         mapOptions.minimapAllowed = true;

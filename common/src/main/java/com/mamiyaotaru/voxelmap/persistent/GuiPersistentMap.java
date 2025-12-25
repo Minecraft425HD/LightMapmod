@@ -805,7 +805,6 @@ public class GuiPersistentMap extends PopupGuiScreen {
             } else {
                 this.coordinates.render(guiGraphics, mouseX, mouseY, delta);
             }
-
             guiGraphics.drawString(this.font, this.worldNameDisplay, this.getWidth() - this.sideMargin - this.worldNameDisplayLength, 16, 0xFFFFFF);
         } else {
             guiGraphics.drawString(this.font, Component.translatable("worldmap.disabled"), this.sideMargin, 16, 0xFFFFFFFF);

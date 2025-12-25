@@ -46,7 +46,6 @@ public class MapSettingsManager implements ISettingsManager {
     public int sizeModifier = 1;
     public int mapCorner = 1;
 
-    public Boolean cavesAllowed = true;
     public boolean worldmapAllowed = true;
     public boolean minimapAllowed = true;
 
