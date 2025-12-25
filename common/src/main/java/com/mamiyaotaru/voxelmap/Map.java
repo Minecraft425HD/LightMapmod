@@ -835,17 +835,43 @@ public class Map implements Runnable, IChangeObserver {
             this.mapData[zoom].moveZ(offsetZ);
             this.mapData[zoom].moveX(offsetX);
 
-            for (int imageY = offsetZ > 0 ? 32 * multi - 1 : -offsetZ - 1; imageY >= (offsetZ > 0 ? 32 * multi - offsetZ : 0); --imageY) {
-                for (int imageX = 0; imageX < 32 * multi; ++imageX) {
-                    color24 = this.getPixelColor(true, true, true, true, nether, caves, world, zoom, multi, startX, startZ, imageX, imageY);
-                    this.mapImages[zoom].setRGB(imageX, imageY, color24);
+            // Optimized Y movement (N/S): recalculate new rows
+            if (offsetZ != 0) {
+                int startY, endY;
+                if (offsetZ > 0) {
+                    // Moved south: recalculate bottom rows
+                    startY = 32 * multi - offsetZ;
+                    endY = 32 * multi;
+                } else {
+                    // Moved north: recalculate top rows
+                    startY = 0;
+                    endY = -offsetZ;
+                }
+                for (int imageY = startY; imageY < endY; ++imageY) {
+                    for (int imageX = 0; imageX < 32 * multi; ++imageX) {
+                        color24 = this.getPixelColor(true, true, true, true, nether, caves, world, zoom, multi, startX, startZ, imageX, imageY);
+                        this.mapImages[zoom].setRGB(imageX, imageY, color24);
+                    }
                 }
             }
 
-            for (int imageY = 32 * multi - 1; imageY >= 0; --imageY) {
-                for (int imageX = offsetX > 0 ? 32 * multi - offsetX : 0; imageX < (offsetX > 0 ? 32 * multi : -offsetX); ++imageX) {
-                    color24 = this.getPixelColor(true, true, true, true, nether, caves, world, zoom, multi, startX, startZ, imageX, imageY);
-                    this.mapImages[zoom].setRGB(imageX, imageY, color24);
+            // Optimized X movement (E/W): recalculate new columns
+            if (offsetX != 0) {
+                int startX, endX;
+                if (offsetX > 0) {
+                    // Moved east: recalculate right columns
+                    startX = 32 * multi - offsetX;
+                    endX = 32 * multi;
+                } else {
+                    // Moved west: recalculate left columns
+                    startX = 0;
+                    endX = -offsetX;
+                }
+                for (int imageX = startX; imageX < endX; ++imageX) {
+                    for (int imageY = 0; imageY < 32 * multi; ++imageY) {
+                        color24 = this.getPixelColor(true, true, true, true, nether, caves, world, zoom, multi, startX, startZ, imageX, imageY);
+                        this.mapImages[zoom].setRGB(imageX, imageY, color24);
+                    }
                 }
             }
         }
