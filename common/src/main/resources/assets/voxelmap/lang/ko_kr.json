@@ -4,7 +4,6 @@
   "minimap.ui.workInProgress": "개발중입니다...",
   "options.minimap.title": "미니맵 설정",
   "options.minimap.squareMap": "사각형 미니맵",
-  "options.minimap.rotation": "미니맵 회전",
   "options.minimap.oldNorth": "구 버전의 북쪽 사용",
   "options.minimap.location": "미니맵 위치",
   "options.minimap.location.topLeft": "왼쪽 위",

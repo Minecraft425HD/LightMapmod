@@ -2,7 +2,6 @@ package com.mamiyaotaru.voxelmap.gui.overridden;
 
 public enum EnumOptionsMinimap {
     SQUARE_MAP("options.minimap.squareMap", false, true, false),
-    ROTATES("options.minimap.rotation", false, true, false),
     OLD_NORTH("options.minimap.oldNorth", false, true, false),
     ZOOM("option.minimapZoom", false, true, false),
     LOCATION("options.minimap.location", false, false, true),

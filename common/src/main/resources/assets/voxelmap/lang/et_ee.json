@@ -3,7 +3,6 @@
   "minimap.ui.otherOptions": "Lisavalikud",
   "options.minimap.title": "Minikaardi valikud",
   "options.minimap.squareMap": "Ruudukujuline kaart",
-  "options.minimap.rotation": "Pööramine",
   "options.minimap.oldNorth": "Vana põhjasuund",
   "options.minimap.location": "Asukoht",
   "options.minimap.location.topLeft": "ülal vasakul",

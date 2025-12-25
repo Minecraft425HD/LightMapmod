@@ -3,7 +3,6 @@
   "minimap.ui.otherOptions": "Другие настройки",
   "options.minimap.title": "Настройки карты",
   "options.minimap.squareMap": "Квадратная карта",
-  "options.minimap.rotation": "Вращение",
   "options.minimap.oldNorth": "Старый север",
   "options.minimap.location": "Положение",
   "options.minimap.location.topLeft": "Сверху слева",

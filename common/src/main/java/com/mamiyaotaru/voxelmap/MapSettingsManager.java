@@ -40,7 +40,7 @@ public class MapSettingsManager implements ISettingsManager {
     public boolean slimeChunks;
     public boolean worldborder = true;
     public boolean squareMap = true;
-    public boolean rotates = true;
+    public final boolean rotates = false;
     public boolean oldNorth;
     public int zoom = 2;
     public int sizeModifier = 1;
@@ -98,7 +98,6 @@ public class MapSettingsManager implements ISettingsManager {
                         case "Slime Chunks" -> this.slimeChunks = Boolean.parseBoolean(curLine[1]);
                         case "World Border" -> this.worldborder = Boolean.parseBoolean(curLine[1]);
                         case "Square Map" -> this.squareMap = Boolean.parseBoolean(curLine[1]);
-                        case "Rotation" -> this.rotates = Boolean.parseBoolean(curLine[1]);
                         case "Old North" -> this.oldNorth = Boolean.parseBoolean(curLine[1]);
                         case "Real Time Torch Flicker" -> this.realTimeTorches = Boolean.parseBoolean(curLine[1]);
                         case "Map Corner" -> this.mapCorner = Math.max(0, Math.min(3, Integer.parseInt(curLine[1])));
@@ -155,7 +154,6 @@ public class MapSettingsManager implements ISettingsManager {
             out.println("Slime Chunks:" + this.slimeChunks);
             out.println("World Border:" + this.worldborder);
             out.println("Square Map:" + this.squareMap);
-            out.println("Rotation:" + this.rotates);
             out.println("Old North:" + this.oldNorth);
             out.println("Map Corner:" + this.mapCorner);
             out.println("Map Size:" + this.sizeModifier);
@@ -209,7 +207,6 @@ public class MapSettingsManager implements ISettingsManager {
     public boolean getOptionBooleanValue(EnumOptionsMinimap par1EnumOptions) {
         return switch (par1EnumOptions) {
             case SQUARE_MAP -> this.squareMap;
-            case ROTATES -> this.rotates;
             case OLD_NORTH -> this.oldNorth;
             case FILTERING -> this.filtering;
             case WATER_TRANSPARENCY -> this.waterTransparency;
@@ -286,7 +283,6 @@ public class MapSettingsManager implements ISettingsManager {
     public void setOptionValue(EnumOptionsMinimap par1EnumOptions) {
         switch (par1EnumOptions) {
             case SQUARE_MAP -> this.squareMap = !this.squareMap;
-            case ROTATES -> this.rotates = !this.rotates;
             case OLD_NORTH -> this.oldNorth = !this.oldNorth;
             case FILTERING -> this.filtering = !this.filtering;
             case WATER_TRANSPARENCY -> this.waterTransparency = !this.waterTransparency;

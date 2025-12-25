@@ -3,7 +3,6 @@
   "minimap.ui.otherOptions": "その他のオプション",
   "options.minimap.title": "ミニマップのオプション",
   "options.minimap.squareMap": "スクエア地図",
-  "options.minimap.rotation": "回転",
   "options.minimap.oldNorth": "旧バージョンの北",
   "options.minimap.location": "場所",
   "options.minimap.location.topLeft": "左上",

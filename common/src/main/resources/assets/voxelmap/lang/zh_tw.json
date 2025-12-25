@@ -3,7 +3,6 @@
   "minimap.ui.otherOptions": "其他選項",
   "options.minimap.title": "小地圖選項",
   "options.minimap.squareMap": "方形地圖",
-  "options.minimap.rotation": "方向旋轉",
   "options.minimap.oldNorth": "日落為北",
   "options.minimap.location": "位置",
   "options.minimap.location.topLeft": "左上角",

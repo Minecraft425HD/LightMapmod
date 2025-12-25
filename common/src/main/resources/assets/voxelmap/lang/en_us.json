@@ -4,7 +4,6 @@
   "minimap.ui.workInProgress": "Work in progress...",
   "options.minimap.title": "Minimap Options",
   "options.minimap.squareMap": "Square Map",
-  "options.minimap.rotation": "Rotating",
   "options.minimap.oldNorth": "Old North",
   "options.minimap.location": "Location",
   "options.minimap.location.topLeft": "Top Left",
