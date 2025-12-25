@@ -1,37 +1,57 @@
 package com.mamiyaotaru.voxelmap.util;
 
-// TODO: 1.20.1 Port - GPU APIs don't exist in 1.20.1
-// import com.mojang.blaze3d.buffers.GpuBuffer;
-// import com.mojang.blaze3d.systems.CommandEncoder;
-// import com.mojang.blaze3d.systems.RenderSystem;
-// import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.util.function.Consumer;
-import com.mamiyaotaru.voxelmap.util.ARGBCompat;
 
 public class GLUtils {
-    // TODO: 1.20.1 Port - Stubbed out because GpuTexture doesn't exist in 1.20.1
-    public static void readTextureContentsToBufferedImage(Object gpuTexture, Consumer<BufferedImage> resultConsumer) {
-        // TODO: 1.20.1 Port - RenderSystem.getDevice() doesn't exist in 1.20.1
-        // RenderSystem.assertOnRenderThread();
-        // int bytePerPixel = gpuTexture.getFormat().pixelSize();
-        // int width = gpuTexture.getWidth(0);
-        // int height = gpuTexture.getHeight(0);
-        // int bufferSize = bytePerPixel * width * height;
-        // GpuBuffer gpuBuffer = RenderSystem.getDevice().createBuffer(() -> "Texture read buffer", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, bufferSize);
-        // CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
-        // commandEncoder.copyTextureToBuffer(gpuTexture, gpuBuffer, 0, () -> {
-        //     BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-        //     try (GpuBuffer.MappedView readView = commandEncoder.mapBuffer(gpuBuffer, true, false)) {
-        //         for (int y = 0; y < height; y++) {
-        //             for (int x = 0; x < width; x++) {
-        //                 int pixel = readView.data().getInt((x + y * width) * bytePerPixel);
-        //                 image.setRGB(x, y, ARGBCompat.toABGR(pixel));
-        //             }
-        //         }
-        //     }
-        //     gpuBuffer.close();
-        //     resultConsumer.accept(image);
-        // }, 0);
+    /**
+     * 1.20.1 Port: Read texture contents using OpenGL directly instead of GPU APIs
+     * Reads the currently bound texture and converts it to a BufferedImage
+     */
+    public static void readTextureContentsToBufferedImage(int textureId, Consumer<BufferedImage> resultConsumer) {
+        RenderSystem.assertOnRenderThread();
+
+        // Bind the texture
+        GlStateManager._bindTexture(textureId);
+
+        // Get texture dimensions
+        int width = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
+        int height = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
+
+        if (width <= 0 || height <= 0) {
+            // Invalid texture, skip
+            return;
+        }
+
+        // Read texture data from GPU
+        int bufferSize = width * height * 4; // 4 bytes per pixel (RGBA)
+        ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize);
+
+        GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+
+        // Convert to BufferedImage
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int index = (x + y * width) * 4;
+                int r = buffer.get(index) & 0xFF;
+                int g = buffer.get(index + 1) & 0xFF;
+                int b = buffer.get(index + 2) & 0xFF;
+                int a = buffer.get(index + 3) & 0xFF;
+
+                // Convert RGBA to ABGR for BufferedImage
+                int pixel = (a << 24) | (b << 16) | (g << 8) | r;
+                image.setRGB(x, y, pixel);
+            }
+        }
+
+        // Call the consumer with the result
+        resultConsumer.accept(image);
     }
 }
