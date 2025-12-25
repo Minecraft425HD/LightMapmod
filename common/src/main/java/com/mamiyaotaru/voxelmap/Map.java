@@ -1639,8 +1639,9 @@ public class Map implements Runnable, IChangeObserver {
 
         // Apply offset based on player movement within the map
         // percentX/Y are in map coordinates, multiply by textureSize/64 to convert to texture pixels
+        // CRITICAL FIX: Both X and Y need NEGATIVE sign for correct direction!
         float offsetMultiplier = textureSize / 64.0F;
-        guiGraphics.pose().translate(-this.percentX * offsetMultiplier, this.percentY * offsetMultiplier, 0.0f);
+        guiGraphics.pose().translate(-this.percentX * offsetMultiplier, -this.percentY * offsetMultiplier, 0.0f);
 
         // Render the full map texture, which will be scaled to 64x64 by the transforms above
         guiGraphics.blit(mapResources[this.zoom], -halfTextureSize, -halfTextureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
