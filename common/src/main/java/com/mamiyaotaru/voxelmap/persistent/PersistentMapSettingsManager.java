@@ -64,69 +64,17 @@ public class PersistentMapSettingsManager implements ISubSettingsManager {
 
     @Override
     public String getKeyText(EnumOptionsMinimap options) {
-        String s = I18n.get(options.getName()) + ": ";
-        if (options.isFloat()) {
-            float f = this.getOptionFloatValue(options);
-            if (options == EnumOptionsMinimap.MIN_ZOOM) {
-                return s + (float) Math.pow(2.0, f) + "x";
-            }
-
-            if (options == EnumOptionsMinimap.MAX_ZOOM) {
-                return s + (float) Math.pow(2.0, f) + "x";
-            }
-
-            if (options == EnumOptionsMinimap.CACHE_SIZE) {
-                return s + (int) f;
-            }
-        }
-
-        return s;
+        return I18n.get(options.getName()) + ": ";
     }
 
     @Override
     public float getOptionFloatValue(EnumOptionsMinimap options) {
-        if (options == EnumOptionsMinimap.MIN_ZOOM) {
-            return this.minZoomPower;
-        } else if (options == EnumOptionsMinimap.MAX_ZOOM) {
-            return this.maxZoomPower;
-        } else {
-            return options == EnumOptionsMinimap.CACHE_SIZE ? this.cacheSize : 0.0F;
-        }
+        return 0.0F;
     }
 
     @Override
     public void setOptionFloatValue(EnumOptionsMinimap options, float value) {
-        if (options == EnumOptionsMinimap.MIN_ZOOM) {
-            this.minZoomPower = ((int) (value * 8.0F) - 3);
-            this.minZoom = (float) Math.pow(2.0, this.minZoomPower);
-            if (this.maxZoom < this.minZoom) {
-                this.maxZoom = this.minZoom;
-                this.maxZoomPower = this.minZoomPower;
-            }
-        } else if (options == EnumOptionsMinimap.MAX_ZOOM) {
-            this.maxZoomPower = ((int) (value * 8.0F) - 3);
-            this.maxZoom = (float) Math.pow(2.0, this.maxZoomPower);
-            if (this.minZoom > this.maxZoom) {
-                this.minZoom = this.maxZoom;
-                this.minZoomPower = this.maxZoomPower;
-            }
-        } else if (options == EnumOptionsMinimap.CACHE_SIZE) {
-            this.cacheSize = (int) (value * 5000.0F);
-            this.cacheSize = Math.max(this.cacheSize, 30);
-
-            for (int minCacheSize = (int) ((1600.0F / this.minZoom / 256.0F + 4.0F) * (1100.0F / this.minZoom / 256.0F + 3.0F) * 1.35F); this.cacheSize < minCacheSize; minCacheSize = (int) ((1600.0F / this.minZoom / 256.0F + 4.0F) * (1100.0F / this.minZoom / 256.0F + 3.0F) * 1.35F)) {
-                ++this.minZoomPower;
-                this.minZoom = (float) Math.pow(2.0, this.minZoomPower);
-            }
-
-            if (this.maxZoom < this.minZoom) {
-                this.maxZoom = this.minZoom;
-                this.maxZoomPower = this.minZoomPower;
-            }
-        }
-
-        this.bindZoom();
-        this.bindCacheSize();
+        // No configurable float options - zoom settings are fixed
     }
 
     public void setOptionValue(EnumOptionsMinimap par1EnumOptions) {
