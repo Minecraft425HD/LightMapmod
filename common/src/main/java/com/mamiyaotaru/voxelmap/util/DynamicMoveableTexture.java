@@ -121,20 +121,20 @@ public class DynamicMoveableTexture extends DynamicTexture {
                 int rowBytes = width * bytesPerPixel;
 
                 if (offset > 0) {
-                    // Shift down: copy rows from BOTTOM to TOP to avoid overlap
-                    // Start from the bottom and work upward so we don't overwrite data we need
-                    for (int y = height - 1; y >= offset; y--) {
-                        long srcAddr = pointer + (y - offset) * rowBytes;
+                    // Shift UP: player moved south, shift map content upward
+                    // Copy row by row from TOP to BOTTOM to avoid overlap issues
+                    for (int y = 0; y < height - offset; y++) {
+                        long srcAddr = pointer + (y + offset) * rowBytes;
                         long dstAddr = pointer + y * rowBytes;
                         MemoryUtil.memCopy(srcAddr, dstAddr, rowBytes);
                     }
                 } else if (offset < 0) {
-                    // Shift up: copy rows from TOP to BOTTOM to avoid overlap
-                    // Start from the top and work downward so we don't overwrite data we need
+                    // Shift DOWN: player moved north, shift map content downward
+                    // Copy row by row from BOTTOM to TOP to avoid overlap issues
                     int absOffset = -offset;
-                    for (int y = absOffset; y < height; y++) {
-                        long srcAddr = pointer + y * rowBytes;
-                        long dstAddr = pointer + (y - absOffset) * rowBytes;
+                    for (int y = height - 1; y >= absOffset; y--) {
+                        long srcAddr = pointer + (y - absOffset) * rowBytes;
+                        long dstAddr = pointer + y * rowBytes;
                         MemoryUtil.memCopy(srcAddr, dstAddr, rowBytes);
                     }
                 }
@@ -143,24 +143,24 @@ public class DynamicMoveableTexture extends DynamicTexture {
                 int[] rowBuffer = new int[width];
 
                 if (offset > 0) {
-                    // Shift down: copy from bottom to top
-                    for (int y = height - 1; y >= offset; y--) {
+                    // Shift UP: copy from bottom rows to top rows
+                    for (int y = 0; y < height - offset; y++) {
                         for (int x = 0; x < width; x++) {
-                            rowBuffer[x] = this.getPixels().getPixelRGBA(x, y - offset);
+                            rowBuffer[x] = this.getPixels().getPixelRGBA(x, y + offset);
                         }
                         for (int x = 0; x < width; x++) {
                             this.getPixels().setPixelRGBA(x, y, rowBuffer[x]);
                         }
                     }
                 } else if (offset < 0) {
-                    // Shift up: copy from top to bottom
+                    // Shift DOWN: copy from top rows to bottom rows
                     int absOffset = -offset;
-                    for (int y = absOffset; y < height; y++) {
+                    for (int y = height - 1; y >= absOffset; y--) {
                         for (int x = 0; x < width; x++) {
-                            rowBuffer[x] = this.getPixels().getPixelRGBA(x, y);
+                            rowBuffer[x] = this.getPixels().getPixelRGBA(x, y - absOffset);
                         }
                         for (int x = 0; x < width; x++) {
-                            this.getPixels().setPixelRGBA(x, y - absOffset, rowBuffer[x]);
+                            this.getPixels().setPixelRGBA(x, y, rowBuffer[x]);
                         }
                     }
                 }
@@ -169,12 +169,12 @@ public class DynamicMoveableTexture extends DynamicTexture {
     }
 
     public void setRGB(int x, int y, int color24) {
-        int alpha = color24 >> 24 & 0xFF;
-        byte a = -1;
-        byte r = (byte) ((color24 & 0xFF) * alpha / 255);
-        byte g = (byte) ((color24 >> 8 & 0xFF) * alpha / 255);
-        byte b = (byte) ((color24 >> 16 & 0xFF) * alpha / 255);
-        int color = (a & 255) << 24 | (r & 255) << 16 | (g & 255) << 8 | b & 255;
+        // Fast path: extract RGB and repack to ABGR format for NativeImage
+        // Format conversion: ARGB (color24) -> ABGR (NativeImage)
+        int r = color24 & 0xFF;
+        int g = (color24 >> 8) & 0xFF;
+        int b = (color24 >> 16) & 0xFF;
+        int color = 0xFF000000 | (b << 16) | (g << 8) | r;  // ABGR with full alpha
         this.getPixels().setPixelRGBA(x, y, color);
     }
 }

@@ -154,6 +154,11 @@ public class Map implements Runnable, IChangeObserver {
     private int lastImageX;
     private int lastImageZ;
     private boolean lastFullscreen;
+    private int biomeSegmentationCounter = 0;
+    // Chunk cache to avoid redundant getChunkAt() calls
+    private LevelChunk cachedChunk = null;
+    private int cachedChunkX = Integer.MIN_VALUE;
+    private int cachedChunkZ = Integer.MIN_VALUE;
     private float direction;
     private float percentX;
     private float percentY;
@@ -835,17 +840,47 @@ public class Map implements Runnable, IChangeObserver {
             this.mapData[zoom].moveZ(offsetZ);
             this.mapData[zoom].moveX(offsetX);
 
-            for (int imageY = offsetZ > 0 ? 32 * multi - 1 : -offsetZ - 1; imageY >= (offsetZ > 0 ? 32 * multi - offsetZ : 0); --imageY) {
-                for (int imageX = 0; imageX < 32 * multi; ++imageX) {
-                    color24 = this.getPixelColor(true, true, true, true, nether, caves, world, zoom, multi, startX, startZ, imageX, imageY);
-                    this.mapImages[zoom].setRGB(imageX, imageY, color24);
+            // Optimized Y movement (N/S): recalculate new rows
+            if (offsetZ != 0) {
+                // Clear chunk cache for new recalculation
+                cachedChunk = null;
+                int startY, endY;
+                if (offsetZ > 0) {
+                    // Moved south: recalculate bottom rows
+                    startY = 32 * multi - offsetZ;
+                    endY = 32 * multi;
+                } else {
+                    // Moved north: recalculate top rows
+                    startY = 0;
+                    endY = -offsetZ;
+                }
+                for (int imageY = startY; imageY < endY; ++imageY) {
+                    for (int imageX = 0; imageX < 32 * multi; ++imageX) {
+                        color24 = this.getPixelColor(true, true, true, true, nether, caves, world, zoom, multi, startX, startZ, imageX, imageY);
+                        this.mapImages[zoom].setRGB(imageX, imageY, color24);
+                    }
                 }
             }
 
-            for (int imageY = 32 * multi - 1; imageY >= 0; --imageY) {
-                for (int imageX = offsetX > 0 ? 32 * multi - offsetX : 0; imageX < (offsetX > 0 ? 32 * multi : -offsetX); ++imageX) {
-                    color24 = this.getPixelColor(true, true, true, true, nether, caves, world, zoom, multi, startX, startZ, imageX, imageY);
-                    this.mapImages[zoom].setRGB(imageX, imageY, color24);
+            // Optimized X movement (E/W): recalculate new columns
+            if (offsetX != 0) {
+                // Clear chunk cache for new recalculation
+                cachedChunk = null;
+                int colStartX, colEndX;
+                if (offsetX > 0) {
+                    // Moved east: recalculate right columns
+                    colStartX = 32 * multi - offsetX;
+                    colEndX = 32 * multi;
+                } else {
+                    // Moved west: recalculate left columns
+                    colStartX = 0;
+                    colEndX = -offsetX;
+                }
+                for (int imageX = colStartX; imageX < colEndX; ++imageX) {
+                    for (int imageY = 0; imageY < 32 * multi; ++imageY) {
+                        color24 = this.getPixelColor(true, true, true, true, nether, caves, world, zoom, multi, startX, startZ, imageX, imageY);
+                        this.mapImages[zoom].setRGB(imageX, imageY, color24);
+                    }
                 }
             }
         }
@@ -859,9 +894,15 @@ public class Map implements Runnable, IChangeObserver {
             }
         }
 
+        // OPTIMIZED: Throttle biome segmentation - only run every 4 pixels of movement
+        // Running on EVERY pixel movement was causing massive stuttering on N/S movement!
         if ((full || offsetX != 0 || offsetZ != 0 || !this.lastFullscreen) && this.fullscreenMap && this.options.biomeOverlay != 0) {
-            this.mapData[zoom].segmentBiomes();
-            this.mapData[zoom].findCenterOfSegments(!this.options.oldNorth);
+            biomeSegmentationCounter += Math.abs(offsetX) + Math.abs(offsetZ);
+            if (full || !this.lastFullscreen || biomeSegmentationCounter >= 4) {
+                this.mapData[zoom].segmentBiomes();
+                this.mapData[zoom].findCenterOfSegments(!this.options.oldNorth);
+                biomeSegmentationCounter = 0;
+            }
         }
 
         this.lastFullscreen = this.fullscreenMap;
@@ -990,7 +1031,15 @@ public class Map implements Runnable, IChangeObserver {
             boolean solid = false;
             if (needHeightAndID) {
                 if (!nether && !caves) {
-                    LevelChunk chunk = world.getChunkAt(blockPos);
+                    // OPTIMIZED: Cache chunk lookups - chunks are 16x16, so we access the same chunk multiple times
+                    int chunkX = blockPos.getX() >> 4;
+                    int chunkZ = blockPos.getZ() >> 4;
+                    if (cachedChunk == null || cachedChunkX != chunkX || cachedChunkZ != chunkZ) {
+                        cachedChunk = world.getChunkAt(blockPos);
+                        cachedChunkX = chunkX;
+                        cachedChunkZ = chunkZ;
+                    }
+                    LevelChunk chunk = cachedChunk;
                     transparentHeight = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) + 1;
                     this.transparentBlockState = world.getBlockState(blockPos.withXYZ(startX + imageX, transparentHeight - 1, startZ + imageY));
                     FluidState fluidState = this.transparentBlockState.getFluidState();
@@ -1590,8 +1639,9 @@ public class Map implements Runnable, IChangeObserver {
 
         // Apply offset based on player movement within the map
         // percentX/Y are in map coordinates, multiply by textureSize/64 to convert to texture pixels
+        // CRITICAL FIX: Both X and Y need NEGATIVE sign for correct direction!
         float offsetMultiplier = textureSize / 64.0F;
-        guiGraphics.pose().translate(-this.percentX * offsetMultiplier, this.percentY * offsetMultiplier, 0.0f);
+        guiGraphics.pose().translate(-this.percentX * offsetMultiplier, -this.percentY * offsetMultiplier, 0.0f);
 
         // Render the full map texture, which will be scaled to 64x64 by the transforms above
         guiGraphics.blit(mapResources[this.zoom], -halfTextureSize, -halfTextureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
