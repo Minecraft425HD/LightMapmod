@@ -31,14 +31,14 @@ public class MapSettingsManager implements ISettingsManager {
     public final boolean lightmap = true;
     public final boolean heightmap = true;
     public final boolean slopemap = true;
-    public boolean filtering;
-    public boolean waterTransparency = this.multicore;
-    public boolean blockTransparency = this.multicore;
-    public boolean biomes = this.multicore;
-    public int biomeOverlay;
-    public boolean chunkGrid;
-    public boolean slimeChunks;
-    public boolean worldborder = true;
+    public final boolean filtering = true;
+    public final boolean waterTransparency = true;
+    public final boolean blockTransparency = true;
+    public final boolean biomes = true;
+    public final int biomeOverlay = 0;
+    public final boolean chunkGrid = false;
+    public final boolean slimeChunks = false;
+    public final boolean worldborder = true;
     public final boolean squareMap = true;
     public final boolean rotates = false;
     public boolean oldNorth;
@@ -89,16 +89,7 @@ public class MapSettingsManager implements ISettingsManager {
                     String[] curLine = sCurrentLine.split(":");
                     switch (curLine[0]) {
                         case "Zoom Level" -> this.zoom = Math.max(0, Math.min(4, Integer.parseInt(curLine[1])));
-                        case "Blur" -> this.filtering = Boolean.parseBoolean(curLine[1]);
-                        case "Water Transparency" -> this.waterTransparency = Boolean.parseBoolean(curLine[1]);
-                        case "Block Transparency" -> this.blockTransparency = Boolean.parseBoolean(curLine[1]);
-                        case "Biomes" -> this.biomes = Boolean.parseBoolean(curLine[1]);
-                        case "Biome Overlay" -> this.biomeOverlay = Math.max(0, Math.min(2, Integer.parseInt(curLine[1])));
-                        case "Chunk Grid" -> this.chunkGrid = Boolean.parseBoolean(curLine[1]);
-                        case "Slime Chunks" -> this.slimeChunks = Boolean.parseBoolean(curLine[1]);
-                        case "World Border" -> this.worldborder = Boolean.parseBoolean(curLine[1]);
                         case "Old North" -> this.oldNorth = Boolean.parseBoolean(curLine[1]);
-                        case "Real Time Torch Flicker" -> this.realTimeTorches = Boolean.parseBoolean(curLine[1]);
                         case "Map Corner" -> this.mapCorner = Math.max(0, Math.min(3, Integer.parseInt(curLine[1])));
                         case "Map Size" -> this.sizeModifier = Math.max(-1, Math.min(4, Integer.parseInt(curLine[1])));
                         case "Zoom Key" -> this.bindKey(this.keyBindZoom, curLine[1]);
@@ -144,14 +135,6 @@ public class MapSettingsManager implements ISettingsManager {
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.settingsFile), StandardCharsets.UTF_8.newEncoder())));
             out.println("Zoom Level:" + this.zoom);
-            out.println("Blur:" + this.filtering);
-            out.println("Water Transparency:" + this.waterTransparency);
-            out.println("Block Transparency:" + this.blockTransparency);
-            out.println("Biomes:" + this.biomes);
-            out.println("Biome Overlay:" + this.biomeOverlay);
-            out.println("Chunk Grid:" + this.chunkGrid);
-            out.println("Slime Chunks:" + this.slimeChunks);
-            out.println("World Border:" + this.worldborder);
             out.println("Old North:" + this.oldNorth);
             out.println("Map Corner:" + this.mapCorner);
             out.println("Map Size:" + this.sizeModifier);
@@ -205,13 +188,6 @@ public class MapSettingsManager implements ISettingsManager {
     public boolean getOptionBooleanValue(EnumOptionsMinimap par1EnumOptions) {
         return switch (par1EnumOptions) {
             case OLD_NORTH -> this.oldNorth;
-            case FILTERING -> this.filtering;
-            case WATER_TRANSPARENCY -> this.waterTransparency;
-            case BLOCK_TRANSPARENCY -> this.blockTransparency;
-            case BIOMES -> this.biomes;
-            case CHUNK_GRID -> this.chunkGrid;
-            case SLIME_CHUNKS -> this.slimeChunks;
-            case WORLD_BORDER -> this.worldborder;
             case MOVE_MAP_DOWN_WHILE_STATUS_EFFECT -> this.moveMapDownWhileStatusEffect;
             case MOVE_SCOREBOARD_DOWN -> this.moveScoreBoardDown;
             default -> throw new IllegalArgumentException("Add code to handle EnumOptionMinimap: " + par1EnumOptions.getName() + ". (possibly not a boolean applicable to minimap)");
@@ -254,19 +230,6 @@ public class MapSettingsManager implements ISettingsManager {
                     return "error";
                 }
             }
-            case BIOME_OVERLAY -> {
-                if (this.biomeOverlay == 0) {
-                    return I18n.get("options.off");
-                } else if (this.biomeOverlay == 1) {
-                    return I18n.get("options.minimap.biomeOverlay.solid");
-                } else {
-                    if (this.biomeOverlay == 2) {
-                        return I18n.get("options.minimap.biomeOverlay.transparent");
-                    }
-
-                    return "error";
-                }
-            }
             default ->
                     throw new IllegalArgumentException("Add code to handle EnumOptionMinimap: " + par1EnumOptions.getName() + ". (possibly not a list value applicable to minimap)");
         }
@@ -280,23 +243,10 @@ public class MapSettingsManager implements ISettingsManager {
     public void setOptionValue(EnumOptionsMinimap par1EnumOptions) {
         switch (par1EnumOptions) {
             case OLD_NORTH -> this.oldNorth = !this.oldNorth;
-            case FILTERING -> this.filtering = !this.filtering;
-            case WATER_TRANSPARENCY -> this.waterTransparency = !this.waterTransparency;
-            case BLOCK_TRANSPARENCY -> this.blockTransparency = !this.blockTransparency;
-            case BIOMES -> this.biomes = !this.biomes;
-            case CHUNK_GRID -> this.chunkGrid = !this.chunkGrid;
-            case SLIME_CHUNKS -> this.slimeChunks = !this.slimeChunks;
-            case WORLD_BORDER -> this.worldborder = !this.worldborder;
             case MOVE_MAP_DOWN_WHILE_STATUS_EFFECT -> this.moveMapDownWhileStatusEffect = !this.moveMapDownWhileStatusEffect;
             case MOVE_SCOREBOARD_DOWN -> this.moveScoreBoardDown = !this.moveScoreBoardDown;
             case LOCATION -> this.mapCorner = this.mapCorner >= 3 ? 0 : this.mapCorner + 1;
             case SIZE -> this.sizeModifier = this.sizeModifier >= 4 ? -1 : this.sizeModifier + 1;
-            case BIOME_OVERLAY -> {
-                ++this.biomeOverlay;
-                if (this.biomeOverlay > 2) {
-                    this.biomeOverlay = 0;
-                }
-            }
             default ->
                     throw new IllegalArgumentException("Add code to handle EnumOptionMinimap: " + par1EnumOptions.getName());
         }
