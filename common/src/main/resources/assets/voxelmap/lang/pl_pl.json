@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Poziom przybliżenia:",
   "minimap.ui.otherOptions": "Opcje dodatkowe",
   "options.minimap.title": "Opcje minimapy",
-  "options.minimap.squareMap": "Kwadratowa mapa",
   "options.minimap.oldNorth": "Stare kierunki świata",
   "options.minimap.location": "Pozycja mapy",
   "options.minimap.location.topLeft": "Górny lewy róg",

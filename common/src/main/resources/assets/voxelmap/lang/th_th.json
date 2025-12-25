@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "ระดับการซูม: ",
   "minimap.ui.otherOptions": "ตัวเลือกอื่นๆ ",
   "options.minimap.title": "ตัวเลือกแผนที่ขนาดย่อ ",
-  "options.minimap.squareMap": "แผนที่แบบวงกลม ",
   "options.minimap.oldNorth": "ทิศเหนือเก่า",
   "options.minimap.location": "ตำแหน่ง",
   "options.minimap.location.topLeft": "บนซ้าย ",

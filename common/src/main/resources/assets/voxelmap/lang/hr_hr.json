@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Nivo zumiranja:",
   "minimap.ui.otherOptions": "Ostala Podešavanja",
   "options.minimap.title": "Podešavanja Minimape",
-  "options.minimap.squareMap": "Kvadratna Mapa",
   "options.minimap.oldNorth": "Stari Sever",
   "options.minimap.location": "Lokacija",
   "options.minimap.location.topLeft": "Gore Levo",

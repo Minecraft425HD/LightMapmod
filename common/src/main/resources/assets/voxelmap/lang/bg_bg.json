@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Ниво на zoom:",
   "minimap.ui.otherOptions": "Други опции",
   "options.minimap.title": "Опции на минимапа",
-  "options.minimap.squareMap": "Квадратна карта",
   "options.minimap.oldNorth": "Old North",
   "options.minimap.location": "Местоположение",
   "options.minimap.location.topLeft": "Горно ляво",

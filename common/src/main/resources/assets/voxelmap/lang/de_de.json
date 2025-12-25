@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Zoomstufe:",
   "minimap.ui.otherOptions": "Weitere Optionen",
   "options.minimap.title": "Kartenoptionen",
-  "options.minimap.squareMap": "Rechteckige Karte",
   "options.minimap.oldNorth": "Original Nord",
   "options.minimap.location": "Lage",
   "options.minimap.location.topLeft": "Oben Links",

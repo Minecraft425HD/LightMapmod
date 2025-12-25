@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Zoom Niveau:",
   "minimap.ui.otherOptions": "Andre Indstillinger",
   "options.minimap.title": "Minimap Indstillinger",
-  "options.minimap.squareMap": "Firkantet Kort",
   "options.minimap.oldNorth": "Gammel Nord",
   "options.minimap.location": "Lokation",
   "options.minimap.location.topLeft": "Øverste venstre hjørne",

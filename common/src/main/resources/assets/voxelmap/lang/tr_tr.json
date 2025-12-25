@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Zoom seviyesi:",
   "minimap.ui.otherOptions": "Diğer ayarlar",
   "options.minimap.title": "Miniharita Ayarları",
-  "options.minimap.squareMap": "Kare harita",
   "options.minimap.oldNorth": "Eski Kuzey",
   "options.minimap.location": "Konum",
   "options.minimap.location.topLeft": "Sol Üst",

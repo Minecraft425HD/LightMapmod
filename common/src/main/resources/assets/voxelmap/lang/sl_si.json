@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Velikost zooma:",
   "minimap.ui.otherOptions": "Ostale nastavitve",
   "options.minimap.title": "Nastavitve Mini-zemljevida",
-  "options.minimap.squareMap": "Kvadraten zemljevid",
   "options.minimap.oldNorth": "Stari sever",
   "options.minimap.location": "Lokacija",
   "options.minimap.location.topLeft": "Zgoraj Levo",

@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Tingkat Perbesaran:",
   "minimap.ui.otherOptions": "Pengaturan Lainnya",
   "options.minimap.title": "Pengaturan Minimap",
-  "options.minimap.squareMap": "Peta Kotak",
   "options.minimap.oldNorth": "Utara Lama",
   "options.minimap.location": "Lokasi",
   "options.minimap.location.topLeft": "Kiri Atas",

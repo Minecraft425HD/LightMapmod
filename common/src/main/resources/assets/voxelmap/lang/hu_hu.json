@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Nagyítási szint",
   "minimap.ui.otherOptions": "Egyéb beállítások",
   "options.minimap.title": "Minitérkép beállítások",
-  "options.minimap.squareMap": "Szögletes térkép",
   "options.minimap.oldNorth": "Régi Észak",
   "options.minimap.location": "Elhelyezés",
   "options.minimap.location.topLeft": "Bal felső",

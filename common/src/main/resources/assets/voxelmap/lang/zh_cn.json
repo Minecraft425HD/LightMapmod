@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "缩放等级:",
   "minimap.ui.otherOptions": "其他选项",
   "options.minimap.title": "小地图选项",
-  "options.minimap.squareMap": "方形地图",
   "options.minimap.oldNorth": "日落北方",
   "options.minimap.location": "地图位置",
   "options.minimap.location.topLeft": "左上角",

@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Livello di zoom:",
   "minimap.ui.otherOptions": "Altre opzioni",
   "options.minimap.title": "Opzioni della minimappa",
-  "options.minimap.squareMap": "Mappa quadrata",
   "options.minimap.oldNorth": "Vecchio Nord",
   "options.minimap.location": "Luogo",
   "options.minimap.location.topLeft": "In alto a sinistra",

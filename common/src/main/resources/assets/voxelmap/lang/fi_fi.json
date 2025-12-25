@@ -2,7 +2,6 @@
   "minimap.ui.zoomLevel": "Zoomin taso:",
   "minimap.ui.otherOptions": "Muut asetukset",
   "options.minimap.title": "Kartan asetukset",
-  "options.minimap.squareMap": "Neliö-kartta",
   "options.minimap.oldNorth": "Wanha Pohjoinen",
   "options.minimap.location": "Sijainti",
   "options.minimap.location.topLeft": "Ylä-Vasen",
