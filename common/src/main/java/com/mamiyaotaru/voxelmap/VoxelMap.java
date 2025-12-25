@@ -1,6 +1,5 @@
 package com.mamiyaotaru.voxelmap;
 
-import com.mamiyaotaru.voxelmap.interfaces.IRadar;
 import com.mamiyaotaru.voxelmap.persistent.PersistentMap;
 import com.mamiyaotaru.voxelmap.persistent.PersistentMapSettingsManager;
 import com.mamiyaotaru.voxelmap.persistent.ThreadManager;
@@ -25,11 +24,8 @@ import net.minecraft.world.level.Level;
 
 public class VoxelMap implements PreparableReloadListener {
     public static MapSettingsManager mapOptions;
-    public static RadarSettingsManager radarOptions;
     private PersistentMapSettingsManager persistentMapOptions;
     private Map map;
-    private Radar radar;
-    private RadarSimple radarSimple;
     private PersistentMap persistentMap;
     private SettingsAndLightingChangeNotifier settingsAndLightingChangeNotifier;
     private WorldUpdateListener worldUpdateListener;
@@ -45,8 +41,6 @@ public class VoxelMap implements PreparableReloadListener {
     public void lateInit(boolean showUnderMenus, boolean isFair) {
         mapOptions = new MapSettingsManager();
         mapOptions.showUnderMenus = showUnderMenus;
-        radarOptions = new RadarSettingsManager();
-        mapOptions.addSecondaryOptionsManager(radarOptions);
         this.persistentMapOptions = new PersistentMapSettingsManager();
         mapOptions.addSecondaryOptionsManager(this.persistentMapOptions);
         BiomeRepository.loadBiomeColors();
@@ -55,27 +49,6 @@ public class VoxelMap implements PreparableReloadListener {
         this.dimensionManager = new DimensionManager();
         this.persistentMap = new PersistentMap();
         mapOptions.loadAll();
-
-        try {
-            if (isFair) {
-                radarOptions.radarAllowed = false;
-                radarOptions.radarMobsAllowed = false;
-                radarOptions.radarPlayersAllowed = false;
-            } else {
-                radarOptions.radarAllowed = true;
-                radarOptions.radarMobsAllowed = true;
-                radarOptions.radarPlayersAllowed = true;
-                this.radar = new Radar();
-                this.radarSimple = new RadarSimple();
-            }
-        } catch (RuntimeException var4) {
-            VoxelConstants.getLogger().error("Failed creating radar " + var4.getLocalizedMessage(), var4);
-            radarOptions.radarAllowed = false;
-            radarOptions.radarMobsAllowed = false;
-            radarOptions.radarPlayersAllowed = false;
-            this.radar = null;
-            this.radarSimple = null;
-        }
 
         // Event listeners are now registered separately during mod construction
         this.map = new Map();
@@ -96,14 +69,6 @@ public class VoxelMap implements PreparableReloadListener {
 
     private void apply(ResourceManager resourceManager) {
         this.waypointManager.onResourceManagerReload(resourceManager);
-        if (this.radar != null) {
-            this.radar.onResourceManagerReload(resourceManager);
-        }
-
-        if (this.radarSimple != null) {
-            this.radarSimple.onResourceManagerReload(resourceManager);
-        }
-
         this.colorManager.onResourceManagerReload(resourceManager);
     }
 
@@ -154,33 +119,14 @@ public class VoxelMap implements PreparableReloadListener {
             VoxelConstants.getLogger().info("Server disabled cavemapping.");
         }
 
-        if (msg.contains("§3 §6 §3 §6 §3 §6 §e")) {
-            radarOptions.radarAllowed = false;
-            radarOptions.radarPlayersAllowed = false;
-            radarOptions.radarMobsAllowed = false;
-            VoxelConstants.getLogger().info("Server disabled radar.");
-        }
-
         if (msg.contains("§3 §6 §3 §6 §3 §6 §f")) {
             mapOptions.cavesAllowed = true;
             VoxelConstants.getLogger().info("Server enabled cavemapping.");
         }
-
-        if (msg.contains("§3 §6 §3 §6 §3 §6 §0")) {
-            radarOptions.radarAllowed = true;
-            radarOptions.radarPlayersAllowed = true;
-            radarOptions.radarMobsAllowed = true;
-            VoxelConstants.getLogger().info("Server enabled radar.");
-        }
-
     }
 
     public MapSettingsManager getMapOptions() {
         return mapOptions;
-    }
-
-    public RadarSettingsManager getRadarOptions() {
-        return radarOptions;
     }
 
     public PersistentMapSettingsManager getPersistentMapOptions() {
@@ -193,20 +139,6 @@ public class VoxelMap implements PreparableReloadListener {
 
     public SettingsAndLightingChangeNotifier getSettingsAndLightingChangeNotifier() {
         return this.settingsAndLightingChangeNotifier;
-    }
-
-    public IRadar getRadar() {
-        if (radarOptions.showRadar) {
-            if (radarOptions.radarMode == 1) {
-                return this.radarSimple;
-            }
-
-            if (radarOptions.radarMode == 2) {
-                return this.radar;
-            }
-        }
-
-        return null;
     }
 
     public ColorManager getColorManager() {
@@ -225,10 +157,7 @@ public class VoxelMap implements PreparableReloadListener {
         return this.persistentMap;
     }
 
-    public void setPermissions(boolean hasFullRadarPermission, boolean hasPlayersOnRadarPermission, boolean hasMobsOnRadarPermission, boolean hasCavemodePermission) {
-        radarOptions.radarAllowed = hasFullRadarPermission;
-        radarOptions.radarPlayersAllowed = hasPlayersOnRadarPermission;
-        radarOptions.radarMobsAllowed = hasMobsOnRadarPermission;
+    public void setPermissions(boolean hasCavemodePermission) {
         mapOptions.cavesAllowed = hasCavemodePermission;
     }
 
@@ -264,12 +193,8 @@ public class VoxelMap implements PreparableReloadListener {
     }
 
     public void clearServerSettings() {
-        radarOptions.radarAllowed = true;
-        radarOptions.radarPlayersAllowed = true;
-        radarOptions.radarMobsAllowed = true;
         mapOptions.cavesAllowed = true;
         mapOptions.serverTeleportCommand = null;
-
         mapOptions.worldmapAllowed = true;
         mapOptions.minimapAllowed = true;
         mapOptions.waypointsAllowed = true;
@@ -281,7 +206,7 @@ public class VoxelMap implements PreparableReloadListener {
     }
 
     public void onJoinServer() {
-        this.radar.onJoinServer();
+        // No-op after radar removal
     }
 
     public void onDisconnect() {
@@ -295,9 +220,5 @@ public class VoxelMap implements PreparableReloadListener {
     public void onClientStopping() {
         VoxelConstants.onShutDown();
         ThreadManager.flushSaveQueue();
-    }
-
-    public Radar getNotSimpleRadar() {
-        return radar;
     }
 }
