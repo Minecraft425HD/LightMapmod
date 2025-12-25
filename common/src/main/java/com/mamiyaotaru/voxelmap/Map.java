@@ -124,7 +124,6 @@ public class Map implements Runnable, IChangeObserver {
     private float lastLightning;
     private float lastPotion;
     private final int[] lastLightmapValues = { -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216 };
-    private boolean lastBeneathRendering;
     private boolean needSkyColor;
     private boolean lastAboveHorizon = true;
     private int lastBiome;
@@ -724,20 +723,8 @@ public class Map implements Runnable, IChangeObserver {
         }
 
         boolean nether = false;
-        MutableBlockPos blockPos = MutableBlockPosCache.get();
-        blockPos.setXYZ(this.lastX, Math.max(Math.min(GameVariableAccessShim.yCoord(), world.getMaxBuildHeight() - 1), world.getMinBuildHeight()), this.lastZ);
-        if (VoxelConstants.getPlayer().level().dimensionType().hasCeiling()) {
-            nether = currentY < 126;
-        }
-        MutableBlockPosCache.release(blockPos);
-
-        boolean beneathRendering = nether;
-        if (this.lastBeneathRendering != beneathRendering) {
-            full = true;
-        }
-
-        this.lastBeneathRendering = beneathRendering;
-        needHeightAndID = needHeightMap && nether;
+        boolean caves = false;
+        needHeightAndID = false;
         int color24;
         synchronized (this.coordinateLock) {
             if (!full) {
@@ -846,13 +833,7 @@ public class Map implements Runnable, IChangeObserver {
 
     private void rectangleCalc(int left, int top, int right, int bottom) {
         boolean nether = false;
-        MutableBlockPos blockPos = MutableBlockPosCache.get();
-        blockPos.setXYZ(this.lastX, Math.max(Math.min(GameVariableAccessShim.yCoord(), world.getMaxBuildHeight()), world.getMinBuildHeight()), this.lastZ);
-        int currentY = GameVariableAccessShim.yCoord();
-        if (VoxelConstants.getPlayer().level().dimensionType().hasCeiling()) {
-            nether = currentY < 126;
-        }
-        MutableBlockPosCache.release(blockPos);
+        boolean caves = false;
 
         int zoom = this.zoom;
         int startX = this.lastX;
