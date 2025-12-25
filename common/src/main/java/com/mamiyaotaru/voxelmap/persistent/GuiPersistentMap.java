@@ -921,12 +921,10 @@ public class GuiPersistentMap extends PopupGuiScreen {
 
     }
 
-    @Override
     public boolean isEditing() {
         return false;
     }
 
-    @Override
     public void accept(boolean b) {
         minecraft.setScreen(this);
     }

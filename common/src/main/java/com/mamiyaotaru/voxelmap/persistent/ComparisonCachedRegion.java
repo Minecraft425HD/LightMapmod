@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.mamiyaotaru.voxelmap.VoxelConstants;
 import com.mamiyaotaru.voxelmap.util.BiomeParser;
 import com.mamiyaotaru.voxelmap.util.BlockStateParser;
+import com.mamiyaotaru.voxelmap.util.HeightUtils;
 import com.mamiyaotaru.voxelmap.util.MessageUtils;
 import com.mamiyaotaru.voxelmap.util.MutableBlockPos;
 import com.mamiyaotaru.voxelmap.util.TextUtils;
@@ -187,7 +188,7 @@ public class ComparisonCachedRegion {
         int z = blockZ - this.z * 256;
         int y = this.data.getHeight(x, z);
         if (this.underground && y == 255) {
-            y = CommandUtils.getSafeHeight(blockX, 64, blockZ, this.world);
+            y = HeightUtils.getSafeHeight(blockX, 64, blockZ, this.world);
         }
 
         return y;

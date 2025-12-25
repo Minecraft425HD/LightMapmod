@@ -33,6 +33,7 @@ public class VoxelMap implements PreparableReloadListener {
     private ClientLevel world;
     private static String passMessage;
     private ArrayDeque<Runnable> runOnWorldSet = new ArrayDeque<>();
+    private String worldSeed = "";
     VoxelMap() {}
 
     public void lateInit(boolean showUnderMenus, boolean isFair) {
@@ -207,5 +208,25 @@ public class VoxelMap implements PreparableReloadListener {
      */
     public void newSubWorldName(String name, boolean fromServer) {
         // No-op after waypoint system removal
+    }
+
+    /**
+     * Gets the world seed used for slime chunk calculation.
+     * For singleplayer, automatically retrieves from server.
+     */
+    public String getWorldSeed() {
+        if (VoxelConstants.isSinglePlayer()) {
+            return VoxelConstants.getIntegratedServer()
+                    .map(server -> String.valueOf(server.getWorldData().worldGenOptions().seed()))
+                    .orElse("");
+        }
+        return this.worldSeed;
+    }
+
+    /**
+     * Sets the world seed for multiplayer slime chunk calculation.
+     */
+    public void setWorldSeed(String seed) {
+        this.worldSeed = seed != null ? seed : "";
     }
 }

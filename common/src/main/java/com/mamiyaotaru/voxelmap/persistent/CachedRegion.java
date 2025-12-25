@@ -7,6 +7,7 @@ import com.mamiyaotaru.voxelmap.VoxelConstants;
 import com.mamiyaotaru.voxelmap.util.BiomeParser;
 import com.mamiyaotaru.voxelmap.util.BlockStateParser;
 import com.mamiyaotaru.voxelmap.util.GameVariableAccessShim;
+import com.mamiyaotaru.voxelmap.util.HeightUtils;
 import com.mamiyaotaru.voxelmap.util.MutableBlockPos;
 import com.mamiyaotaru.voxelmap.util.ReflectionUtils;
 import com.mamiyaotaru.voxelmap.util.TextUtils;
@@ -724,7 +725,7 @@ public class CachedRegion {
         int z = blockZ - this.z * 256;
         int y = this.data == null ? Short.MIN_VALUE : this.data.getHeight(x, z);
         if (this.underground && y == 255) {
-            y = CommandUtils.getSafeHeight(blockX, 64, blockZ, this.world);
+            y = HeightUtils.getSafeHeight(blockX, 64, blockZ, this.world);
         }
 
         return y;
