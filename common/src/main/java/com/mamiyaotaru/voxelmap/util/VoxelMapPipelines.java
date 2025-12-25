@@ -67,39 +67,6 @@ public class VoxelMapPipelines extends RenderStateShard {
                             .createCompositeState(false)
             ));
 
-    // Waypoint beam - just reference VoxelMapRenderTypes
-    public static final RenderType WAYPOINT_BEAM_PIPELINE = VoxelMapRenderTypes.WAYPOINT_BEAM;
-
-    // Waypoint icon with depth test - reference VoxelMapRenderTypes
-    public static final Function<ResourceLocation, RenderType> WAYPOINT_ICON_DEPTHTEST_PIPELINE =
-            VoxelMapRenderTypes.WAYPOINT_ICON_DEPTHTEST;
-
-    // Waypoint icon without depth test - reference VoxelMapRenderTypes
-    public static final Function<ResourceLocation, RenderType> WAYPOINT_ICON_NO_DEPTHTEST_PIPELINE =
-            VoxelMapRenderTypes.WAYPOINT_ICON_NO_DEPTHTEST;
-
-    // Waypoint text background - reference VoxelMapRenderTypes
-    public static final RenderType WAYPOINT_TEXT_BACKGROUND_PIPELINE =
-            VoxelMapRenderTypes.WAYPOINT_TEXT_BACKGROUND;
-
-    // Entity icon pipeline - textured rendering for entities on minimap
-    public static final Function<ResourceLocation, RenderType> ENTITY_ICON_PIPELINE =
-            net.minecraft.Util.memoize((texture) -> RenderType.create(
-                    "voxelmap_entity_icon",
-                    DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP,
-                    VertexFormat.Mode.QUADS,
-                    256,
-                    false,
-                    true,
-                    RenderType.CompositeState.builder()
-                            .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_CULL_SHADER)
-                            .setTextureState(new TextureStateShard(texture, false, false))
-                            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                            .setLightmapState(LIGHTMAP)
-                            .setOverlayState(NO_OVERLAY)
-                            .createCompositeState(true)
-            ));
-
     // General GUI and GUI_TEXTURED - reference VoxelMapRenderTypes
     public static final RenderType GUI = VoxelMapRenderTypes.GUI;
     public static final Function<ResourceLocation, RenderType> GUI_TEXTURED = VoxelMapRenderTypes.GUI_TEXTURED;
