@@ -150,15 +150,20 @@ public class BlockModel {
         final BlockVertex[] longestSide;
 
         public BlockFace(BakedQuad quad) {
-            // TODO: 1.20.1 Port - BakedQuad API changed in 1.20.1, vertex extraction needs rewrite
-            // The position0/1/2/3 and packedUV0/1/2/3 methods don't exist in 1.20.1
-            // Need to manually extract vertices from the int[] array returned by getVertices()
-            // this.vertices[0] = new BlockVertex(quad.position0().x(), quad.position0().y(), quad.position0().z(), UVPair.unpackU(quad.packedUV0()), UVPair.unpackV(quad.packedUV0()));
-            // this.vertices[1] = new BlockVertex(quad.position1().x(), quad.position1().y(), quad.position1().z(), UVPair.unpackU(quad.packedUV1()), UVPair.unpackV(quad.packedUV1()));
-            // this.vertices[2] = new BlockVertex(quad.position2().x(), quad.position2().y(), quad.position2().z(), UVPair.unpackU(quad.packedUV2()), UVPair.unpackV(quad.packedUV2()));
-            // this.vertices[3] = new BlockVertex(quad.position3().x(), quad.position3().y(), quad.position3().z(), UVPair.unpackU(quad.packedUV3()), UVPair.unpackV(quad.packedUV3()));
+            // 1.20.1 Port: BakedQuad API changed - extract vertices from int[] array
+            int[] values = quad.getVertices();
+            int arraySize = values.length;
+            int intsPerVertex = arraySize / 4;
+            this.vertices = new BlockVertex[4];
 
-            this.vertices = new BlockVertex[0];
+            for (int t = 0; t < 4; ++t) {
+                float x = Float.intBitsToFloat(values[t * intsPerVertex]);
+                float y = Float.intBitsToFloat(values[t * intsPerVertex + 1]);
+                float z = Float.intBitsToFloat(values[t * intsPerVertex + 2]);
+                float u = Float.intBitsToFloat(values[t * intsPerVertex + 4]);
+                float v = Float.intBitsToFloat(values[t * intsPerVertex + 5]);
+                this.vertices[t] = new BlockVertex(x, y, z, u, v);
+            }
 
             this.isHorizontal = this.checkIfHorizontal();
             this.isVertical = this.checkIfVertical();
