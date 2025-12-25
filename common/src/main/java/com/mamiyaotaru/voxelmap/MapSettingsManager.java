@@ -28,9 +28,6 @@ public class MapSettingsManager implements ISettingsManager {
     public boolean showUnderMenus;
     private final int availableProcessors = Runtime.getRuntime().availableProcessors();
     public final boolean multicore = this.availableProcessors > 1;
-    public boolean hide;
-    public boolean coords = true;
-    protected boolean showCaves = true;
     public boolean lightmap = true;
     public boolean heightmap = this.multicore;
     public boolean slopemap = true;
@@ -59,7 +56,6 @@ public class MapSettingsManager implements ISettingsManager {
     public KeyMapping keyBindZoom;
     public KeyMapping keyBindFullscreen;
     public KeyMapping keyBindMenu;
-    public KeyMapping keyBindMinimapToggle;
     public final KeyMapping[] keyBindings;
     private boolean somethingChanged;
     public static MapSettingsManager instance;
@@ -75,9 +71,8 @@ public class MapSettingsManager implements ISettingsManager {
         keyBindZoom = new KeyMapping("key.minimap.zoom", InputConstants.getKey("key.keyboard.z").getValue(), category);
         keyBindFullscreen = new KeyMapping("key.minimap.toggleFullscreen", InputConstants.getKey("key.keyboard.x").getValue(), category);
         keyBindMenu = new KeyMapping("key.minimap.voxelmapMenu", InputConstants.getKey("key.keyboard.m").getValue(), category);
-        keyBindMinimapToggle = new KeyMapping("key.minimap.toggleMinimap", InputConstants.getKey("key.keyboard.o").getValue(), category);
 
-        this.keyBindings = new KeyMapping[]{this.keyBindMenu, this.keyBindZoom, this.keyBindFullscreen, this.keyBindMinimapToggle};
+        this.keyBindings = new KeyMapping[]{this.keyBindMenu, this.keyBindZoom, this.keyBindFullscreen};
     }
 
     public void addSecondaryOptionsManager(ISubSettingsManager secondarySettingsManager) {
@@ -95,9 +90,6 @@ public class MapSettingsManager implements ISettingsManager {
                     String[] curLine = sCurrentLine.split(":");
                     switch (curLine[0]) {
                         case "Zoom Level" -> this.zoom = Math.max(0, Math.min(4, Integer.parseInt(curLine[1])));
-                        case "Hide Minimap" -> this.hide = Boolean.parseBoolean(curLine[1]);
-                        case "Show Coordinates" -> this.coords = Boolean.parseBoolean(curLine[1]);
-                        case "Enable Cave Mode" -> this.showCaves = Boolean.parseBoolean(curLine[1]);
                         case "Dynamic Lighting" -> this.lightmap = Boolean.parseBoolean(curLine[1]);
                         case "Height Map" -> this.heightmap = Boolean.parseBoolean(curLine[1]);
                         case "Slope Map" -> this.slopemap = Boolean.parseBoolean(curLine[1]);
@@ -118,7 +110,6 @@ public class MapSettingsManager implements ISettingsManager {
                         case "Zoom Key" -> this.bindKey(this.keyBindZoom, curLine[1]);
                         case "Fullscreen Key" -> this.bindKey(this.keyBindFullscreen, curLine[1]);
                         case "Menu Key" -> this.bindKey(this.keyBindMenu, curLine[1]);
-                        case "Toggle Minimap Key" -> this.bindKey(this.keyBindMinimapToggle, curLine[1]);
                         case "Teleport Command" -> this.teleportCommand = curLine[1];
                         case "Move Map Down While Status Effect" -> this.moveMapDownWhileStatusEffect = Boolean.parseBoolean(curLine[1]);
                         case "Move ScoreBoard Down" -> this.moveScoreBoardDown = Boolean.parseBoolean(curLine[1]);
@@ -159,9 +150,6 @@ public class MapSettingsManager implements ISettingsManager {
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.settingsFile), StandardCharsets.UTF_8.newEncoder())));
             out.println("Zoom Level:" + this.zoom);
-            out.println("Hide Minimap:" + this.hide);
-            out.println("Show Coordinates:" + this.coords);
-            out.println("Enable Cave Mode:" + this.showCaves);
             out.println("Dynamic Lighting:" + this.lightmap);
             out.println("Height Map:" + this.heightmap);
             out.println("Slope Map:" + this.slopemap);
@@ -181,7 +169,6 @@ public class MapSettingsManager implements ISettingsManager {
             out.println("Zoom Key:" + this.keyBindZoom.saveString());
             out.println("Fullscreen Key:" + this.keyBindFullscreen.saveString());
             out.println("Menu Key:" + this.keyBindMenu.saveString());
-            out.println("Toggle Minimap Key:" + this.keyBindMinimapToggle.saveString());
             out.println("Teleport Command:" + this.teleportCommand);
             out.println("Move Map Down While Status Effect:" + this.moveMapDownWhileStatusEffect);
             out.println("Move ScoreBoard Down:" + this.moveScoreBoardDown);
@@ -228,9 +215,6 @@ public class MapSettingsManager implements ISettingsManager {
 
     public boolean getOptionBooleanValue(EnumOptionsMinimap par1EnumOptions) {
         return switch (par1EnumOptions) {
-            case SHOW_COORDS -> this.coords;
-            case HIDE_MINIMAP -> this.hide || !this.minimapAllowed;
-            case CAVE_MODE -> this.cavesAllowed && this.showCaves;
             case DYNAMIC_LIGHTING -> this.lightmap;
             case SQUARE_MAP -> this.squareMap;
             case ROTATES -> this.rotates;
@@ -319,9 +303,6 @@ public class MapSettingsManager implements ISettingsManager {
 
     public void setOptionValue(EnumOptionsMinimap par1EnumOptions) {
         switch (par1EnumOptions) {
-            case SHOW_COORDS -> this.coords = !this.coords;
-            case HIDE_MINIMAP -> this.hide = !this.hide;
-            case CAVE_MODE -> this.showCaves = !this.showCaves;
             case DYNAMIC_LIGHTING -> this.lightmap = !this.lightmap;
             case SQUARE_MAP -> this.squareMap = !this.squareMap;
             case ROTATES -> this.rotates = !this.rotates;

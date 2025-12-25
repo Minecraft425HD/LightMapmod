@@ -27,20 +27,13 @@ public class GuiMinimapOptions extends GuiScreenMinimap {
 
     @Override
     public void init() {
-        EnumOptionsMinimap[] relevantOptions = { EnumOptionsMinimap.SHOW_COORDS, EnumOptionsMinimap.HIDE_MINIMAP, EnumOptionsMinimap.LOCATION, EnumOptionsMinimap.SIZE, EnumOptionsMinimap.SQUARE_MAP, EnumOptionsMinimap.ROTATES, EnumOptionsMinimap.CAVE_MODE, EnumOptionsMinimap.MOVE_MAP_DOWN_WHILE_STATUS_EFFECT, EnumOptionsMinimap.MOVE_SCOREBOARD_DOWN};
+        EnumOptionsMinimap[] relevantOptions = { EnumOptionsMinimap.LOCATION, EnumOptionsMinimap.SIZE, EnumOptionsMinimap.SQUARE_MAP, EnumOptionsMinimap.ROTATES, EnumOptionsMinimap.MOVE_MAP_DOWN_WHILE_STATUS_EFFECT, EnumOptionsMinimap.MOVE_SCOREBOARD_DOWN };
         this.screenTitle = I18n.get("options.minimap.title");
 
         for (int i = 0; i < relevantOptions.length; i++) {
             EnumOptionsMinimap option = relevantOptions[i];
             GuiOptionButtonMinimap optionButton = new GuiOptionButtonMinimap(getWidth() / 2 - 155 + i % 2 * 160, getHeight() / 6 + 24 * (i >> 1), option, Component.literal(options.getKeyText(option)), this::optionClicked);
             this.addRenderableWidget(optionButton);
-
-            if (option == EnumOptionsMinimap.HIDE_MINIMAP) {
-                optionButton.active = this.options.minimapAllowed;
-            }
-            if (option == EnumOptionsMinimap.CAVE_MODE) {
-                optionButton.active = this.options.cavesAllowed;
-            }
         }
 
         this.addRenderableWidget(new Button.Builder(Component.translatable("options.minimap.detailsPerformance"), button -> VoxelConstants.getMinecraft().setScreen(new GuiMinimapPerformance(this))).bounds(this.getWidth() / 2 - 155, this.getHeight() / 6 + 135 - 6, 150, 20).build());

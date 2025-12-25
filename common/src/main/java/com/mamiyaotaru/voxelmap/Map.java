@@ -291,7 +291,7 @@ public class Map implements Runnable, IChangeObserver {
         if (minecraft != null) {
             while (true) {
                 if (this.world != null) {
-                    if (!this.options.hide && this.options.minimapAllowed) {
+                    if (this.options.minimapAllowed) {
                         try {
                             this.mapCalc(this.doFullRender);
                             if (!this.doFullRender) {
@@ -365,10 +365,6 @@ public class Map implements Runnable, IChangeObserver {
             }
         }
 
-        if (minecraft.screen == null && this.options.keyBindMinimapToggle.consumeClick()) {
-            this.options.setOptionValue(EnumOptionsMinimap.HIDE_MINIMAP);
-        }
-
         this.checkForChanges();
         this.lastGuiScreen = minecraft.screen;
         this.calculateCurrentLightAndSkyColor();
@@ -393,7 +389,7 @@ public class Map implements Runnable, IChangeObserver {
                 }
             }
         } else {
-            if (!this.options.hide && this.options.minimapAllowed && this.world != null) {
+            if (this.options.minimapAllowed && this.world != null) {
                 this.mapCalc(this.doFullRender);
                 if (!this.doFullRender) {
                     MutableBlockPos blockPos = MutableBlockPosCache.get();
@@ -641,20 +637,16 @@ public class Map implements Runnable, IChangeObserver {
         }
         Map.statusIconOffset = statusIconOffset;
 
-        if (!this.options.hide) {
-            if (this.fullscreenMap) {
-                this.renderMapFull(drawContext, this.scWidth, this.scHeight, scaleProj);
-                this.drawArrow(drawContext, this.scWidth / 2, this.scHeight / 2, scaleProj);
-            } else {
-                this.renderMap(drawContext, mapX, mapY, scScale, scaleProj);
-                this.drawDirections(drawContext, mapX, mapY, scaleProj);
-                this.drawArrow(drawContext, mapX, mapY, scaleProj);
-            }
+        if (this.fullscreenMap) {
+            this.renderMapFull(drawContext, this.scWidth, this.scHeight, scaleProj);
+            this.drawArrow(drawContext, this.scWidth / 2, this.scHeight / 2, scaleProj);
+        } else {
+            this.renderMap(drawContext, mapX, mapY, scScale, scaleProj);
+            this.drawDirections(drawContext, mapX, mapY, scaleProj);
+            this.drawArrow(drawContext, mapX, mapY, scaleProj);
         }
 
-        if (this.options.coords) {
-            this.showCoords(drawContext, mapX, mapY, scaleProj);
-        }
+        this.showCoords(drawContext, mapX, mapY, scaleProj);
     }
 
     private void checkForChanges() {
@@ -742,15 +734,15 @@ public class Map implements Runnable, IChangeObserver {
 
             netherPlayerInOpen = world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
             nether = currentY < 126;
-            if (this.options.cavesAllowed && this.options.showCaves && currentY >= 126 && !netherPlayerInOpen) {
+            if (this.options.cavesAllowed && currentY >= 126 && !netherPlayerInOpen) {
                 caves = true;
             }
         } else if (!world.dimensionType().hasCeiling() && !world.dimensionType().hasSkyLight()) {
             boolean endPlayerInOpen = world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
-            if (this.options.cavesAllowed && this.options.showCaves && !endPlayerInOpen) {
+            if (this.options.cavesAllowed && !endPlayerInOpen) {
                 caves = true;
             }
-        } else if (this.options.cavesAllowed && this.options.showCaves && world.getBrightness(LightLayer.SKY, blockPos) <= 0) {
+        } else if (this.options.cavesAllowed && world.getBrightness(LightLayer.SKY, blockPos) <= 0) {
             caves = true;
         }
         MutableBlockPosCache.release(blockPos);
@@ -878,15 +870,15 @@ public class Map implements Runnable, IChangeObserver {
         if (VoxelConstants.getPlayer().level().dimensionType().hasCeiling()) {
             netherPlayerInOpen = this.world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
             nether = currentY < 126;
-            if (this.options.cavesAllowed && this.options.showCaves && currentY >= 126 && !netherPlayerInOpen) {
+            if (this.options.cavesAllowed && currentY >= 126 && !netherPlayerInOpen) {
                 caves = true;
             }
         } else if (!world.dimensionType().hasCeiling() && !world.dimensionType().hasSkyLight()) {
             boolean endPlayerInOpen = this.world.getChunk(blockPos).getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) <= currentY;
-            if (this.options.cavesAllowed && this.options.showCaves && !endPlayerInOpen) {
+            if (this.options.cavesAllowed && !endPlayerInOpen) {
                 caves = true;
             }
-        } else if (this.options.cavesAllowed && this.options.showCaves && this.world.getBrightness(LightLayer.SKY, blockPos) <= 0) {
+        } else if (this.options.cavesAllowed && this.world.getBrightness(LightLayer.SKY, blockPos) <= 0) {
             caves = true;
         }
         MutableBlockPosCache.release(blockPos);
@@ -1784,7 +1776,7 @@ public class Map implements Runnable, IChangeObserver {
         matrixStack.pushPose();
         matrixStack.scale(scaleProj, scaleProj, 1.0f);
 
-        if (!this.options.hide && !this.fullscreenMap) {
+        if (!this.fullscreenMap) {
             boolean unicode = minecraft.options.forceUnicodeFont().get();
             float scale = unicode ? 0.65F : 0.5F;
             matrixStack.pushPose();

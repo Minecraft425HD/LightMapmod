@@ -1,9 +1,6 @@
 package com.mamiyaotaru.voxelmap.gui.overridden;
 
 public enum EnumOptionsMinimap {
-    SHOW_COORDS("options.minimap.showCoordinates", false, true, false),
-    HIDE_MINIMAP("options.minimap.hideMinimap", false, true, false),
-    CAVE_MODE("options.minimap.caveMode", false, true, false),
     DYNAMIC_LIGHTING("options.minimap.dynamicLighting", false, true, false),
     TERRAIN_DEPTH("options.minimap.terrainDepth", false, false, true),
     SQUARE_MAP("options.minimap.squareMap", false, true, false),

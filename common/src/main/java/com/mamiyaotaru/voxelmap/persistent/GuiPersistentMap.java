@@ -799,13 +799,11 @@ public class GuiPersistentMap extends PopupGuiScreen {
             guiGraphics.drawCenteredString(this.font, this.screenTitle, this.getWidth() / 2, 16, 0xFFFFFFFF);
             int x = (int) Math.floor(cursorCoordX);
             int z = (int) Math.floor(cursorCoordZ);
-            if (VoxelConstants.getVoxelMapInstance().getMapOptions().coords) {
-                if (!this.editingCoordinates) {
-                    guiGraphics.drawString(this.font, "X: " + x, this.sideMargin, 16, 0xFFFFFFFF);
-                    guiGraphics.drawString(this.font, "Z: " + z, this.sideMargin + 64, 16, 0xFFFFFFFF);
-                } else {
-                    this.coordinates.render(guiGraphics, mouseX, mouseY, delta);
-                }
+            if (!this.editingCoordinates) {
+                guiGraphics.drawString(this.font, "X: " + x, this.sideMargin, 16, 0xFFFFFFFF);
+                guiGraphics.drawString(this.font, "Z: " + z, this.sideMargin + 64, 16, 0xFFFFFFFF);
+            } else {
+                this.coordinates.render(guiGraphics, mouseX, mouseY, delta);
             }
 
             guiGraphics.drawString(this.font, this.worldNameDisplay, this.getWidth() - this.sideMargin - this.worldNameDisplayLength, 16, 0xFFFFFF);
