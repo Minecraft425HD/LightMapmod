@@ -1,6 +1,5 @@
 package com.mamiyaotaru.voxelmap.persistent;
 
-import com.mamiyaotaru.voxelmap.VoxelMap;
 import com.mamiyaotaru.voxelmap.gui.overridden.EnumOptionsMinimap;
 import com.mamiyaotaru.voxelmap.interfaces.ISubSettingsManager;
 import java.io.BufferedReader;
@@ -20,8 +19,6 @@ public class PersistentMapSettingsManager implements ISubSettingsManager {
     protected float maxZoom = 16.0F;
     protected int cacheSize = 500;
     protected boolean outputImages;
-    public boolean showWaypoints = true;
-    public boolean showWaypointNames = true;
 
     @Override
     public void loadSettings(File settingsFile) {
@@ -36,8 +33,6 @@ public class PersistentMapSettingsManager implements ISubSettingsManager {
                     case "Worldmap Minimum Zoom" -> this.minZoom = Float.parseFloat(curLine[1]);
                     case "Worldmap Maximum Zoom" -> this.maxZoom = Float.parseFloat(curLine[1]);
                     case "Worldmap Cache Size" -> this.cacheSize = Integer.parseInt(curLine[1]);
-                    case "Show Worldmap Waypoints" -> this.showWaypoints = Boolean.parseBoolean(curLine[1]);
-                    case "Show Worldmap Waypoint Names" -> this.showWaypointNames = Boolean.parseBoolean(curLine[1]);
                     case "Output Images" -> this.outputImages = Boolean.parseBoolean(curLine[1]);
                 }
             }
@@ -65,8 +60,6 @@ public class PersistentMapSettingsManager implements ISubSettingsManager {
         out.println("Worldmap Minimum Zoom:" + this.minZoom);
         out.println("Worldmap Maximum Zoom:" + this.maxZoom);
         out.println("Worldmap Cache Size:" + this.cacheSize);
-        out.println("Show Worldmap Waypoints:" + this.showWaypoints);
-        out.println("Show Worldmap Waypoint Names:" + this.showWaypointNames);
     }
 
     @Override
@@ -87,12 +80,7 @@ public class PersistentMapSettingsManager implements ISubSettingsManager {
             }
         }
 
-        if (options.isBoolean()) {
-            boolean flag = this.getOptionBooleanValue(options);
-            return flag ? s + I18n.get("options.on") : s + I18n.get("options.off");
-        } else {
-            return s;
-        }
+        return s;
     }
 
     @Override
@@ -104,14 +92,6 @@ public class PersistentMapSettingsManager implements ISubSettingsManager {
         } else {
             return options == EnumOptionsMinimap.CACHE_SIZE ? this.cacheSize : 0.0F;
         }
-    }
-
-    public boolean getOptionBooleanValue(EnumOptionsMinimap par1EnumOptions) {
-        return switch (par1EnumOptions) {
-            case SHOW_WAYPOINTS -> this.showWaypoints && VoxelMap.mapOptions.waypointsAllowed;
-            case SHOW_WAYPOINT_NAMES -> this.showWaypointNames && VoxelMap.mapOptions.waypointsAllowed;
-            default -> throw new IllegalArgumentException("Add code to handle EnumOptionMinimap: " + par1EnumOptions.getName() + ". (possibly not a boolean)");
-        };
     }
 
     @Override
@@ -150,12 +130,7 @@ public class PersistentMapSettingsManager implements ISubSettingsManager {
     }
 
     public void setOptionValue(EnumOptionsMinimap par1EnumOptions) {
-        switch (par1EnumOptions) {
-            case SHOW_WAYPOINTS -> this.showWaypoints = !this.showWaypoints;
-            case SHOW_WAYPOINT_NAMES -> this.showWaypointNames = !this.showWaypointNames;
-            default -> throw new IllegalArgumentException("Add code to handle EnumOptionMinimap: " + par1EnumOptions.getName());
-        }
-
+        // No boolean options remain after waypoint removal
     }
 
     private void bindCacheSize() {

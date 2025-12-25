@@ -50,7 +50,6 @@ public class PersistentMap implements IChangeObserver {
     final ColorManager colorManager;
     final MapSettingsManager mapOptions;
     PersistentMapSettingsManager options;
-    WorldMatcher worldMatcher;
     final int[] lightmapColors;
     ClientLevel world;
     String subworldName = "";
@@ -97,9 +96,6 @@ public class PersistentMap implements IChangeObserver {
         this.queuedChangedChunks = false;
         this.chunkUpdateQueue.clear();
         this.world = world;
-        if (this.worldMatcher != null) {
-            this.worldMatcher.cancel();
-        }
 
         if (world != null) {
             this.newWorldStuff();
@@ -125,7 +121,7 @@ public class PersistentMap implements IChangeObserver {
     }
 
     private void newWorldStuff() {
-        String worldName = TextUtils.scrubNameFile(VoxelConstants.getVoxelMapInstance().getWaypointManager().getCurrentWorldName());
+        String worldName = TextUtils.scrubNameFile(VoxelConstants.getVoxelMapInstance().getCurrentWorldName());
         File oldCacheDir = new File(VoxelConstants.getMinecraft().gameDirectory, "/mods/mamiyaotaru/voxelmap/cache/" + worldName + "/");
         if (oldCacheDir.exists() && oldCacheDir.isDirectory()) {
             File newCacheDir = new File(VoxelConstants.getMinecraft().gameDirectory, "/voxelmap/cache/" + worldName + "/");
@@ -138,10 +134,7 @@ public class PersistentMap implements IChangeObserver {
             }
         }
 
-        if (VoxelConstants.getVoxelMapInstance().getWaypointManager().isMultiworld() && !VoxelConstants.isSinglePlayer() && !VoxelConstants.getVoxelMapInstance().getWaypointManager().receivedAutoSubworldName()) {
-            this.worldMatcher = new WorldMatcher(this, this.world);
-            this.worldMatcher.findMatch();
-        }
+        // Multiworld detection removed with waypoint system
 
         this.chunkCache = new MapChunkCache(33, 33, this);
     }
@@ -155,14 +148,7 @@ public class PersistentMap implements IChangeObserver {
             this.options.mapZ = GameVariableAccessShim.zCoord();
         }
 
-        if (!VoxelConstants.getVoxelMapInstance().getWaypointManager().getCurrentSubworldDescriptor(false).equals(this.subworldName)) {
-            this.subworldName = VoxelConstants.getVoxelMapInstance().getWaypointManager().getCurrentSubworldDescriptor(false);
-            if (this.worldMatcher != null && !this.subworldName.isEmpty()) {
-                this.worldMatcher.cancel();
-            }
-
-            this.purgeCachedRegions();
-        }
+        // Subworld detection removed with waypoint system
 
         if (this.queuedChangedChunks) {
             this.queuedChangedChunks = false;
@@ -738,8 +724,8 @@ public class PersistentMap implements IChangeObserver {
         } else {
             ThreadManager.emptyQueue();
             CachedRegion[] visibleCachedRegionsArray = new CachedRegion[(right - left + 1) * (bottom - top + 1)];
-            String worldName = VoxelConstants.getVoxelMapInstance().getWaypointManager().getCurrentWorldName();
-            String subWorldName = VoxelConstants.getVoxelMapInstance().getWaypointManager().getCurrentSubworldDescriptor(false);
+            String worldName = VoxelConstants.getVoxelMapInstance().getCurrentWorldName();
+            String subWorldName = "";
             List<RegionCoordinates> regionsToDisplay = new ArrayList<>();
 
             for (int t = left; t <= right; ++t) {
@@ -864,8 +850,8 @@ public class PersistentMap implements IChangeObserver {
             synchronized (this.cachedRegions) {
                 cachedRegion = this.cachedRegions.get(key);
                 if (cachedRegion == null || cachedRegion == CachedRegion.emptyRegion) {
-                    String worldName = VoxelConstants.getVoxelMapInstance().getWaypointManager().getCurrentWorldName();
-                    String subWorldName = VoxelConstants.getVoxelMapInstance().getWaypointManager().getCurrentSubworldDescriptor(false);
+                    String worldName = VoxelConstants.getVoxelMapInstance().getCurrentWorldName();
+                    String subWorldName = "";
                     cachedRegion = new CachedRegion(this, key, this.world, worldName, subWorldName, regionX, regionZ);
                     this.cachedRegions.put(key, cachedRegion);
                     synchronized (this.cachedRegionsPool) {

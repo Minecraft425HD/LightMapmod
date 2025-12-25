@@ -9,7 +9,6 @@ public enum EnumOptionsMinimap {
     SQUARE_MAP("options.minimap.squareMap", false, true, false),
     ROTATES("options.minimap.rotation", false, true, false),
     OLD_NORTH("options.minimap.oldNorth", false, true, false),
-    IN_GAME_WAYPOINTS("options.minimap.inGameWaypoints", false, false, true),
     ZOOM("option.minimapZoom", false, true, false),
     LOCATION("options.minimap.location", false, false, true),
     SIZE("options.minimap.size", false, false, true),
@@ -21,19 +20,11 @@ public enum EnumOptionsMinimap {
     CHUNK_GRID("options.minimap.chunkGrid", false, true, false),
     SLIME_CHUNKS("options.minimap.slimeChunks", false, true, false),
     WORLD_BORDER("options.minimap.worldBorder", false, true, false),
-    WAYPOINT_DISTANCE("options.minimap.waypoints.distance", true, false, false),
-    DEATHPOINTS("options.minimap.waypoints.deathpoints", false, false, true),
-    SHOW_WAYPOINTS("options.worldmap.showWaypoints", false, true, false),
-    SHOW_WAYPOINT_NAMES("options.worldmap.showWaypointNames", false, true, false),
     MIN_ZOOM("options.worldmap.minZoom", true, false, false),
     MAX_ZOOM("options.worldmap.maxZoom", true, false, false),
     CACHE_SIZE("options.worldmap.cacheSize", true, false, false),
     MOVE_MAP_DOWN_WHILE_STATUS_EFFECT("options.minimap.moveMapBelowStatusEffectIcons", false, true, false),
-    MOVE_SCOREBOARD_DOWN("options.minimap.moveScoreboardBelowMap", false, true, false),
-    DISTANCE_UNIT_CONVERSION("options.minimap.waypoints.distanceUnitConversion", false, false, true),
-    WAYPOINT_SIGN_SCALE("options.minimap.waypoints.waypointSignScale", true, false, false),
-    SHOW_IN_GAME_WAYPOINT_NAMES("options.minimap.waypoints.showWaypointNames", false, false, true),
-    SHOW_IN_GAME_WAYPOINT_DISTANCES("options.minimap.waypoints.showWaypointDistances", false, false, true);
+    MOVE_SCOREBOARD_DOWN("options.minimap.moveScoreboardBelowMap", false, true, false);
 
     private final boolean isFloat;
     private final boolean isBoolean;

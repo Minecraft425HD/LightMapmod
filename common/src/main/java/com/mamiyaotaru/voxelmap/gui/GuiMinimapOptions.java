@@ -27,7 +27,7 @@ public class GuiMinimapOptions extends GuiScreenMinimap {
 
     @Override
     public void init() {
-        EnumOptionsMinimap[] relevantOptions = { EnumOptionsMinimap.SHOW_COORDS, EnumOptionsMinimap.HIDE_MINIMAP, EnumOptionsMinimap.LOCATION, EnumOptionsMinimap.SIZE, EnumOptionsMinimap.SQUARE_MAP, EnumOptionsMinimap.ROTATES, EnumOptionsMinimap.IN_GAME_WAYPOINTS, EnumOptionsMinimap.CAVE_MODE, EnumOptionsMinimap.MOVE_MAP_DOWN_WHILE_STATUS_EFFECT, EnumOptionsMinimap.MOVE_SCOREBOARD_DOWN};
+        EnumOptionsMinimap[] relevantOptions = { EnumOptionsMinimap.SHOW_COORDS, EnumOptionsMinimap.HIDE_MINIMAP, EnumOptionsMinimap.LOCATION, EnumOptionsMinimap.SIZE, EnumOptionsMinimap.SQUARE_MAP, EnumOptionsMinimap.ROTATES, EnumOptionsMinimap.CAVE_MODE, EnumOptionsMinimap.MOVE_MAP_DOWN_WHILE_STATUS_EFFECT, EnumOptionsMinimap.MOVE_SCOREBOARD_DOWN};
         this.screenTitle = I18n.get("options.minimap.title");
 
         for (int i = 0; i < relevantOptions.length; i++) {
@@ -37,9 +37,6 @@ public class GuiMinimapOptions extends GuiScreenMinimap {
 
             if (option == EnumOptionsMinimap.HIDE_MINIMAP) {
                 optionButton.active = this.options.minimapAllowed;
-            }
-            if (option == EnumOptionsMinimap.IN_GAME_WAYPOINTS) {
-                optionButton.active = this.options.waypointsAllowed;
             }
             if (option == EnumOptionsMinimap.CAVE_MODE) {
                 optionButton.active = this.options.cavesAllowed;
@@ -58,10 +55,6 @@ public class GuiMinimapOptions extends GuiScreenMinimap {
         EnumOptionsMinimap option = ((GuiOptionButtonMinimap) par1GuiButton).returnEnumOptions();
         this.options.setOptionValue(option);
         par1GuiButton.setMessage(Component.literal(this.options.getKeyText(option)));
-        if (option == EnumOptionsMinimap.OLD_NORTH) {
-            VoxelConstants.getVoxelMapInstance().getWaypointManager().setOldNorth(this.options.oldNorth);
-        }
-
     }
 
     @Override

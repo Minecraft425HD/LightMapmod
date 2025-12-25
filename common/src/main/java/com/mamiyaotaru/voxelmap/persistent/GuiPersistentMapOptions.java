@@ -1,7 +1,6 @@
 package com.mamiyaotaru.voxelmap.persistent;
 
 import com.mamiyaotaru.voxelmap.VoxelConstants;
-import com.mamiyaotaru.voxelmap.VoxelMap;
 import com.mamiyaotaru.voxelmap.gui.overridden.EnumOptionsMinimap;
 import com.mamiyaotaru.voxelmap.gui.overridden.GuiOptionButtonMinimap;
 import com.mamiyaotaru.voxelmap.gui.overridden.GuiOptionSliderMinimap;
@@ -28,27 +27,10 @@ public class GuiPersistentMapOptions extends GuiScreenMinimap {
 
     @Override
     public void init() {
-        EnumOptionsMinimap[] relevantOptions = { EnumOptionsMinimap.SHOW_WAYPOINTS, EnumOptionsMinimap.SHOW_WAYPOINT_NAMES};
-
+        EnumOptionsMinimap[] relevantOptions = { EnumOptionsMinimap.MIN_ZOOM, EnumOptionsMinimap.MAX_ZOOM, EnumOptionsMinimap.CACHE_SIZE};
         int counter = 0;
 
         for (EnumOptionsMinimap option : relevantOptions) {
-            GuiOptionButtonMinimap optionButton = new GuiOptionButtonMinimap(this.getWidth() / 2 - 155 + counter % 2 * 160, this.getHeight() / 6 + 24 * (counter >> 1), option, Component.literal(this.options.getKeyText(option)), this::optionClicked);
-            this.addRenderableWidget(optionButton);
-
-            if (option == EnumOptionsMinimap.SHOW_WAYPOINTS) {
-                optionButton.active = VoxelMap.mapOptions.waypointsAllowed;
-            }
-            if (option == EnumOptionsMinimap.SHOW_WAYPOINT_NAMES) {
-                optionButton.active = VoxelMap.mapOptions.waypointsAllowed;
-            }
-            counter++;
-        }
-
-        EnumOptionsMinimap[] relevantOptions2 = { EnumOptionsMinimap.MIN_ZOOM, EnumOptionsMinimap.MAX_ZOOM, EnumOptionsMinimap.CACHE_SIZE};
-        counter += 2;
-
-        for (EnumOptionsMinimap option : relevantOptions2) {
             if (option.isFloat()) {
                 float sValue = this.options.getOptionFloatValue(option);
 
@@ -66,30 +48,12 @@ public class GuiPersistentMapOptions extends GuiScreenMinimap {
         }
 
         this.addRenderableWidget(new Button.Builder(Component.translatable("gui.done"), buttonx -> VoxelConstants.getMinecraft().setScreen(this.parent)).bounds(this.getWidth() / 2 - 100, this.getHeight() - 28, 200, 20).build());
-
-        for (Object buttonObj : this.children()) {
-            if (buttonObj instanceof GuiOptionButtonMinimap button) {
-                if (button.returnEnumOptions() == EnumOptionsMinimap.SHOW_WAYPOINT_NAMES) {
-                    button.active = this.options.showWaypoints && VoxelMap.mapOptions.waypointsAllowed;
-                }
-            }
-        }
-
     }
 
     protected void optionClicked(Button par1GuiButton) {
         EnumOptionsMinimap option = ((GuiOptionButtonMinimap) par1GuiButton).returnEnumOptions();
         this.options.setOptionValue(option);
         par1GuiButton.setMessage(Component.literal(this.options.getKeyText(option)));
-
-        for (Object buttonObj : this.children()) {
-            if (buttonObj instanceof GuiOptionButtonMinimap button) {
-                if (button.returnEnumOptions() == EnumOptionsMinimap.SHOW_WAYPOINT_NAMES) {
-                    button.active = this.options.showWaypoints && VoxelMap.mapOptions.waypointsAllowed;
-                }
-            }
-        }
-
     }
 
     @Override
@@ -112,8 +76,8 @@ public class GuiPersistentMapOptions extends GuiScreenMinimap {
         }
 
         drawContext.drawCenteredString(this.font, this.screenTitle, this.getWidth() / 2, 20, 0xFFFFFFFF);
-        drawContext.drawCenteredString(this.font, this.cacheSettings, this.getWidth() / 2, this.getHeight() / 6 + 24, 0xFFFFFFFF);
-        drawContext.drawCenteredString(this.font, this.warning, this.getWidth() / 2, this.getHeight() / 6 + 34, 0xFFFFFFFF);
+        drawContext.drawCenteredString(this.font, this.cacheSettings, this.getWidth() / 2, this.getHeight() / 6 - 10, 0xFFFFFFFF);
+        drawContext.drawCenteredString(this.font, this.warning, this.getWidth() / 2, this.getHeight() / 6, 0xFFFFFFFF);
         super.render(drawContext, mouseX, mouseY, delta);
     }
 }

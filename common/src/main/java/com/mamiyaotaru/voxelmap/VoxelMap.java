@@ -14,13 +14,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Unit;
-import net.minecraft.world.level.Level;
 
 public class VoxelMap implements PreparableReloadListener {
     public static MapSettingsManager mapOptions;
@@ -30,10 +29,8 @@ public class VoxelMap implements PreparableReloadListener {
     private SettingsAndLightingChangeNotifier settingsAndLightingChangeNotifier;
     private WorldUpdateListener worldUpdateListener;
     private ColorManager colorManager;
-    private WaypointManager waypointManager;
     private DimensionManager dimensionManager;
     private ClientLevel world;
-    private String worldName = "";
     private static String passMessage;
     private ArrayDeque<Runnable> runOnWorldSet = new ArrayDeque<>();
     VoxelMap() {}
@@ -45,7 +42,6 @@ public class VoxelMap implements PreparableReloadListener {
         mapOptions.addSecondaryOptionsManager(this.persistentMapOptions);
         BiomeRepository.loadBiomeColors();
         this.colorManager = new ColorManager();
-        this.waypointManager = new WaypointManager();
         this.dimensionManager = new DimensionManager();
         this.persistentMap = new PersistentMap();
         mapOptions.loadAll();
@@ -68,7 +64,6 @@ public class VoxelMap implements PreparableReloadListener {
     }
 
     private void apply(ResourceManager resourceManager) {
-        this.waypointManager.onResourceManagerReload(resourceManager);
         this.colorManager.onResourceManagerReload(resourceManager);
     }
 
@@ -80,25 +75,16 @@ public class VoxelMap implements PreparableReloadListener {
             VoxelConstants.getMinecraft().gui.getChat().addMessage(Component.literal(passMessage));
             passMessage = null;
         }
-
     }
 
     public void onTick() {
         ClientLevel newWorld = GameVariableAccessShim.getWorld();
         if (this.world != newWorld) {
             this.world = newWorld;
-            this.waypointManager.newWorld(this.world);
             this.persistentMap.newWorld(this.world);
             if (this.world != null) {
                 MapUtils.reset();
-                // send "new" world_id packet
-
                 VoxelConstants.getPacketBridge().sendWorldIDPacket();
-
-                if (!this.worldName.equals(this.waypointManager.getCurrentWorldName())) {
-                    this.worldName = this.waypointManager.getCurrentWorldName();
-                }
-
                 this.map.newWorld(this.world);
                 while (!runOnWorldSet.isEmpty()) {
                     runOnWorldSet.removeFirst().run();
@@ -145,10 +131,6 @@ public class VoxelMap implements PreparableReloadListener {
         return this.colorManager;
     }
 
-    public WaypointManager getWaypointManager() {
-        return this.waypointManager;
-    }
-
     public DimensionManager getDimensionManager() {
         return this.dimensionManager;
     }
@@ -159,29 +141,6 @@ public class VoxelMap implements PreparableReloadListener {
 
     public void setPermissions(boolean hasCavemodePermission) {
         mapOptions.cavesAllowed = hasCavemodePermission;
-    }
-
-    public synchronized void newSubWorldName(String name, boolean fromServer) {
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                VoxelMap.this.waypointManager.setSubworldName(name, fromServer);
-                VoxelMap.this.map.newWorldName();
-            }
-        };
-        if (world == null) {
-            runOnWorldSet.addLast(run);
-        } else {
-            run.run();
-        }
-    }
-
-    public String getWorldSeed() {
-        return waypointManager.getWorldSeed().isEmpty() ? VoxelConstants.getWorldByKey(Level.OVERWORLD).map(value -> Long.toString(((ServerLevel) value).getSeed())).orElse("") : waypointManager.getWorldSeed();
-    }
-
-    public void setWorldSeed(String newSeed) {
-        waypointManager.setWorldSeed(newSeed);
     }
 
     public void sendPlayerMessageOnMainThread(String s) {
@@ -197,8 +156,6 @@ public class VoxelMap implements PreparableReloadListener {
         mapOptions.serverTeleportCommand = null;
         mapOptions.worldmapAllowed = true;
         mapOptions.minimapAllowed = true;
-        mapOptions.waypointsAllowed = true;
-        mapOptions.deathWaypointAllowed = true;
     }
 
     public void onPlayInit() {
@@ -220,5 +177,35 @@ public class VoxelMap implements PreparableReloadListener {
     public void onClientStopping() {
         VoxelConstants.onShutDown();
         ThreadManager.flushSaveQueue();
+    }
+
+    /**
+     * Gets the current world name for caching purposes.
+     * Returns the singleplayer world name or multiplayer server name.
+     */
+    public String getCurrentWorldName() {
+        if (VoxelConstants.isSinglePlayer()) {
+            return VoxelConstants.getIntegratedServer()
+                    .map(server -> server.getWorldData().getLevelName())
+                    .filter(name -> name != null && !name.isBlank())
+                    .orElse("Singleplayer World");
+        } else {
+            ServerData info = VoxelConstants.getMinecraft().getCurrentServer();
+            if (info != null && info.name != null && !info.name.isBlank()) {
+                return info.name;
+            }
+            if (VoxelConstants.isRealmServer()) {
+                return "Realms";
+            }
+            return "Multiplayer Server";
+        }
+    }
+
+    /**
+     * Placeholder for subworld name functionality that was removed.
+     * Always returns empty string since waypoint/subworld system was removed.
+     */
+    public void newSubWorldName(String name, boolean fromServer) {
+        // No-op after waypoint system removal
     }
 }

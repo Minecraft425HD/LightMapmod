@@ -6,10 +6,8 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import org.joml.Matrix4f;
 // import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 // import org.spongepowered.asm.mixin.injection.At;
 // import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,17 +16,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 // @Mixin(LevelRenderer.class)
 public abstract class MixinWorldRenderer {
 
-    @Unique private final PoseStack voxelmap_poseStack = new PoseStack();
-
     // TODO: 1.20.1 Port - Explicit descriptor required for official mappings
     // @Inject(method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;)V", at = @At("RETURN"), require = 0)
     private void renderLevel(PoseStack poseStack, float partialTick, long finishNanoTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projectionMatrix, CallbackInfo ci) {
-        voxelmap_poseStack.pushPose();
-        voxelmap_poseStack.last().pose().set(projectionMatrix);
-        BufferSource bufferSource = VoxelConstants.getMinecraft().renderBuffers().bufferSource();
-        VoxelConstants.onRenderWaypoints(partialTick, voxelmap_poseStack, bufferSource, camera);
-
-        voxelmap_poseStack.popPose();
+        // Waypoint rendering removed
     }
 
     // TODO: 1.20.1 Port - Targeting private 4-parameter version of setSectionDirty

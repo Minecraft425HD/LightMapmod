@@ -45,12 +45,6 @@ public class MapSettingsManager implements ISettingsManager {
     public boolean squareMap = true;
     public boolean rotates = true;
     public boolean oldNorth;
-    public boolean showBeacons;
-    public boolean showWaypoints = true;
-    private boolean preToggleBeacons;
-    private boolean preToggleSigns = true;
-    public int deathpoints = 1;
-    public int maxWaypointDisplayDistance = 1000;
     public int zoom = 2;
     public int sizeModifier = 1;
     public int mapCorner = 1;
@@ -58,24 +52,13 @@ public class MapSettingsManager implements ISettingsManager {
     public Boolean cavesAllowed = true;
     public boolean worldmapAllowed = true;
     public boolean minimapAllowed = true;
-    public boolean waypointsAllowed = true;
-    public boolean deathWaypointAllowed = true;
 
     public boolean moveMapDownWhileStatusEffect = true;
     public boolean moveScoreBoardDown = true;
-    public int distanceUnitConversionMode = 2;
-    public float waypointSignScale = 1.0F;
-    public int waypointNamesLocation = 2;
-    public int waypointDistancesLocation = 2;
-    public int sort = 1;
     protected boolean realTimeTorches;
     public KeyMapping keyBindZoom;
     public KeyMapping keyBindFullscreen;
     public KeyMapping keyBindMenu;
-    public KeyMapping keyBindWaypointMenu;
-    public KeyMapping keyBindWaypoint;
-    public KeyMapping keyBindMobToggle;
-    public KeyMapping keyBindWaypointToggle;
     public KeyMapping keyBindMinimapToggle;
     public final KeyMapping[] keyBindings;
     private boolean somethingChanged;
@@ -92,13 +75,9 @@ public class MapSettingsManager implements ISettingsManager {
         keyBindZoom = new KeyMapping("key.minimap.zoom", InputConstants.getKey("key.keyboard.z").getValue(), category);
         keyBindFullscreen = new KeyMapping("key.minimap.toggleFullscreen", InputConstants.getKey("key.keyboard.x").getValue(), category);
         keyBindMenu = new KeyMapping("key.minimap.voxelmapMenu", InputConstants.getKey("key.keyboard.m").getValue(), category);
-        keyBindWaypointMenu = new KeyMapping("key.minimap.waypointMenu", InputConstants.getKey("key.keyboard.u").getValue(), category);
-        keyBindWaypoint = new KeyMapping("key.minimap.waypointHotkey", InputConstants.getKey("key.keyboard.n").getValue(), category);
-        keyBindMobToggle = new KeyMapping("key.minimap.toggleMobs", -1, category);
-        keyBindWaypointToggle = new KeyMapping("key.minimap.toggleInGameWaypoints", -1, category);
         keyBindMinimapToggle = new KeyMapping("key.minimap.toggleMinimap", InputConstants.getKey("key.keyboard.o").getValue(), category);
 
-        this.keyBindings = new KeyMapping[]{this.keyBindMenu, this.keyBindWaypointMenu, this.keyBindZoom, this.keyBindFullscreen, this.keyBindWaypoint, this.keyBindMobToggle, this.keyBindWaypointToggle, this.keyBindMinimapToggle};
+        this.keyBindings = new KeyMapping[]{this.keyBindMenu, this.keyBindZoom, this.keyBindFullscreen, this.keyBindMinimapToggle};
     }
 
     public void addSecondaryOptionsManager(ISubSettingsManager secondarySettingsManager) {
@@ -133,29 +112,16 @@ public class MapSettingsManager implements ISettingsManager {
                         case "Square Map" -> this.squareMap = Boolean.parseBoolean(curLine[1]);
                         case "Rotation" -> this.rotates = Boolean.parseBoolean(curLine[1]);
                         case "Old North" -> this.oldNorth = Boolean.parseBoolean(curLine[1]);
-                        case "Waypoint Beacons" -> this.showBeacons = Boolean.parseBoolean(curLine[1]);
-                        case "Waypoint Signs" -> this.showWaypoints = Boolean.parseBoolean(curLine[1]);
-                        case "Deathpoints" -> this.deathpoints = Math.max(0, Math.min(2, Integer.parseInt(curLine[1])));
-                        case "Waypoint Max Distance" -> this.maxWaypointDisplayDistance = Math.max(-1, Math.min(10000, Integer.parseInt(curLine[1])));
-                        case "Waypoint Sort By" -> this.sort = Math.max(1, Math.min(4, Integer.parseInt(curLine[1])));
                         case "Real Time Torch Flicker" -> this.realTimeTorches = Boolean.parseBoolean(curLine[1]);
                         case "Map Corner" -> this.mapCorner = Math.max(0, Math.min(3, Integer.parseInt(curLine[1])));
                         case "Map Size" -> this.sizeModifier = Math.max(-1, Math.min(4, Integer.parseInt(curLine[1])));
                         case "Zoom Key" -> this.bindKey(this.keyBindZoom, curLine[1]);
                         case "Fullscreen Key" -> this.bindKey(this.keyBindFullscreen, curLine[1]);
                         case "Menu Key" -> this.bindKey(this.keyBindMenu, curLine[1]);
-                        case "Waypoint Menu Key" -> this.bindKey(this.keyBindWaypointMenu, curLine[1]);
-                        case "Waypoint Key" -> this.bindKey(this.keyBindWaypoint, curLine[1]);
-                        case "Mob Key" -> this.bindKey(this.keyBindMobToggle, curLine[1]);
-                        case "In-game Waypoint Key" -> this.bindKey(this.keyBindWaypointToggle, curLine[1]);
                         case "Toggle Minimap Key" -> this.bindKey(this.keyBindMinimapToggle, curLine[1]);
                         case "Teleport Command" -> this.teleportCommand = curLine[1];
                         case "Move Map Down While Status Effect" -> this.moveMapDownWhileStatusEffect = Boolean.parseBoolean(curLine[1]);
                         case "Move ScoreBoard Down" -> this.moveScoreBoardDown = Boolean.parseBoolean(curLine[1]);
-                        case "Distance Unit Conversion Mode" -> this.distanceUnitConversionMode = Integer.parseInt(curLine[1]);
-                        case "Waypoint Sign Scale" -> this.waypointSignScale = Float.parseFloat(curLine[1]);
-                        case "Show In-game Waypoint Names" -> this.waypointNamesLocation = Integer.parseInt(curLine[1]);
-                        case "Show In-game Waypoint Distances" -> this.waypointDistancesLocation  = Integer.parseInt(curLine[1]);
                     }
                 }
                 KeyMapping.resetMapping();
@@ -210,28 +176,15 @@ public class MapSettingsManager implements ISettingsManager {
             out.println("Square Map:" + this.squareMap);
             out.println("Rotation:" + this.rotates);
             out.println("Old North:" + this.oldNorth);
-            out.println("Waypoint Beacons:" + this.showBeacons);
-            out.println("Waypoint Signs:" + this.showWaypoints);
-            out.println("Deathpoints:" + this.deathpoints);
-            out.println("Waypoint Max Distance:" + this.maxWaypointDisplayDistance);
-            out.println("Waypoint Sort By:" + this.sort);
             out.println("Map Corner:" + this.mapCorner);
             out.println("Map Size:" + this.sizeModifier);
             out.println("Zoom Key:" + this.keyBindZoom.saveString());
             out.println("Fullscreen Key:" + this.keyBindFullscreen.saveString());
             out.println("Menu Key:" + this.keyBindMenu.saveString());
-            out.println("Waypoint Menu Key:" + this.keyBindWaypointMenu.saveString());
-            out.println("Waypoint Key:" + this.keyBindWaypoint.saveString());
-            out.println("Mob Key:" + this.keyBindMobToggle.saveString());
-            out.println("In-game Waypoint Key:" + this.keyBindWaypointToggle.saveString());
             out.println("Toggle Minimap Key:" + this.keyBindMinimapToggle.saveString());
             out.println("Teleport Command:" + this.teleportCommand);
             out.println("Move Map Down While Status Effect:" + this.moveMapDownWhileStatusEffect);
             out.println("Move ScoreBoard Down:" + this.moveScoreBoardDown);
-            out.println("Distance Unit Conversion Mode:" + this.distanceUnitConversionMode);
-            out.println("Waypoint Sign Scale:" + this.waypointSignScale);
-            out.println("Show In-game Waypoint Names:" + this.waypointNamesLocation);
-            out.println("Show In-game Waypoint Distances:" + this.waypointDistancesLocation);
 
             for (ISubSettingsManager subSettingsManager : this.subSettingsManagers) {
                 subSettingsManager.saveAll(out);
@@ -250,10 +203,6 @@ public class MapSettingsManager implements ISettingsManager {
             float f = this.getOptionFloatValue(options);
             if (options == EnumOptionsMinimap.ZOOM) {
                 return s + (int) f;
-            } else if (options == EnumOptionsMinimap.WAYPOINT_DISTANCE) {
-                return f < 0.0F ? s + I18n.get("options.minimap.waypoints.infinite") : s + (int) f;
-            } else if (options == EnumOptionsMinimap.WAYPOINT_SIGN_SCALE) {
-                return s + String.format("%.2fx", f);
             } else {
                 return f == 0.0F ? s + I18n.get("options.off") : s + (int) f + "%";
             }
@@ -272,10 +221,6 @@ public class MapSettingsManager implements ISettingsManager {
     public float getOptionFloatValue(EnumOptionsMinimap options) {
         if (options == EnumOptionsMinimap.ZOOM) {
             return this.zoom;
-        } else if (options == EnumOptionsMinimap.WAYPOINT_DISTANCE) {
-            return this.maxWaypointDisplayDistance;
-        } else if (options == EnumOptionsMinimap.WAYPOINT_SIGN_SCALE) {
-            return this.waypointSignScale;
         } else {
             return 0.0F;
         }
@@ -312,16 +257,6 @@ public class MapSettingsManager implements ISettingsManager {
                     return I18n.get("options.minimap.terrain.height");
                 } else if (this.slopemap) {
                     return I18n.get("options.minimap.terrain.slope");
-                }
-                return I18n.get("options.off");
-            }
-            case IN_GAME_WAYPOINTS -> {
-                if (this.waypointsAllowed && this.showBeacons && this.showWaypoints) {
-                    return I18n.get("options.minimap.inGameWaypoints.both");
-                } else if (this.waypointsAllowed && this.showBeacons) {
-                    return I18n.get("options.minimap.inGameWaypoints.beacons");
-                } else if (this.waypointsAllowed && this.showWaypoints) {
-                    return I18n.get("options.minimap.inGameWaypoints.signs");
                 }
                 return I18n.get("options.off");
             }
@@ -372,58 +307,6 @@ public class MapSettingsManager implements ISettingsManager {
                     return "error";
                 }
             }
-            case DEATHPOINTS -> {
-                if (this.deathpoints == 0) {
-                    return I18n.get("options.off");
-                } else if (this.deathpoints == 1) {
-                    return I18n.get("options.minimap.waypoints.deathpoints.mostRecent");
-                } else {
-                    if (this.deathpoints == 2) {
-                        return I18n.get("options.minimap.waypoints.deathpoints.all");
-                    }
-
-                    return "error";
-                }
-            }
-            case DISTANCE_UNIT_CONVERSION -> {
-                if (this.distanceUnitConversionMode == 0) {
-                    return I18n.get("options.off");
-                } else if (this.distanceUnitConversionMode == 1) {
-                    return I18n.get("options.minimap.waypoints.distanceUnitConversion.from1000m");
-                } else {
-                    if (this.distanceUnitConversionMode == 2) {
-                        return I18n.get("options.minimap.waypoints.distanceUnitConversion.from10000m");
-                    }
-
-                    return "error";
-                }
-            }
-            case SHOW_IN_GAME_WAYPOINT_NAMES -> {
-                if (this.waypointNamesLocation == 0) {
-                    return I18n.get("options.off");
-                } else if (this.waypointNamesLocation == 1) {
-                    return I18n.get("options.minimap.waypoints.showWaypointNames.aboveIcon");
-                } else {
-                    if (this.waypointNamesLocation == 2) {
-                        return I18n.get("options.minimap.waypoints.showWaypointNames.belowIcon");
-                    }
-
-                    return "error";
-                }
-            }
-            case SHOW_IN_GAME_WAYPOINT_DISTANCES -> {
-                if (this.waypointDistancesLocation == 0) {
-                    return I18n.get("options.off");
-                } else if (this.waypointDistancesLocation == 1) {
-                    return I18n.get(this.waypointNamesLocation == 0 ? "options.minimap.waypoints.showWaypointNames.aboveIcon" : "options.minimap.waypoints.showWaypointDistances.besideName");
-                } else {
-                    if (this.waypointDistancesLocation == 2) {
-                        return I18n.get(this.waypointNamesLocation == 0 ? "options.minimap.waypoints.showWaypointNames.belowIcon" : "options.minimap.waypoints.showWaypointDistances.belowName");
-                    }
-
-                    return "error";
-                }
-            }
             default ->
                     throw new IllegalArgumentException("Add code to handle EnumOptionMinimap: " + par1EnumOptions.getName() + ". (possibly not a list value applicable to minimap)");
         }
@@ -431,21 +314,6 @@ public class MapSettingsManager implements ISettingsManager {
 
     @Override
     public void setOptionFloatValue(EnumOptionsMinimap options, float value) {
-        if (options == EnumOptionsMinimap.WAYPOINT_DISTANCE) {
-            float distance = value * 9951.0F + 50.0F;
-            if (distance > 10000.0F) {
-                distance = -1.0F;
-            }
-
-            this.maxWaypointDisplayDistance = (int) distance;
-        } else if (options == EnumOptionsMinimap.WAYPOINT_SIGN_SCALE) {
-            int stepCount = 100;
-            float scale = Math.round(value * stepCount) / (float) stepCount;
-            scale = scale + 0.5F;
-
-            this.waypointSignScale = scale;
-        }
-
         this.somethingChanged = true;
     }
 
@@ -480,19 +348,6 @@ public class MapSettingsManager implements ISettingsManager {
                     this.slopemap = true;
                 }
             }
-            case IN_GAME_WAYPOINTS -> {
-                if (this.showBeacons && this.showWaypoints) {
-                    this.showBeacons = false;
-                    this.showWaypoints = false;
-                } else if (this.showBeacons) {
-                    this.showBeacons = false;
-                    this.showWaypoints = true;
-                } else if (this.showWaypoints) {
-                    this.showBeacons = true;
-                } else {
-                    this.showBeacons = true;
-                }
-            }
             case LOCATION -> this.mapCorner = this.mapCorner >= 3 ? 0 : this.mapCorner + 1;
             case SIZE -> this.sizeModifier = this.sizeModifier >= 4 ? -1 : this.sizeModifier + 1;
             case BIOME_OVERLAY -> {
@@ -501,47 +356,11 @@ public class MapSettingsManager implements ISettingsManager {
                     this.biomeOverlay = 0;
                 }
             }
-            case DEATHPOINTS -> {
-                ++this.deathpoints;
-                if (this.deathpoints > 2) {
-                    this.deathpoints = 0;
-                }
-            }
-            case DISTANCE_UNIT_CONVERSION -> {
-                ++this.distanceUnitConversionMode;
-                if (this.distanceUnitConversionMode > 2) {
-                    this.distanceUnitConversionMode = 0;
-                }
-            }
-            case SHOW_IN_GAME_WAYPOINT_NAMES -> {
-                ++this.waypointNamesLocation;
-                if (this.waypointNamesLocation > 2) {
-                    this.waypointNamesLocation = 0;
-                }
-            }
-            case SHOW_IN_GAME_WAYPOINT_DISTANCES -> {
-                ++this.waypointDistancesLocation;
-                if (this.waypointDistancesLocation > 2) {
-                    this.waypointDistancesLocation = 0;
-                }
-            }
             default ->
                     throw new IllegalArgumentException("Add code to handle EnumOptionMinimap: " + par1EnumOptions.getName());
         }
 
         this.somethingChanged = true;
-    }
-
-    public void toggleIngameWaypoints() {
-        if (!this.showBeacons && !this.showWaypoints) {
-            this.showBeacons = this.preToggleBeacons;
-            this.showWaypoints = this.preToggleSigns;
-        } else {
-            this.preToggleBeacons = this.showBeacons;
-            this.preToggleSigns = this.showWaypoints;
-            this.showBeacons = false;
-            this.showWaypoints = false;
-        }
     }
 
     public String getKeyBindingDescription(int keybindIndex) {
@@ -560,15 +379,6 @@ public class MapSettingsManager implements ISettingsManager {
     public void setKeyBinding(KeyMapping keyBinding, InputConstants.Key input) {
         keyBinding.setKey(input);
         this.saveAll();
-    }
-
-    public void setSort(int sort) {
-        if (sort != this.sort && sort != -this.sort) {
-            this.sort = sort;
-        } else {
-            this.sort = -this.sort;
-        }
-
     }
 
     public boolean isChanged() {

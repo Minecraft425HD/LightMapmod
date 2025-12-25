@@ -1,13 +1,9 @@
 package com.mamiyaotaru.voxelmap;
 
-import com.mamiyaotaru.voxelmap.gui.GuiAddWaypoint;
-import com.mamiyaotaru.voxelmap.gui.GuiWaypoints;
 import com.mamiyaotaru.voxelmap.gui.overridden.EnumOptionsMinimap;
 import com.mamiyaotaru.voxelmap.interfaces.AbstractMapData;
 import com.mamiyaotaru.voxelmap.interfaces.IChangeObserver;
 import com.mamiyaotaru.voxelmap.persistent.GuiPersistentMap;
-import com.mamiyaotaru.voxelmap.textures.Sprite;
-import com.mamiyaotaru.voxelmap.textures.TextureAtlas;
 import com.mamiyaotaru.voxelmap.util.BiomeRepository;
 import com.mamiyaotaru.voxelmap.util.BlockRepository;
 import com.mamiyaotaru.voxelmap.util.CPULightmap;
@@ -25,7 +21,6 @@ import com.mamiyaotaru.voxelmap.util.ScaledDynamicMutableTexture;
 import com.mamiyaotaru.voxelmap.util.VoxelMapCachedOrthoProjectionMatrixBuffer;
 import com.mamiyaotaru.voxelmap.util.VoxelMapGuiGraphics;
 import com.mamiyaotaru.voxelmap.util.VoxelMapPipelines;
-import com.mamiyaotaru.voxelmap.util.Waypoint;
 // TODO: 1.20.1 Port - GPU APIs don't exist in 1.20.1
 // import com.mojang.blaze3d.ProjectionType;
 // import com.mojang.blaze3d.buffers.GpuBuffer;
@@ -106,7 +101,6 @@ public class Map implements Runnable, IChangeObserver {
     private final MapSettingsManager options;
     private final LayoutVariables layoutVariables;
     private final ColorManager colorManager;
-    private final WaypointManager waypointManager;
     private final int availableProcessors = Runtime.getRuntime().availableProcessors();
     private final boolean multicore = this.availableProcessors > 1;
     private final int heightMapResetHeight = this.multicore ? 2 : 5;
@@ -192,7 +186,6 @@ public class Map implements Runnable, IChangeObserver {
 
         this.options = VoxelConstants.getVoxelMapInstance().getMapOptions();
         this.colorManager = VoxelConstants.getVoxelMapInstance().getColorManager();
-        this.waypointManager = VoxelConstants.getVoxelMapInstance().getWaypointManager();
         this.layoutVariables = new LayoutVariables();
         ArrayList<KeyMapping> tempBindings = new ArrayList<>();
         tempBindings.addAll(Arrays.asList(minecraft.options.keyMappings));
@@ -338,15 +331,8 @@ public class Map implements Runnable, IChangeObserver {
     }
 
     public void newWorldName() {
-        String subworldName = this.waypointManager.getCurrentSubworldDescriptor(true);
-        StringBuilder subworldNameBuilder = (new StringBuilder("§r")).append(I18n.get("worldmap.multiworld.newWorld")).append(":").append(" ");
-        if (subworldName.isEmpty() && this.waypointManager.isMultiworld()) {
-            subworldNameBuilder.append("???");
-        } else if (!subworldName.isEmpty()) {
-            subworldNameBuilder.append(subworldName);
-        }
-
-        this.error = subworldNameBuilder.toString();
+        // Waypoints removed - no subworld name display
+        this.error = "";
     }
 
     public void onTickInGame(GuiGraphics drawContext) {
@@ -358,40 +344,6 @@ public class Map implements Runnable, IChangeObserver {
 
         if (minecraft.screen == null && this.options.keyBindMenu.consumeClick()) {
             minecraft.setScreen(new GuiPersistentMap(null));
-        }
-
-        if (minecraft.screen == null && this.options.keyBindWaypointMenu.consumeClick()) {
-            if (VoxelMap.mapOptions.waypointsAllowed) {
-                minecraft.setScreen(new GuiWaypoints(null));
-            }
-        }
-
-        if (minecraft.screen == null && this.options.keyBindWaypoint.consumeClick()) {
-            if (VoxelMap.mapOptions.waypointsAllowed) {
-                float r;
-                float g;
-                float b;
-                if (this.waypointManager.getWaypoints().isEmpty()) {
-                    r = 0.0F;
-                    g = 1.0F;
-                    b = 0.0F;
-                } else {
-                    r = this.generator.nextFloat();
-                    g = this.generator.nextFloat();
-                    b = this.generator.nextFloat();
-                }
-
-                TreeSet<DimensionContainer> dimensions = new TreeSet<>();
-                dimensions.add(VoxelConstants.getVoxelMapInstance().getDimensionManager().getDimensionContainerByWorld(VoxelConstants.getPlayer().level()));
-                double dimensionScale = VoxelConstants.getPlayer().level().dimensionType().coordinateScale();
-                Waypoint newWaypoint = new Waypoint("", (int) (GameVariableAccessShim.xCoord() * dimensionScale), (int) (GameVariableAccessShim.zCoord() * dimensionScale), GameVariableAccessShim.yCoord(), true, r, g, b, "",
-                        VoxelConstants.getVoxelMapInstance().getWaypointManager().getCurrentSubworldDescriptor(false), dimensions);
-                minecraft.setScreen(new GuiAddWaypoint(null, newWaypoint, false));
-            }
-        }
-
-        if (minecraft.screen == null && this.options.keyBindWaypointToggle.consumeClick()) {
-            this.options.toggleIngameWaypoints();
         }
 
         if (minecraft.screen == null && this.options.keyBindZoom.consumeClick()) {
@@ -418,10 +370,6 @@ public class Map implements Runnable, IChangeObserver {
         }
 
         this.checkForChanges();
-        if (VoxelMap.mapOptions.deathWaypointAllowed && minecraft.screen instanceof DeathScreen && !(this.lastGuiScreen instanceof DeathScreen)) {
-            this.waypointManager.handleDeath();
-        }
-
         this.lastGuiScreen = minecraft.screen;
         this.calculateCurrentLightAndSkyColor();
         if (this.threading) {
@@ -1703,142 +1651,8 @@ public class Map implements Runnable, IChangeObserver {
         minTablistOffset = guiScale * 63;
         this.drawMapFrame(guiGraphics, x, y, this.options.squareMap);
 
-        double lastXDouble = GameVariableAccessShim.xCoordDouble();
-        double lastZDouble = GameVariableAccessShim.zCoordDouble();
-        TextureAtlas textureAtlas = VoxelConstants.getVoxelMapInstance().getWaypointManager().getTextureAtlas();
-        if (VoxelMap.mapOptions.waypointsAllowed) {
-            Waypoint highlightedPoint = this.waypointManager.getHighlightedWaypoint();
-
-            for (Waypoint pt : this.waypointManager.getWaypoints()) {
-                if (pt.isActive() || pt == highlightedPoint) {
-                    double distanceSq = pt.getDistanceSqToEntity(minecraft.getCameraEntity());
-                    if (distanceSq < (this.options.maxWaypointDisplayDistance * this.options.maxWaypointDisplayDistance) || this.options.maxWaypointDisplayDistance < 0 || pt == highlightedPoint) {
-                        this.drawWaypoint(guiGraphics, pt, textureAtlas, x, y, scScale, lastXDouble, lastZDouble, null, null, null, null);
-                    }
-                }
-            }
-
-            if (highlightedPoint != null) {
-                this.drawWaypoint(guiGraphics, highlightedPoint, textureAtlas, x, y, scScale, lastXDouble, lastZDouble, textureAtlas.getAtlasSprite("voxelmap:images/waypoints/target.png"), 1.0F, 0.0F, 0.0F);
-            }
-        }
+        // Waypoint rendering removed
         guiGraphics.pose().popPose();
-    }
-
-    private void drawWaypoint(GuiGraphics guiGraphics, Waypoint pt, TextureAtlas textureAtlas, int x, int y, int scScale, double lastXDouble, double lastZDouble, Sprite icon, Float r, Float g, Float b) {
-        boolean uprightIcon = icon != null;
-        if (r == null) {
-            r = pt.red;
-        }
-
-        if (g == null) {
-            g = pt.green;
-        }
-
-        if (b == null) {
-            b = pt.blue;
-        }
-
-        double wayX = lastXDouble - pt.getX() - 0.5;
-        double wayY = lastZDouble - pt.getZ() - 0.5;
-        float locate = (float) Math.toDegrees(Math.atan2(wayX, wayY));
-        float hypot = (float) Math.sqrt(wayX * wayX + wayY * wayY);
-        boolean far;
-        if (this.options.rotates) {
-            locate += this.direction;
-        } else {
-            locate -= this.northRotate;
-        }
-
-        hypot /= this.zoomScaleAdjusted;
-        if (this.options.squareMap) {
-            double radLocate = Math.toRadians(locate);
-            double dispX = hypot * Math.cos(radLocate);
-            double dispY = hypot * Math.sin(radLocate);
-            far = Math.abs(dispX) > 28.5 || Math.abs(dispY) > 28.5;
-            if (far) {
-                hypot = (float) (hypot / Math.max(Math.abs(dispX), Math.abs(dispY)) * 30.0);
-            }
-        } else {
-            far = hypot >= 31.0f;
-            if (far) {
-                hypot = 34.0f;
-            }
-        }
-
-        boolean target = false;
-        if (far) {
-            if (icon == null) {
-                if (scScale >= 3) {
-                    icon = textureAtlas.getAtlasSprite("voxelmap:images/waypoints/marker" + pt.imageSuffix + ".png");
-                } else {
-                    icon = textureAtlas.getAtlasSprite("voxelmap:images/waypoints/marker" + pt.imageSuffix + "Small.png");
-                }
-
-                if (icon == textureAtlas.getMissingImage()) {
-                    if (scScale >= 3) {
-                        icon = textureAtlas.getAtlasSprite("voxelmap:images/waypoints/marker.png");
-                    } else {
-                        icon = textureAtlas.getAtlasSprite("voxelmap:images/waypoints/markerSmall.png");
-                    }
-                }
-            } else {
-                target = true;
-            }
-            int color = pt.getUnifiedColor(!pt.enabled && !target ? 0.3F : 1.0F);
-
-            try {
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().translate(x, y, 0.0f);
-                guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(-locate));
-                if (uprightIcon) {
-                    guiGraphics.pose().translate(0.0f, -hypot, 0.0f);
-                    guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(locate));
-                    guiGraphics.pose().translate(-x, -y, 0.0f);
-                } else {
-                    guiGraphics.pose().translate(-x, -y, 0.0f);
-                    guiGraphics.pose().translate(0.0f, -hypot, 0.0f);
-                }
-
-                icon.blit(guiGraphics, VoxelMapPipelines.GUI_TEXTURED_LESS_OR_EQUAL_DEPTH_PIPELINE, x - 4, y - 4, 8, 8, color);
-            } catch (Exception var40) {
-                this.error = "Error: marker overlay not found!";
-            } finally {
-                guiGraphics.pose().popPose();
-            }
-        } else {
-            if (icon == null) {
-                if (scScale >= 3) {
-                    icon = textureAtlas.getAtlasSprite("voxelmap:images/waypoints/waypoint" + pt.imageSuffix + ".png");
-                } else {
-                    icon = textureAtlas.getAtlasSprite("voxelmap:images/waypoints/waypoint" + pt.imageSuffix + "Small.png");
-                }
-
-                if (icon == textureAtlas.getMissingImage()) {
-                    if (scScale >= 3) {
-                        icon = textureAtlas.getAtlasSprite("voxelmap:images/waypoints/waypoint.png");
-                    } else {
-                        icon = textureAtlas.getAtlasSprite("voxelmap:images/waypoints/waypointSmall.png");
-                    }
-                }
-            } else {
-                target = true;
-            }
-            int color = pt.getUnifiedColor(!pt.enabled && !target ? 0.3F : 1.0F);
-
-            try {
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(-locate));
-                guiGraphics.pose().translate(0.0f, -hypot, 0.0f);
-                guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(locate));
-
-                icon.blit(guiGraphics, VoxelMapPipelines.GUI_TEXTURED_LESS_OR_EQUAL_DEPTH_PIPELINE, x - 4, y - 4, 8, 8, color);
-            } catch (Exception var42) {
-                this.error = "Error: waypoint overlay not found!";
-            } finally {
-                guiGraphics.pose().popPose();
-            }
-        }
     }
 
     private void drawArrow(GuiGraphics guiGraphics, int x, int y, float scaleProj) {

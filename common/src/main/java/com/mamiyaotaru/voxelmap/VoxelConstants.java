@@ -2,10 +2,7 @@ package com.mamiyaotaru.voxelmap;
 
 import com.mamiyaotaru.voxelmap.persistent.ThreadManager;
 import com.mamiyaotaru.voxelmap.util.BiomeRepository;
-import com.mamiyaotaru.voxelmap.util.CommandUtils;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Optional;
-import net.minecraft.client.Camera;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,7 +12,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -123,27 +119,11 @@ public final class VoxelConstants {
     }
 
     public static boolean onChat(Component chat, GuiMessageTag indicator) {
-        return CommandUtils.checkForWaypoints(chat, indicator);
+        return true;
     }
 
     public static boolean onSendChatMessage(String message) {
-        if (message.startsWith("newWaypoint")) {
-            CommandUtils.waypointClicked(message);
-            return false;
-        } else if (message.startsWith("ztp")) {
-            CommandUtils.teleport(message);
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public static void onRenderWaypoints(float gameTimeDeltaPartialTick, PoseStack poseStack, BufferSource bufferSource, Camera camera) {
-        try {
-            VoxelConstants.getVoxelMapInstance().getWaypointManager().renderWaypoints(gameTimeDeltaPartialTick, poseStack, bufferSource, camera);
-        } catch (RuntimeException e) {
-            VoxelConstants.getLogger().log(org.apache.logging.log4j.Level.ERROR, "Error while render waypoints", e);
-        }
+        return true;
     }
 
     public static void onShutDown() {
