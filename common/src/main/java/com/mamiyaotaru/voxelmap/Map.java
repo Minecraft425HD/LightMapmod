@@ -155,6 +155,10 @@ public class Map implements Runnable, IChangeObserver {
     private int lastImageZ;
     private boolean lastFullscreen;
     private int biomeSegmentationCounter = 0;
+    // Chunk cache to avoid redundant getChunkAt() calls
+    private LevelChunk cachedChunk = null;
+    private int cachedChunkX = Integer.MIN_VALUE;
+    private int cachedChunkZ = Integer.MIN_VALUE;
     private float direction;
     private float percentX;
     private float percentY;
@@ -838,6 +842,8 @@ public class Map implements Runnable, IChangeObserver {
 
             // Optimized Y movement (N/S): recalculate new rows
             if (offsetZ != 0) {
+                // Clear chunk cache for new recalculation
+                cachedChunk = null;
                 int startY, endY;
                 if (offsetZ > 0) {
                     // Moved south: recalculate bottom rows
@@ -858,6 +864,8 @@ public class Map implements Runnable, IChangeObserver {
 
             // Optimized X movement (E/W): recalculate new columns
             if (offsetX != 0) {
+                // Clear chunk cache for new recalculation
+                cachedChunk = null;
                 int colStartX, colEndX;
                 if (offsetX > 0) {
                     // Moved east: recalculate right columns
@@ -1023,7 +1031,15 @@ public class Map implements Runnable, IChangeObserver {
             boolean solid = false;
             if (needHeightAndID) {
                 if (!nether && !caves) {
-                    LevelChunk chunk = world.getChunkAt(blockPos);
+                    // OPTIMIZED: Cache chunk lookups - chunks are 16x16, so we access the same chunk multiple times
+                    int chunkX = blockPos.getX() >> 4;
+                    int chunkZ = blockPos.getZ() >> 4;
+                    if (cachedChunk == null || cachedChunkX != chunkX || cachedChunkZ != chunkZ) {
+                        cachedChunk = world.getChunkAt(blockPos);
+                        cachedChunkX = chunkX;
+                        cachedChunkZ = chunkZ;
+                    }
+                    LevelChunk chunk = cachedChunk;
                     transparentHeight = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, blockPos.getX() & 15, blockPos.getZ() & 15) + 1;
                     this.transparentBlockState = world.getBlockState(blockPos.withXYZ(startX + imageX, transparentHeight - 1, startZ + imageY));
                     FluidState fluidState = this.transparentBlockState.getFluidState();
