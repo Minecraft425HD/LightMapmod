@@ -122,21 +122,21 @@ public class DynamicMoveableTexture extends DynamicTexture {
 
                 if (offset > 0) {
                     // Shift UP: player moved south, shift map content upward
-                    // Single bulk copy - all source rows are contiguous in memory!
-                    int rowsToCopy = height - offset;
-                    long srcAddr = pointer + offset * rowBytes;  // Start from row 'offset'
-                    long dstAddr = pointer;  // Start from row 0
-                    long totalBytes = rowsToCopy * rowBytes;
-                    MemoryUtil.memCopy(srcAddr, dstAddr, totalBytes);
+                    // Copy row by row from TOP to BOTTOM to avoid overlap issues
+                    for (int y = 0; y < height - offset; y++) {
+                        long srcAddr = pointer + (y + offset) * rowBytes;
+                        long dstAddr = pointer + y * rowBytes;
+                        MemoryUtil.memCopy(srcAddr, dstAddr, rowBytes);
+                    }
                 } else if (offset < 0) {
                     // Shift DOWN: player moved north, shift map content downward
-                    // Single bulk copy - all source rows are contiguous in memory!
+                    // Copy row by row from BOTTOM to TOP to avoid overlap issues
                     int absOffset = -offset;
-                    int rowsToCopy = height - absOffset;
-                    long srcAddr = pointer;  // Start from row 0
-                    long dstAddr = pointer + absOffset * rowBytes;  // Start from row 'absOffset'
-                    long totalBytes = rowsToCopy * rowBytes;
-                    MemoryUtil.memCopy(srcAddr, dstAddr, totalBytes);
+                    for (int y = height - 1; y >= absOffset; y--) {
+                        long srcAddr = pointer + (y - absOffset) * rowBytes;
+                        long dstAddr = pointer + y * rowBytes;
+                        MemoryUtil.memCopy(srcAddr, dstAddr, rowBytes);
+                    }
                 }
             } else {
                 // Fallback: Use row-based buffer (slower but still better than pixel-by-pixel)
