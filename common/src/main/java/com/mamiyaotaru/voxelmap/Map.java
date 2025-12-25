@@ -2,7 +2,6 @@ package com.mamiyaotaru.voxelmap;
 
 import com.mamiyaotaru.voxelmap.gui.GuiAddWaypoint;
 import com.mamiyaotaru.voxelmap.gui.GuiWaypoints;
-import com.mamiyaotaru.voxelmap.gui.GuiWelcomeScreen;
 import com.mamiyaotaru.voxelmap.gui.overridden.EnumOptionsMinimap;
 import com.mamiyaotaru.voxelmap.interfaces.AbstractMapData;
 import com.mamiyaotaru.voxelmap.interfaces.IChangeObserver;
@@ -355,10 +354,6 @@ public class Map implements Runnable, IChangeObserver {
 
         if (this.lightmapTexture == null) {
             this.lightmapTexture = this.getLightmapTexture();
-        }
-
-        if (minecraft.screen == null && this.options.welcome) {
-            minecraft.setScreen(new GuiWelcomeScreen(null));
         }
 
         if (minecraft.screen == null && this.options.keyBindMenu.consumeClick()) {

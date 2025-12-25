@@ -10,7 +10,6 @@ public enum EnumOptionsMinimap {
     ROTATES("options.minimap.rotation", false, true, false),
     OLD_NORTH("options.minimap.oldNorth", false, true, false),
     IN_GAME_WAYPOINTS("options.minimap.inGameWaypoints", false, false, true),
-    WELCOME_SCREEN("Welcome Screen", false, true, false),
     ZOOM("option.minimapZoom", false, true, false),
     LOCATION("options.minimap.location", false, false, true),
     SIZE("options.minimap.size", false, false, true),
