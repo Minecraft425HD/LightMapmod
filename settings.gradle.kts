@@ -1,4 +1,4 @@
-rootProject.name = "voxelmap"
+rootProject.name = "lightmap"
 
 pluginManagement {
     repositories {
