@@ -1221,7 +1221,8 @@ public class MinimapRenderer implements Runnable, IChangeObserver {
         }
         MutableBlockPosCache.release(blockPos);
         MutableBlockPosCache.release(tempBlockPos);
-        return MinimapHelper.doSlimeAndGrid(color24, world, startX + imageX, startZ + imageY);
+        // ColorUtils methods output ARGB format, convert to ABGR for NativeImage
+        return MinimapHelper.doSlimeAndGrid(ARGBCompat.toABGR(color24), world, startX + imageX, startZ + imageY);
     }
 
     private int getBlockHeight(boolean nether, boolean caves, Level world, int x, int z) {
