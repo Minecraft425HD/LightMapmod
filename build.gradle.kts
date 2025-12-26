@@ -4,9 +4,9 @@ plugins {
 
 val MINECRAFT_VERSION by extra { "1.20.1" }
 val FORGE_VERSION by extra { "47.4.0" }
-val VOXELMAP_VERSION by extra { "1.15.11" }
+val LIGHTMAP_VERSION by extra { "1.0.0" }
 
-val MOD_VERSION by extra { "$MINECRAFT_VERSION-$VOXELMAP_VERSION" }
+val MOD_VERSION by extra { "$MINECRAFT_VERSION-$LIGHTMAP_VERSION" }
 
 allprojects {
     apply(plugin = "java")
@@ -33,7 +33,7 @@ subprojects {
     }
 
     version = MOD_VERSION
-    group = "com.mamiyaotaru"
+    group = "com.lightmap"
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"

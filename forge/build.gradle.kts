@@ -10,7 +10,7 @@ val FORGE_VERSION: String by rootProject.extra
 val MOD_VERSION: String by rootProject.extra
 
 base {
-    archivesName = "voxelmap-forge"
+    archivesName = "lightmap-forge"
 }
 
 sourceSets {
@@ -42,7 +42,7 @@ configurations {
 tasks.jar {
     val main = project.project(":common").sourceSets.getByName("main")
     from(main.output.classesDirs) {
-        exclude("/voxelmap.refmap.json")
+        exclude("/lightmap.refmap.json")
     }
     from(main.output.resourcesDir)
 
@@ -65,7 +65,7 @@ minecraft {
             property("forge.logging.console.level", "debug")
 
             mods {
-                create("voxelmap") {
+                create("lightmap") {
                     source(sourceSets.main.get())
                     source(project.project(":common").sourceSets.main.get())
                 }
