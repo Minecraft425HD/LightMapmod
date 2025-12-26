@@ -2,7 +2,6 @@ package com.lightmap.forge.mixins;
 
 import com.lightmap.LightMapConstants;
 import com.lightmap.forge.ForgeModApiBridge;
-// TODO: 1.20.1 Port - RenderPipelines doesn't exist in 1.20.1, this is a 1.21.x class
 // This entire mixin needs to be disabled or replaced with a 1.20.1 alternative
 // For now, commenting out to allow compilation
 /*
@@ -22,7 +21,6 @@ public class MixinRenderPipelines {
 }
 */
 
-// TODO: 1.20.1 Port - Need to find alternative initialization point for ForgeModApiBridge
 // The mod API bridge needs to be set somewhere else since RenderPipelines doesn't exist
 public class MixinRenderPipelines {
     // Mixin disabled for 1.20.1 compatibility

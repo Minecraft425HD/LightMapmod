@@ -22,7 +22,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-// AtlasIds doesn't exist in 1.20.1 - using TextureAtlas.LOCATION_BLOCKS instead
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.Registry;
@@ -163,8 +162,6 @@ public class BlockColorCache {
 
     private void loadColors() {
         this.loadedTerrainImage = false;
-        // TODO: SkinManager.get() doesn't exist in 1.20.1
-        // LightMapConstants.getMinecraft().getSkinManager().get(LightMapConstants.getPlayer().getGameProfile());
         BlockDatabase.getBlocks();
         this.loadColorPicker();
         this.loadTexturePackTerrainImage();
@@ -202,89 +199,6 @@ public class BlockColorCache {
 
         this.loaded = true;
     }
-
-    // FIXME 1.21.5 Radar
-    // public final BufferedImage getBlockImage(BlockState blockState, ItemStack stack, Level world, float iconScale, float captureDepth) {
-    // try {
-    // BakedModel model = LightMapConstants.getMinecraft().getModelManager().getModel(stack, world, null, 0); //FIXME 1.21.4
-    // this.drawModel(Direction.EAST, blockState, model, stack, iconScale, captureDepth);
-    // BufferedImage blockImage = ImageHelper.createBufferedImageFromGLID(OpenGL.Utils.fboTextureId);
-    // if (LightMapConstants.DEBUG) {
-    // ImageIO.write(blockImage, "png", new File(LightMapConstants.getMinecraft().gameDirectory, blockState.getBlock().getName().getString() + "-" + Block.getId(blockState) + ".png"));
-    // }
-    // return blockImage;
-    // } catch (Exception var8) {
-    // LightMapConstants.getLogger().error("error getting block armor image for " + blockState.toString() + ": " + var8.getLocalizedMessage(), var8);
-    // return null;
-    // }
-    // }
-
-    // FIXME 1.21.5 Radar
-    // private void drawModel(Direction facing, BlockState blockState, BakedModel model, ItemStack stack, float scale, float captureDepth) {
-    // float size = 8.0F * scale;
-    // ItemTransforms transforms = model.getTransforms();
-    // ItemTransform headTransforms = transforms.head();
-    // Vector3f translations = headTransforms.translation;
-    // float transX = -translations.x() * size + 0.5F * size;
-    // float transY = translations.y() * size + 0.5F * size;
-    // float transZ = -translations.z() * size + 0.5F * size;
-    // Vector3f rotations = headTransforms.rotation;
-    // float rotX = rotations.x();
-    // float rotY = rotations.y();
-    // float rotZ = rotations.z();
-    // OpenGL.glBindTexture(OpenGL.GL11_GL_TEXTURE_2D, OpenGL.Utils.fboTextureId);
-    // int width = OpenGL.glGetTexLevelParameteri(OpenGL.GL11_GL_TEXTURE_2D, 0, OpenGL.GL11_GL_TRANSFORM_BIT);
-    // int height = OpenGL.glGetTexLevelParameteri(OpenGL.GL11_GL_TEXTURE_2D, 0, OpenGL.GL11_GL_TEXTURE_HEIGHT);
-    // OpenGL.glBindTexture(OpenGL.GL11_GL_TEXTURE_2D, 0);
-    // OpenGL.glViewport(0, 0, width, height);
-    // Matrix4f minimapProjectionMatrix = RenderSystem.getProjectionMatrix();
-    // Matrix4f matrix4f = new Matrix4f().ortho(0.0F, width, height, 0.0F, 1000.0F, 3000.0F);
-    // RenderSystem.setProjectionMatrix(matrix4f, ProjectionType.ORTHOGRAPHIC);
-    // Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
-    // matrixStack.pushMatrix();
-    // matrixStack.identity();
-    // matrixStack.translate(0.0f, 0.0f, -3000.0f + (captureDepth * scale));
-    // OpenGL.Utils.bindFramebuffer();
-    // OpenGL.glDepthMask(true);
-    // OpenGL.glEnable(OpenGL.GL11_GL_DEPTH_TEST);
-    // OpenGL.glEnable(OpenGL.GL11_GL_BLEND);
-    // OpenGL.glDisable(OpenGL.GL11_GL_CULL_FACE);
-    // OpenGL.glBlendFunc(OpenGL.GL11_GL_SRC_ALPHA, OpenGL.GL11_GL_ONE_MINUS_SRC_ALPHA);
-    // OpenGL.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-    // OpenGL.glClearColor(1.0F, 1.0F, 1.0F, 0.0F);
-    // OpenGL.glClearDepth(1.0);
-    // OpenGL.glClear(OpenGL.GL11_GL_COLOR_BUFFER_BIT | OpenGL.GL11_GL_DEPTH_BUFFER_BIT);
-    // OpenGL.glBlendFunc(OpenGL.GL11_GL_SRC_ALPHA, OpenGL.GL11_GL_ONE_MINUS_SRC_ALPHA);
-    // matrixStack.pushMatrix();
-    // matrixStack.translate((width / 2f) - size / 2.0F + transX, (height / 2f) - size / 2.0F + transY, 0.0F + transZ);
-    // matrixStack.scale(size, size, size);
-    // LightMapConstants.getMinecraft().getTextureManager().getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
-    // OpenGL.Utils.img2(TextureAtlas.LOCATION_BLOCKS);
-    // matrixStack.rotate(Axis.YP.rotationDegrees(180.0F));
-    // matrixStack.rotate(Axis.YP.rotationDegrees(rotY));
-    // matrixStack.rotate(Axis.XP.rotationDegrees(rotX));
-    // matrixStack.rotate(Axis.ZP.rotationDegrees(rotZ));
-    // if (facing == Direction.UP) {
-    // matrixStack.rotate(Axis.XP.rotationDegrees(90.0F));
-    // }
-    //
-    // Vector4f fullbright2 = new Vector4f(this.fullbright.x, fullbright.y, fullbright.z, 0);
-    // fullbright2.mul(matrixStack);
-    // Vector3f fullbright3 = new Vector3f(fullbright2.x, fullbright2.y, fullbright2.z);
-    // RenderSystem.setShaderLights(fullbright3, fullbright3);
-    // PoseStack newMatrixStack = new PoseStack();
-    // MultiBufferSource.BufferSource immediate = LightMapConstants.getMinecraft().renderBuffers().bufferSource();
-    // LightMapConstants.getMinecraft().getItemRenderer().render(stack, ItemDisplayContext.NONE, false, newMatrixStack, immediate, 15728880, OverlayTexture.NO_OVERLAY, model); //FIXME 1.21.4
-    // immediate.endBatch();
-    // matrixStack.popMatrix();
-    // matrixStack.popMatrix();
-    // OpenGL.glEnable(OpenGL.GL11_GL_CULL_FACE);
-    // OpenGL.glDisable(OpenGL.GL11_GL_DEPTH_TEST);
-    // OpenGL.glDepthMask(false);
-    // OpenGL.Utils.unbindFramebuffer();
-    // RenderSystem.setProjectionMatrix(minimapProjectionMatrix, ProjectionType.ORTHOGRAPHIC);
-    // OpenGL.glViewport(0, 0, LightMapConstants.getMinecraft().getWindow().getWidth(), LightMapConstants.getMinecraft().getWindow().getHeight());
-    // }
 
     private void loadColorPicker() {
         try {
@@ -422,7 +336,6 @@ public class BlockColorCache {
             if ((color >> 24 & 0xFF) < 27) {
                 color |= 0x1B000000;
             }
-            // LightMapConstants.getLogger().info("getColor " + state.toString() + " -> " + Integer.toHexString(color));
             return color;
         } catch (Exception var5) {
             LightMapConstants.getLogger().error("failed getting color: " + state.getBlock().getName().getString(), var5);

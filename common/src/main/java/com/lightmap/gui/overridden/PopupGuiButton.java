@@ -5,7 +5,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-// TODO: 1.20.1 Port - Button.Plain doesn't exist, extending Button directly
 public class PopupGuiButton extends Button {
     final IPopupGuiScreen parentScreen;
 

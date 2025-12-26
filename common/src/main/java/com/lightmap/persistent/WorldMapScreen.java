@@ -18,24 +18,13 @@ import com.lightmap.util.GameVariableAccessShim;
 import com.lightmap.util.ImageHelper;
 import com.lightmap.util.LightMapGuiGraphics;
 import com.lightmap.util.LightMapPipelines;
-// TODO 1.21: Restore for 1.21+
-// import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.mojang.blaze3d.systems.RenderSystem;
-// TODO 1.21: Restore for 1.21+
-// import com.mojang.blaze3d.textures.FilterMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
-// TODO 1.21: Restore for 1.21+
-// import net.minecraft.client.input.CharacterEvent;
-// TODO 1.21: Restore for 1.21+
-// import net.minecraft.client.input.KeyEvent;
-// TODO 1.21: Restore for 1.21+
-// import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.multiplayer.ServerData;
-// import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -141,7 +130,6 @@ public class WorldMapScreen extends PopupGuiScreen {
     }
 
     private void getSkin() {
-        // 1.20.1: Use getInsecureSkinInformation() instead of getInsecureSkin()
         java.util.Map<com.mojang.authlib.minecraft.MinecraftProfileTexture.Type, com.mojang.authlib.minecraft.MinecraftProfileTexture> skinMap =
             LightMapConstants.getMinecraft().getSkinManager().getInsecureSkinInformation(LightMapConstants.getPlayer().getGameProfile());
         com.mojang.authlib.minecraft.MinecraftProfileTexture skinTexture = skinMap.get(com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN);
@@ -307,7 +295,6 @@ public class WorldMapScreen extends PopupGuiScreen {
         return true;
     }
 
-    // 1.20.1: Input event system changed - mouseReleased uses primitive parameters
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         currentDragging = false;
@@ -323,7 +310,6 @@ public class WorldMapScreen extends PopupGuiScreen {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.popupOpen()) {
@@ -352,7 +338,6 @@ public class WorldMapScreen extends PopupGuiScreen {
         return super.mouseClicked(mouseX, mouseY, button) || button == 1;
     }
 
-    // 1.20.1: Input event system changed - keyPressed uses primitive parameters
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!this.editingCoordinates && (minecraft.options.keyJump.matches(keyCode, scanCode) || minecraft.options.keyShift.matches(keyCode, scanCode))) {
@@ -406,7 +391,6 @@ public class WorldMapScreen extends PopupGuiScreen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    // 1.20.1: Input event system changed - keyReleased uses primitive parameters
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         keySprintPressed = !minecraft.options.keySprint.matches(keyCode, scanCode) && keySprintPressed;
@@ -418,7 +402,6 @@ public class WorldMapScreen extends PopupGuiScreen {
         return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
-    // 1.20.1: Input event system changed - charTyped uses primitive parameters
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
         this.clearPopups();
@@ -434,11 +417,6 @@ public class WorldMapScreen extends PopupGuiScreen {
                 this.switchToKeyboardInput();
             }
         }
-
-        // FIXME 1.21.9
-        // if (LightMapConstants.getLightMapInstance().getMapOptions().keyBindMenu.matches(modifiers, -1)) {
-        // super.keyPressed(GLFW.GLFW_KEY_ESCAPE, -1, -1);
-        // }
 
         return super.charTyped(codePoint, modifiers);
     }
@@ -457,7 +435,6 @@ public class WorldMapScreen extends PopupGuiScreen {
     private void switchToMouseInput() {
         this.timeOfLastKBInput = 0L;
         if (!this.mouseCursorShown) {
-            // 1.20.1: window.handle() doesn't exist, use window.getWindow() instead
             GLFW.glfwSetInputMode(minecraft.getWindow().getWindow(), 208897, 212993);
         }
 
@@ -467,7 +444,6 @@ public class WorldMapScreen extends PopupGuiScreen {
     private void switchToKeyboardInput() {
         this.timeOfLastKBInput = System.currentTimeMillis();
         this.mouseCursorShown = false;
-        // 1.20.1: window.handle() doesn't exist, use window.getWindow() instead
         GLFW.glfwSetInputMode(minecraft.getWindow().getWindow(), 208897, 212995);
     }
 
@@ -759,8 +735,6 @@ public class WorldMapScreen extends PopupGuiScreen {
 
             boolean hover = cursorCoordX >= playerX - width / 2 * guiToMap && cursorCoordX <= playerX + width / 2 * guiToMap && cursorCoordZ >= playerZ - height / 2 * guiToMap && cursorCoordZ <= playerZ + height / 2 * guiToMap;
             if (hover) {
-                // TODO 1.21: Restore for 1.21+
-                // guiGraphics.requestCursor(CursorTypes.CROSSHAIR);
                 renderTooltip(guiGraphics, Component.literal("X: " + GameVariableAccessShim.xCoord() + ", Y: " + GameVariableAccessShim.yCoord() + ", Z: " + GameVariableAccessShim.zCoord()), this.mouseX, this.mouseY);
             }
 
@@ -812,7 +786,6 @@ public class WorldMapScreen extends PopupGuiScreen {
         super.render(guiGraphics, mouseX, mouseY, delta);
     }
 
-    // 1.20.1: This method signature doesn't exist in superclass, removed @Override
     public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float delta) {
         // nothing
     }

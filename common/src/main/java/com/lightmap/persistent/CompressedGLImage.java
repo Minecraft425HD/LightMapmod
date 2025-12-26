@@ -98,7 +98,6 @@ public class CompressedGLImage {
             buffer.position(0).limit(this.bytes.length);
         }
 
-        // TODO: 1.20.1 Port - getPointer() and format().components() may not exist in 1.20.1
         // This needs to be rewritten for 1.20.1 compatibility
         // For now, using pixel-by-pixel upload (unoptimized but works)
         /* Commented out for compilation - needs 1.20.1 compatible implementation

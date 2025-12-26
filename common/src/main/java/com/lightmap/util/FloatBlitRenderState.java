@@ -1,17 +1,13 @@
 package com.lightmap.util;
 
-// import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-// import net.minecraft.client.gui.render.TextureSetup;
 // GuiElementRenderState doesn't exist in 1.20.1
 import net.minecraft.util.Mth;
 import org.joml.Matrix3x2f;
 
 public record FloatBlitRenderState(
-        // TODO: 1.20.1 Port - Replace with proper 1.20.1 rendering type
         Object pipeline,
-        // TODO: 1.20.1 Port - TextureSetup doesn't exist in 1.20.1
         Object textureSetup,
         Matrix3x2f pose,
         float x0,
@@ -26,7 +22,6 @@ public record FloatBlitRenderState(
         int color2,
         ScreenRectangle scissorArea,
         ScreenRectangle bounds) { // GuiElementRenderState doesn't exist in 1.20.1
-    // TODO: 1.20.1 Port - RenderPipeline and TextureSetup don't exist, using Object instead
     public FloatBlitRenderState(
             Object renderPipeline,
             Object textureSetup,
@@ -48,7 +43,6 @@ public record FloatBlitRenderState(
 
     // @Override // Commented for 1.20.1 compatibility
     public void buildVertices(VertexConsumer vertexConsumer) {
-        // TODO: 1.20.1 Port - addVertexWith2DPose() doesn't exist in 1.20.1
         // Using 1.20.1 compatible vertex API: .vertex(matrix, x, y, z).uv(u, v).color(r, g, b, a).endVertex()
         // vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0()).setUv(this.u0(), this.v0()).setColor(this.color());
         // vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1()).setUv(this.u0(), this.v1()).setColor(this.color2());
@@ -57,7 +51,6 @@ public record FloatBlitRenderState(
     }
 
     private static ScreenRectangle getBounds(float x0, float y0, float x1, float y1, Matrix3x2f matrix3x2f, ScreenRectangle screenRectangle) {
-        // TODO: 1.20.1 Port - transformMaxBounds() doesn't exist in 1.20.1
         ScreenRectangle screenRectangle2 = new ScreenRectangle(Mth.floor(x0), Mth.floor(y0), Mth.ceil(x1 - x0), Mth.ceil(y1 - y0)); // .transformMaxBounds(matrix3x2f);
         return screenRectangle != null ? screenRectangle.intersection(screenRectangle2) : screenRectangle2;
     }

@@ -21,21 +21,10 @@ import com.lightmap.util.ScaledDynamicMutableTexture;
 import com.lightmap.util.LightMapCachedOrthoProjectionMatrixBuffer;
 import com.lightmap.util.LightMapGuiGraphics;
 import com.lightmap.util.LightMapPipelines;
-// TODO: 1.20.1 Port - GPU APIs don't exist in 1.20.1
-// import com.mojang.blaze3d.ProjectionType;
-// import com.mojang.blaze3d.buffers.GpuBuffer;
-// import com.mojang.blaze3d.buffers.GpuBufferSlice;
-// import com.mojang.blaze3d.pipeline.RenderPipeline;
-// import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-// TODO: 1.20.1 Port - These texture classes don't exist in 1.20.1
-// import com.mojang.blaze3d.textures.FilterMode;
-// import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-// TODO: 1.20.1 Port - MeshData doesn't exist in 1.20.1
-// import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
@@ -48,7 +37,6 @@ import net.minecraft.client.gui.screens.OutOfMemoryScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
-// import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.language.I18n;
@@ -165,7 +153,6 @@ public class MinimapRenderer implements Runnable, IChangeObserver {
 
     private final ResourceLocation[] resourceMapImageFiltered = new ResourceLocation[5];
     private final ResourceLocation[] resourceMapImageUnfiltered = new ResourceLocation[5];
-    // TODO: GpuTexture doesn't exist in 1.20.1 - need to use direct OpenGL FBO
     // private GpuTexture fboTexture;
     // private GpuTextureView fboTextureView;
     private Tesselator fboTessellator = new Tesselator(4096);
@@ -234,13 +221,6 @@ public class MinimapRenderer implements Runnable, IChangeObserver {
         this.zoom = this.options.zoom;
         this.setZoomScale();
 
-        final int fboTextureSize = 512;
-        // TODO: GpuTexture doesn't exist in 1.20.1 - need to use direct OpenGL FBO
-        // this.fboTexture = RenderSystem.getDevice().createTexture("lightmap-fbotexture", GpuTexture.USAGE_COPY_DST | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_RENDER_ATTACHMENT, TextureFormat.RGBA8, fboTextureSize, fboTextureSize, 1, 1);
-        // this.fboTextureView = RenderSystem.getDevice().createTextureView(this.fboTexture);
-        // DynamicTexture fboTexture = new DynamicTexture("lightmap-fbotexture", fboTextureSize, fboTextureSize, true);
-        // minecraft.getTextureManager().register(resourceFboTexture, fboTexture);
-        // this.fboTexture = fboTexture.getTexture();
         this.projection = new LightMapCachedOrthoProjectionMatrixBuffer("LightMap MinimapRenderer To Screen Proj", -256.0F, 256.0F, 256.0F, -256.0F, 1000.0F, 21000.0F);
 
         try {
@@ -401,7 +381,6 @@ public class MinimapRenderer implements Runnable, IChangeObserver {
             this.doFullRender = false;
         }
 
-        // 1.20.1: debugEntries.isOverlayVisible() -> minecraft.options.renderDebug
         boolean enabled = !minecraft.options.hideGui && (this.options.showUnderMenus || minecraft.screen == null) && !minecraft.options.renderDebug;
 
         this.direction = GameVariableAccessShim.rotationYaw() + 180.0F;
@@ -557,7 +536,6 @@ public class MinimapRenderer implements Runnable, IChangeObserver {
     private int getSkyColor() {
         this.needSkyColor = false;
         boolean aboveHorizon = this.lastAboveHorizon;
-        // TODO: 1.20.1 Port - FogRenderer.computeFogColor() API is different in 1.20.1
         // Original: Vector4f color = Minecraft.getInstance().gameRenderer.fogRenderer.computeFogColor(minecraft.gameRenderer.getMainCamera(), 0.0F, this.world, minecraft.options.renderDistance().get(), minecraft.gameRenderer.getDarkenWorldAmount(0.0F));
         // Fallback: Get biome sky color
         net.minecraft.world.phys.Vec3 skyColorVec = this.world.getSkyColor(minecraft.gameRenderer.getMainCamera().getPosition(), 0.0F);
@@ -598,7 +576,6 @@ public class MinimapRenderer implements Runnable, IChangeObserver {
         double scaledHeightD = (double) minecraft.getWindow().getHeight() / scScale;
         this.scWidth = Mth.ceil(scaledWidthD);
         this.scHeight = Mth.ceil(scaledHeightD);
-        // 1.20.1: getGuiScale() returns int, not double (cast to float for division)
         float scaleProj = (float) (scScale) / (float) minecraft.getWindow().getGuiScale();
 
         int mapX;
@@ -621,7 +598,6 @@ public class MinimapRenderer implements Runnable, IChangeObserver {
 
                 for (MobEffectInstance statusEffectInstance : LightMapConstants.getPlayer().getActiveEffects()) {
                     if (statusEffectInstance.showIcon()) {
-                        // 1.20.1: getEffect() returns MobEffect directly, not Holder (no .value() needed)
                         if (statusEffectInstance.getEffect().isBeneficial()) {
                             statusIconOffset = Math.max(statusIconOffset, 24.0F);
                         } else {
@@ -889,14 +865,7 @@ public class MinimapRenderer implements Runnable, IChangeObserver {
         int color24;
         Biome biome;
         if (needBiome) {
-            // int chunkX = SectionPos.blockToSectionCoord(blockPos.getX());
-            // int chunkZ = SectionPos.blockToSectionCoord(blockPos.getZ());
-            // if (world.getChunk(chunkX, chunkZ, ChunkStatus.FULL, false) != null) { // TODO 1.21.5 testen
             biome = world.getBiome(blockPos).value();
-            // } else {
-            // biome = null;
-            // }
-
             this.mapData[zoom].setBiome(imageX, imageY, biome);
         } else {
             biome = this.mapData[zoom].getBiome(imageX, imageY);
@@ -1530,7 +1499,6 @@ public class MinimapRenderer implements Runnable, IChangeObserver {
 
         guiGraphics.pose().popPose();
 
-        // TODO: 1.20.1 Port - GPU rendering APIs (ProjectionType, GpuBufferSlice, RenderPass, etc.) don't exist in 1.20.1
         // This entire section from lines 1594-1649 needs to be rewritten for 1.20.1 rendering APIs
         // Commenting out for now to achieve compilation
         /*
@@ -1585,17 +1553,10 @@ public class MinimapRenderer implements Runnable, IChangeObserver {
         RenderSystem.setProjectionMatrix(originalProjectionMatrix, originalProjectionType);
         fboTessellator.clear();
         */
-        // if (((saved++) % 1000) == 0)
-        // ImageHelper.saveImage("minimap_" + saved, fboTexture);
-
-        // TODO: 1.20.1 Port - fboTextureView depends on GPU rendering APIs that don't exist in 1.20.1
-        // LightMapGuiGraphics.blitFloat(guiGraphics, null, fboTextureView, x - 32, y - 32, 64, 64, 0, 1, 0, 1, 0xffffffff);
 
         double guiScale = (double) minecraft.getWindow().getWidth() / this.scWidth;
         minTablistOffset = guiScale * 63;
         this.drawMapFrame(guiGraphics, x, y, this.options.squareMap);
-
-        // Waypoint rendering removed
         guiGraphics.pose().popPose();
     }
 

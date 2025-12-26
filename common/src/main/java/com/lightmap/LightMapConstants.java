@@ -6,8 +6,6 @@ import java.util.Optional;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-// TODO: 1.20.1 Port - InputQuirks class doesn't exist in 1.20.1
-// import net.minecraft.client.input.InputQuirks;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ServerData;
@@ -37,7 +35,6 @@ public final class LightMapConstants {
     @NotNull
     public static Minecraft getMinecraft() { return Minecraft.getInstance(); }
 
-    // TODO: 1.20.1 Port - InputQuirks doesn't exist, need alternative way to detect macOS
     public static boolean isSystemMacOS() { return System.getProperty("os.name").toLowerCase().contains("mac"); }
 
     public static boolean isFabulousGraphicsOrBetter() { return Minecraft.useShaderTransparency(); }

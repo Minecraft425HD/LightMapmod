@@ -1,6 +1,5 @@
 package com.lightmap.mixins;
 
-// TODO: 1.20.1 Port - Entire accessor commented out because EnderDragonModel doesn't exist as separate class in 1.20.1
 // The model is likely a nested class or doesn't exist with this structure
 // Entity rendering is disabled for now, so this accessor is not needed
 

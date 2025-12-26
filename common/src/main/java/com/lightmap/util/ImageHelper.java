@@ -20,16 +20,10 @@ import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-// ReloadableTexture doesn't exist in 1.20.1
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.system.MemoryUtil;
 
 public class ImageHelper {
-    // TODO: saveImage methods removed - GpuTexture doesn't exist in 1.20.1
-    // Use GL texture IDs directly if needed
-    // public static void saveImage(String name, int textureId, int width, int height) {
-    //     // Implementation would require direct OpenGL calls
-    // }
 
     public static BufferedImage validateImage(BufferedImage image) {
         if (image.getType() != 6) {
@@ -58,19 +52,6 @@ public class ImageHelper {
             if (texture instanceof DynamicTexture dynamicTexture) {
                 image = bufferedImageFromNativeImage(dynamicTexture.getPixels());
             }
-            // ReloadableTexture doesn't exist in 1.20.1
-            /* else if (texture instanceof ReloadableTexture) {
-                InputStream is = LightMapConstants.getMinecraft().getResourceManager().getResource(Identifier).get().open();
-                image = ImageIO.read(is);
-                is.close();
-                if (image.getType() != BufferedImage.TYPE_4BYTE_ABGR) {
-                    BufferedImage temp = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-                    Graphics2D g2 = temp.createGraphics();
-                    g2.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
-                    g2.dispose();
-                    image = temp;
-                }
-            }*/
             return image;
         } catch (Exception var5) {
             return null;
@@ -85,17 +66,6 @@ public class ImageHelper {
         int width = image.getWidth();
         int height = image.getHeight();
         NativeImage nativeImage = new NativeImage(width, height, false);
-        // TODO: 1.20.1 Port - getPointer() may not exist in 1.20.1 NativeImage API
-        // Need to verify and potentially replace with alternative
-        /* Commented out for compilation - needs 1.20.1 compatible implementation
-        if (image.getType() == BufferedImage.TYPE_4BYTE_ABGR) {
-            byte[] is = new byte[width * height * 4];
-            image.getRaster().getDataElements(0, 0, width, height, is);
-            MemoryUtil.memByteBuffer(nativeImage.getPointer(), is.length).put(is);
-            return nativeImage;
-        }
-        */
-        LightMapConstants.getLogger().warn("ImageHelper.nativeImageFromBufferedImage: Unoptimized image format: " + image.getType(), new Exception());
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int argb = image.getRGB(x, y);
@@ -106,29 +76,12 @@ public class ImageHelper {
     }
 
     public static BufferedImage bufferedImageFromNativeImage(NativeImage image) {
-        // TODO: 1.20.1 Port - getPointer() and format().components() may not exist in 1.20.1
-        // Need to verify and potentially replace with alternative
-        /* Commented out for compilation - needs 1.20.1 compatible implementation
-        if (image.getPointer() == 0) {
-            throw new IllegalStateException("image is not allocated!");
-        }
-        */
         if (image.format() != Format.RGBA) {
             throw new IllegalStateException("invalid format. expected RGBA, got " + image.format() + "!");
         }
         int width = image.getWidth();
         int height = image.getHeight();
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-
-        // TODO: 1.20.1 Port - Using unoptimized pixel-by-pixel copy for now
-        // Original optimized code used getPointer() and format().components() which may not exist in 1.20.1
-        /* Commented out for compilation - needs 1.20.1 compatible implementation
-        byte[] is = new byte[width * height * image.format().components()];
-        MemoryUtil.memByteBuffer(image.getPointer(), is.length).get(is);
-        bufferedImage.getRaster().setDataElements(0, 0, width, height, is);
-        */
-
-        // Fallback to pixel-by-pixel copy (unoptimized but works)
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int argb = image.getPixelRGBA(x, y);

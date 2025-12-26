@@ -1,7 +1,6 @@
 package com.lightmap.textures;
 
 import com.lightmap.util.LightMapGuiGraphics;
-// import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;

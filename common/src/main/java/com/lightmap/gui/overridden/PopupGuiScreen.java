@@ -2,8 +2,6 @@ package com.lightmap.gui.overridden;
 
 import java.util.ArrayList;
 import net.minecraft.client.gui.GuiGraphics;
-// TODO: 1.20.1 Port - MouseButtonEvent doesn't exist, using primitive parameters instead
-// import net.minecraft.client.input.MouseButtonEvent;
 
 public abstract class PopupGuiScreen extends GuiScreenMinimap implements IPopupGuiScreen {
     private final ArrayList<Popup> popups = new ArrayList<>();
@@ -65,7 +63,6 @@ public abstract class PopupGuiScreen extends GuiScreenMinimap implements IPopupG
         }
     }
 
-    // 1.20.1: Input event system changed - mouseClicked uses primitive parameters
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return !this.clickedPopup(mouseX, mouseY) && super.mouseClicked(mouseX, mouseY, button);

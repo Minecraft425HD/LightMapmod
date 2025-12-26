@@ -94,7 +94,6 @@ public class BlockDatabase {
         barrier = Blocks.BARRIER;
         chorusPlant = Blocks.CHORUS_PLANT;
         chorusFlower = Blocks.CHORUS_FLOWER;
-        // 1.20.1: LEAF_LITTER doesn't exist in 1.20.1
         // leafLitter = Blocks.LEAF_LITTER;
         leafLitter = null;
         biomeBlocksArray = new Block[]{grassBlock, oakLeaves, spruceLeaves, birchLeaves, jungleLeaves, acaciaLeaves, darkOakLeaves, mangroveLeaves, grass, fern, tallGrass, largeFern, reeds, vine, lilypad, tallFlower, water, leafLitter};

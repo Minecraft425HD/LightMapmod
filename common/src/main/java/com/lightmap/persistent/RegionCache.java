@@ -329,7 +329,6 @@ public class RegionCache {
                                         if (!this.closed && this.data.getHeight(tx * 16, sx * 16) == Short.MIN_VALUE && this.data.getLight(tx * 16, sx * 16) == 0) {
                                             int index = tx + sx * 16;
                                             ChunkPos chunkPos = new ChunkPos(this.x * 16 + tx, this.z * 16 + sx);
-                                            // TODO: NBT upgrade section commented out for 1.20.1 compatibility
                                             // The upgradeChunkTag method signature has changed in 1.20.1
                                             // NBT tag access methods (.get()) have also changed
                                             // This section needs to be reimplemented with 1.20.1 APIs

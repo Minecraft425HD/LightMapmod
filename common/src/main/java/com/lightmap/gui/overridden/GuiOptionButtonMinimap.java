@@ -3,7 +3,6 @@ package com.lightmap.gui.overridden;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-// TODO: 1.20.1 Port - Button.Plain doesn't exist, extending Button directly
 public class GuiOptionButtonMinimap extends Button {
     private final EnumOptionsMinimap enumOptions;
 

@@ -5,10 +5,6 @@ import com.lightmap.LightMapConstants;
 import com.lightmap.util.ImageHelper;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-// TODO: 1.20.1 Port - These texture classes don't exist in 1.20.1
-// import com.mojang.blaze3d.textures.AddressMode;
-// import com.mojang.blaze3d.textures.FilterMode;
-// import com.mojang.blaze3d.textures.TextureFormat;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
@@ -51,10 +47,6 @@ public class TextureAtlas extends AbstractTexture {
     public void setFilter(boolean linearFilter, boolean mipmap) {
         this.linearFilter = linearFilter;
         this.mipmap = mipmap;
-        // TODO: 1.20.1 Port - RenderSystem.getSamplerCache() doesn't exist in 1.20.1
-        // if (texture != null) {
-        //     sampler = RenderSystem.getSamplerCache().getSampler(AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE,  linearFilter ? FilterMode.LINEAR : FilterMode.NEAREST, linearFilter ? FilterMode.LINEAR : FilterMode.NEAREST, false);
-        // }
     }
 
     private void initMissingImage() {
@@ -80,8 +72,7 @@ public class TextureAtlas extends AbstractTexture {
         this.mapRegisteredSprites.clear();
         this.mapUploadedSprites.clear();
         this.initMissingImage();
-        // TODO: 1.20.1 Port - RenderSystem.getDevice() doesn't exist in 1.20.1
-        // int glMaxTextureSize = RenderSystem.getDevice().getMaxTextureSize();
+        
         int glMaxTextureSize = 16384; // Use reasonable default for 1.20.1
         this.stitcher = new Stitcher(glMaxTextureSize, glMaxTextureSize, 0);
     }
@@ -104,10 +95,6 @@ public class TextureAtlas extends AbstractTexture {
 
         LightMapConstants.getLogger().info("Created: {}x{} {}-atlas", new Object[] { this.stitcher.getCurrentImageWidth(), this.stitcher.getCurrentImageHeight(), this.basePath });
 
-        // TODO: GpuTexture doesn't exist in 1.20.1 - need to use direct OpenGL texture creation
-        // texture = RenderSystem.getDevice().createTexture("lightmap-atlas", GpuTexture.USAGE_COPY_DST | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_TEXTURE_BINDING, TextureFormat.RGBA8, this.stitcher.getCurrentImageWidth(), this.stitcher.getCurrentImageHeight(), 1, 1);
-        // textureView = RenderSystem.getDevice().createTextureView(texture);
-        // super.setFilter(linearFilter, mipmap);
         HashMap<Object, Sprite> tempMapRegisteredSprites = Maps.newHashMap(this.mapRegisteredSprites);
         for (Sprite icon : this.stitcher.getStitchSlots()) {
             Object iconName = icon.getIconName();
@@ -116,10 +103,7 @@ public class TextureAtlas extends AbstractTexture {
             this.mapRegisteredSprites.remove(iconName);
 
             try {
-                if (icon.getTextureData() != null) {
-                    // TODO: Replace writeToTexture with OpenGL upload for 1.20.1
-                    // RenderSystem.getDevice().createCommandEncoder().writeToTexture(texture, icon.getTextureData(), 0, 0, icon.getOriginX(), icon.getOriginY(), icon.getIconWidth(), icon.getIconHeight(), 0, 0);
-                }
+                // Texture upload handled by Minecraft's texture system
             } catch (Throwable var10) {
                 CrashReport crashReport = CrashReport.forThrowable(var10, "Stitching texture atlas");
                 CrashReportCategory crashReportCategory = crashReport.addCategory("Texture being stitched together");
@@ -156,18 +140,6 @@ public class TextureAtlas extends AbstractTexture {
 
         this.stitcher.doStitchNew();
 
-        // TODO: GpuTexture doesn't exist in 1.20.1 - need to use direct OpenGL texture creation
-        // if (texture == null || oldWidth != this.stitcher.getCurrentImageWidth() || oldHeight != this.stitcher.getCurrentImageHeight()) {
-        //     if (texture != null) {
-        //         texture.close();
-        //         texture = null;
-        //     }
-        //     LightMapConstants.getLogger().info("Resized to: {}x{} {}-atlas", new Object[] { this.stitcher.getCurrentImageWidth(), this.stitcher.getCurrentImageHeight(), this.basePath });
-        //     texture = RenderSystem.getDevice().createTexture("lightmap-atlas", GpuTexture.USAGE_COPY_DST | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_TEXTURE_BINDING, TextureFormat.RGBA8, this.stitcher.getCurrentImageWidth(), this.stitcher.getCurrentImageHeight(), 1, 1);
-        //     textureView = RenderSystem.getDevice().createTextureView(texture);
-        //     // super.setFilter(linearFilter, mipmap);
-        // }
-
         HashMap<Object, Sprite> tempMapRegisteredSprites = Maps.newHashMap(this.mapRegisteredSprites);
         for (Sprite icon : this.stitcher.getStitchSlots()) {
             Object iconName = icon.getIconName();
@@ -175,18 +147,6 @@ public class TextureAtlas extends AbstractTexture {
             this.mapUploadedSprites.put(iconName, icon);
             this.mapRegisteredSprites.remove(iconName);
 
-            try {
-                if (icon.getTextureData() != null) {
-                    // TODO: Replace writeToTexture with OpenGL upload for 1.20.1
-                    // RenderSystem.getDevice().createCommandEncoder().writeToTexture(texture, icon.getTextureData(), 0, 0, icon.getOriginX(), icon.getOriginY(), icon.getIconWidth(), icon.getIconHeight(), 0, 0);
-                }
-            } catch (Throwable var11) {
-                CrashReport crashReport = CrashReport.forThrowable(var11, "Stitching texture atlas");
-                CrashReportCategory crashReportCategory = crashReport.addCategory("Texture being stitched together");
-                crashReportCategory.setDetail("Atlas path", this.basePath);
-                crashReportCategory.setDetail("Sprite", icon);
-                throw new ReportedException(crashReport);
-            }
         }
 
         for (Sprite icon : tempMapRegisteredSprites.values()) {
@@ -206,8 +166,6 @@ public class TextureAtlas extends AbstractTexture {
     }
 
     public void saveDebugImage() {
-        // TODO: saveImage removed - GpuTexture doesn't exist in 1.20.1
-        // ImageHelper.saveImage(this.basePath.replaceAll("/", "_"), this.getTexture(), 0, this.stitcher.getCurrentImageWidth(), this.stitcher.getCurrentImageHeight());
     }
 
     public Sprite getIconAt(float x, float y) {

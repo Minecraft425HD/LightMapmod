@@ -7,7 +7,6 @@ public class TropicalFishVariantDataFactory extends DefaultEntityVariantDataFact
 
     public TropicalFishVariantDataFactory(EntityType<?> type, ResourceLocation secondaryTexture) {
         super(type, secondaryTexture);
-        // TODO Auto-generated constructor stub
     }
 
 }

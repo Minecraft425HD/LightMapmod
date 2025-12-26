@@ -39,7 +39,6 @@ public final class BlockStateParser {
         } else if (resourceStringParts.length == 2) {
             identifier = new ResourceLocation(resourceStringParts[0], resourceStringParts[1]);
         }
-        // 1.20.1: BuiltInRegistries.BLOCK.get() returns Block directly, not Optional<Reference<Block>>
         Block block = BuiltInRegistries.BLOCK.get(identifier);
         if (block == null) {
             return null;

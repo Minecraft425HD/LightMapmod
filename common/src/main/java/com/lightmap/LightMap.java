@@ -58,7 +58,6 @@ public class LightMap implements PreparableReloadListener {
         this.apply(resourceManager);
     }
 
-    // TODO: 1.20.1 Port - SharedState doesn't exist in 1.20.1, ResourceManager passed directly
     @Override
     public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, net.minecraft.util.profiling.ProfilerFiller preparationsProfiler, net.minecraft.util.profiling.ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
         return preparationBarrier.wait((Object) Unit.INSTANCE).thenRunAsync(() -> this.apply(resourceManager), gameExecutor);
