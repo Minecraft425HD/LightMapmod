@@ -1,13 +1,13 @@
 package com.lightmap.util;
 
-import com.lightmap.MapSettingsManager;
+import com.lightmap.MinimapSettings;
 import com.lightmap.LightMapConstants;
 import java.util.Objects;
 import java.util.Random;
 import net.minecraft.client.multiplayer.ClientLevel;
 
-public class MapUtils {
-    private static MapSettingsManager options;
+public class MinimapHelper {
+    private static MinimapSettings options;
     private static Random slimeRandom = new Random();
     private static String lastSeed;
     private static long lastSeedLong;

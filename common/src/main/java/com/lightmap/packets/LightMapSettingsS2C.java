@@ -27,7 +27,7 @@ public record LightMapSettingsS2C(String settingsJson) {
 
     public static void parsePacket(LightMapSettingsS2C packet) {
         @SuppressWarnings("unchecked")
-        Map<String, Object> settings = new Gson().fromJson(packet.settingsJson(), Map.class);
+        MinimapRenderer<String, Object> settings = new Gson().fromJson(packet.settingsJson(), MinimapRenderer.class);
         for (Map.Entry<String, Object> entry : settings.entrySet()) {
             String setting = entry.getKey();
             Object value = entry.getValue();

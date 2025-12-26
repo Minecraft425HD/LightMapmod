@@ -2,7 +2,7 @@ package com.lightmap.textures;
 
 import com.google.common.collect.Maps;
 import com.lightmap.LightMapConstants;
-import com.lightmap.util.ImageUtils;
+import com.lightmap.util.ImageHelper;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 // TODO: 1.20.1 Port - These texture classes don't exist in 1.20.1
@@ -207,7 +207,7 @@ public class TextureAtlas extends AbstractTexture {
 
     public void saveDebugImage() {
         // TODO: saveImage removed - GpuTexture doesn't exist in 1.20.1
-        // ImageUtils.saveImage(this.basePath.replaceAll("/", "_"), this.getTexture(), 0, this.stitcher.getCurrentImageWidth(), this.stitcher.getCurrentImageHeight());
+        // ImageHelper.saveImage(this.basePath.replaceAll("/", "_"), this.getTexture(), 0, this.stitcher.getCurrentImageWidth(), this.stitcher.getCurrentImageHeight());
     }
 
     public Sprite getIconAt(float x, float y) {
@@ -271,7 +271,7 @@ public class TextureAtlas extends AbstractTexture {
             LightMapConstants.getLogger().warn("Cannot register icon for null BufferedImage: " + name);
             return null;
         }
-        NativeImage img = ImageUtils.nativeImageFromBufferedImage(bufferedImage);
+        NativeImage img = ImageHelper.nativeImageFromBufferedImage(bufferedImage);
         return registerIconForBufferedImage(name, img);
     }
 

@@ -20,13 +20,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import org.jetbrains.annotations.NotNull;
 
-public final class BiomeRepository {
+public final class BiomeColors {
     private static final Random generator = new Random();
     private static final HashMap<Biome, Integer> IDtoColor = new HashMap<>(256);
     private static final TreeMap<String, Integer> nameToColor = new TreeMap<>();
     private static boolean dirty;
 
-    private BiomeRepository() {}
+    private BiomeColors() {}
 
     public static void loadBiomeColors() {
         File saveDir = new File(LightMapConstants.getMinecraft().gameDirectory, "/lightmap/");

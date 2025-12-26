@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class BlockRepository {
+public class BlockDatabase {
     public static Block air = Blocks.AIR;
     public static Block voidAir;
     public static Block caveAir;

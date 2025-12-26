@@ -1,6 +1,6 @@
 package com.lightmap.gui.overridden;
 
-import com.lightmap.MapSettingsManager;
+import com.lightmap.MinimapSettings;
 import com.lightmap.LightMapConstants;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,7 +22,7 @@ public class GuiScreenMinimap extends Screen {
     }
 
     @Override
-    public void removed() { MapSettingsManager.instance.saveAll(); }
+    public void removed() { MinimapSettings.instance.saveAll(); }
 
     public void renderTooltip(GuiGraphics drawContext, Component text, int x, int y) {
         if (!(text != null && text.getString() != null && !text.getString().isEmpty())) {

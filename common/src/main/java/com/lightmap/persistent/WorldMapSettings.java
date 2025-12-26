@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import net.minecraft.client.resources.language.I18n;
 
-public class PersistentMapSettingsManager implements ISubSettingsManager {
+public class WorldMapSettings implements ISubSettingsManager {
     protected int mapX;
     protected int mapZ;
     protected float zoom = 4.0F;

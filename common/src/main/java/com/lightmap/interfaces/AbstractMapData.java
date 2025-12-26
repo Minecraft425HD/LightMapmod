@@ -1,7 +1,7 @@
 package com.lightmap.interfaces;
 
 import com.lightmap.LightMapConstants;
-import com.lightmap.util.BiomeRepository;
+import com.lightmap.util.BiomeColors;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.world.level.biome.Biome;
@@ -204,7 +204,7 @@ public abstract class AbstractMapData {
         public Segment(Point point) {
             this.biomeID = point.biomeID;
             if (this.biomeID != null) {
-                this.name = BiomeRepository.getName(this.biomeID);
+                this.name = BiomeColors.getName(this.biomeID);
             }
 
             this.memberPoints = new ArrayList<>();

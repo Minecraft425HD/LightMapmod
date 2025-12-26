@@ -5,13 +5,13 @@ import java.util.Arrays;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class FullMapData extends AbstractMapData {
+public class MapDataStore extends AbstractMapData {
     private final static int LAYERS = 17;
 
     private int[] data;
     private Biome[] biomes;
 
-    public FullMapData(int width, int height) {
+    public MapDataStore(int width, int height) {
         this.width = width;
         this.height = height;
         this.data = new int[width * height * LAYERS];
@@ -264,10 +264,10 @@ public class FullMapData extends AbstractMapData {
     }
 
     private int getIDFromState(BlockState blockState) {
-        return BlockRepository.getStateId(blockState);
+        return BlockDatabase.getStateId(blockState);
     }
 
     private BlockState getStateFromID(int id) {
-        return BlockRepository.getStateById(id);
+        return BlockDatabase.getStateById(id);
     }
 }

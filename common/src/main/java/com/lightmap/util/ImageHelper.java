@@ -24,7 +24,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.system.MemoryUtil;
 
-public class ImageUtils {
+public class ImageHelper {
     // TODO: saveImage methods removed - GpuTexture doesn't exist in 1.20.1
     // Use GL texture IDs directly if needed
     // public static void saveImage(String name, int textureId, int width, int height) {
@@ -95,7 +95,7 @@ public class ImageUtils {
             return nativeImage;
         }
         */
-        LightMapConstants.getLogger().warn("ImageUtils.nativeImageFromBufferedImage: Unoptimized image format: " + image.getType(), new Exception());
+        LightMapConstants.getLogger().warn("ImageHelper.nativeImageFromBufferedImage: Unoptimized image format: " + image.getType(), new Exception());
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int argb = image.getRGB(x, y);

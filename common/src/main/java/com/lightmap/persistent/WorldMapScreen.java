@@ -1,6 +1,6 @@
 package com.lightmap.persistent;
 
-import com.lightmap.MapSettingsManager;
+import com.lightmap.MinimapSettings;
 import com.lightmap.LightMapConstants;
 import com.lightmap.LightMap;
 import com.lightmap.gui.GuiMinimapOptions;
@@ -15,7 +15,7 @@ import com.lightmap.util.BiomeMapData;
 import com.lightmap.util.DimensionContainer;
 import com.lightmap.util.EasingUtils;
 import com.lightmap.util.GameVariableAccessShim;
-import com.lightmap.util.ImageUtils;
+import com.lightmap.util.ImageHelper;
 import com.lightmap.util.LightMapGuiGraphics;
 import com.lightmap.util.LightMapPipelines;
 // TODO 1.21: Restore for 1.21+
@@ -52,13 +52,13 @@ import java.util.Random;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class GuiPersistentMap extends PopupGuiScreen {
+public class WorldMapScreen extends PopupGuiScreen {
     private final Random generator = new Random();
-    private final PersistentMap persistentMap;
+    private final WorldMapData persistentMap;
     private final Screen parent;
-    private final MapSettingsManager mapOptions;
-    private final PersistentMapSettingsManager options;
-    protected String screenTitle = "World Map";
+    private final MinimapSettings mapOptions;
+    private final WorldMapSettings options;
+    protected String screenTitle = "World MinimapRenderer";
     protected String worldNameDisplay = "";
     protected int worldNameDisplayLength;
     protected int maxWorldNameDisplayLength;
@@ -101,7 +101,7 @@ public class GuiPersistentMap extends PopupGuiScreen {
     private float guiToDirectMouse = 2.0F;
     private static boolean gotSkin;
     private boolean closed;
-    private CachedRegion[] regions = new CachedRegion[0];
+    private RegionCache[] regions = new RegionCache[0];
     private final BiomeMapData biomeMapData = new BiomeMapData(760, 360);
     private float mapPixelsX;
     private float mapPixelsY;
@@ -123,13 +123,13 @@ public class GuiPersistentMap extends PopupGuiScreen {
     private int iconsWidth = 16;
     private int iconsHeight = 16;
 
-    public GuiPersistentMap(Screen parent) {
+    public WorldMapScreen(Screen parent) {
         this.parent = parent;
         this.setParentScreen(this.parent);
 
         mapOptions = LightMapConstants.getLightMapInstance().getMapOptions();
-        this.persistentMap = LightMapConstants.getLightMapInstance().getPersistentMap();
-        this.options = LightMapConstants.getLightMapInstance().getPersistentMapOptions();
+        this.persistentMap = LightMapConstants.getLightMapInstance().getWorldMapData();
+        this.options = LightMapConstants.getLightMapInstance().getWorldMapDataOptions();
         this.zoom = this.options.zoom;
         this.zoomStart = this.options.zoom;
         this.zoomGoal = this.options.zoom;
@@ -148,7 +148,7 @@ public class GuiPersistentMap extends PopupGuiScreen {
         ResourceLocation skinLocation = skinTexture != null ?
             LightMapConstants.getMinecraft().getSkinManager().registerTexture(skinTexture, com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN) : null;
 
-        BufferedImage skinImage = ImageUtils.createBufferedImageFromIdentifier(skinLocation);
+        BufferedImage skinImage = ImageHelper.createBufferedImageFromIdentifier(skinLocation);
 
         if (skinImage == null) {
             if (LightMapConstants.DEBUG) {
@@ -161,15 +161,15 @@ public class GuiPersistentMap extends PopupGuiScreen {
 
         boolean showHat = LightMapConstants.getPlayer().isModelPartShown(PlayerModelPart.HAT);
         if (showHat) {
-            skinImage = ImageUtils.addImages(ImageUtils.loadImage(skinImage, 8, 8, 8, 8), ImageUtils.loadImage(skinImage, 40, 8, 8, 8), 0.0F, 0.0F, 8, 8);
+            skinImage = ImageHelper.addImages(ImageHelper.loadImage(skinImage, 8, 8, 8, 8), ImageHelper.loadImage(skinImage, 40, 8, 8, 8), 0.0F, 0.0F, 8, 8);
         } else {
-            skinImage = ImageUtils.loadImage(skinImage, 8, 8, 8, 8);
+            skinImage = ImageHelper.loadImage(skinImage, 8, 8, 8, 8);
         }
 
         float scale = skinImage.getWidth() / 8.0F;
-        skinImage = ImageUtils.fillOutline(ImageUtils.pad(ImageUtils.scaleImage(skinImage, 2.0F / scale)), true, 1);
+        skinImage = ImageHelper.fillOutline(ImageHelper.pad(ImageHelper.scaleImage(skinImage, 2.0F / scale)), true, 1);
 
-        DynamicTexture texture = new DynamicTexture(ImageUtils.nativeImageFromBufferedImage(skinImage));
+        DynamicTexture texture = new DynamicTexture(ImageHelper.nativeImageFromBufferedImage(skinImage));
         minecraft.getTextureManager().register(lightmapSkinLocation, texture);
     }
 
@@ -623,7 +623,7 @@ public class GuiPersistentMap extends PopupGuiScreen {
         float cursorCoordX = 0.0f;
         guiGraphics.pose().scale(this.mapToGui, this.mapToGui, 1.0f);
         if (LightMap.mapOptions.worldmapAllowed) {
-            for (CachedRegion region : this.regions) {
+            for (RegionCache region : this.regions) {
                 ResourceLocation resource = region.getTextureLocation();
                 if (resource != null) {
                     guiGraphics.blit(resource, region.getX() * 256, region.getZ() * 256, 0, 0, region.getWidth(), region.getWidth(), region.getWidth(), region.getWidth());
@@ -706,7 +706,7 @@ public class GuiPersistentMap extends PopupGuiScreen {
                             }
 
                             column = !this.oldNorth ? regionX : regionZ;
-                            CachedRegion region = this.regions[regionZ * (right + 1 - (left - 1) + 1) + regionX];
+                            RegionCache region = this.regions[regionZ * (right + 1 - (left - 1) + 1) + regionX];
                             Biome biome = null;
                             if (region.getMapData() != null && region.isLoaded() && !region.isEmpty()) {
                                 int inRegionX = mapX - region.getX() * region.getWidth();
@@ -859,7 +859,7 @@ public class GuiPersistentMap extends PopupGuiScreen {
         synchronized (this.closedLock) {
             this.closed = true;
             this.persistentMap.getRegions(0, -1, 0, -1);
-            this.regions = new CachedRegion[0];
+            this.regions = new RegionCache[0];
         }
     }
 

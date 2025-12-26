@@ -51,11 +51,11 @@ import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelResource;
 import org.apache.logging.log4j.Level;
 
-public class CachedRegion {
-    public static final EmptyCachedRegion emptyRegion = new EmptyCachedRegion();
+public class RegionCache {
+    public static final EmptyRegionCache emptyRegion = new EmptyRegionCache();
     private long mostRecentView;
     private long mostRecentChange;
-    private PersistentMap persistentMap;
+    private WorldMapData persistentMap;
     private String key;
     private final ClientLevel world;
     private ServerLevel worldServer;
@@ -75,8 +75,8 @@ public class CachedRegion {
     boolean remoteWorld;
     private final boolean[] liveChunkUpdateQueued = new boolean[256];
     private final boolean[] chunkUpdateQueued = new boolean[256];
-    private CompressibleGLBufferedImage image;
-    private CompressibleMapData data;
+    private CompressedGLImage image;
+    private CompressedMapData data;
     final MutableBlockPos blockPos = new MutableBlockPos(0, 0, 0);
     final MutableBlockPos loopBlockPos = new MutableBlockPos(0, 0, 0);
     Future<?> future;
@@ -95,12 +95,12 @@ public class CachedRegion {
     private boolean queuedToCompress;
     final boolean debug = false;
 
-    public CachedRegion() {
+    public RegionCache() {
         this.world = null;
     }
 
     @SuppressWarnings("unchecked")
-    public CachedRegion(PersistentMap persistentMap, String key, ClientLevel world, String worldName, String subworldName, int x, int z) {
+    public RegionCache(WorldMapData persistentMap, String key, ClientLevel world, String worldName, String subworldName, int x, int z) {
         this.persistentMap = persistentMap;
         this.key = key;
         this.world = world;
@@ -203,8 +203,8 @@ public class CachedRegion {
     }
 
     private void load() {
-        this.data = new CompressibleMapData(world);
-        this.image = new CompressibleGLBufferedImage(256, 256, 6);
+        this.data = new CompressedMapData(world);
+        this.image = new CompressedGLImage(256, 256, 6);
         this.loadCachedData();
         this.loadCurrentData(this.world);
         if (!this.remoteWorld) {
@@ -534,19 +534,19 @@ public class CachedRegion {
             if (newThread) {
                 ThreadManager.saveExecutorService.execute(() -> {
                     if (LightMapConstants.DEBUG) {
-                        LightMapConstants.getLogger().info("Saving region file for " + CachedRegion.this.x + "," + CachedRegion.this.z + " in " + CachedRegion.this.worldNamePathPart + "/" + CachedRegion.this.subworldNamePathPart + CachedRegion.this.dimensionNamePathPart);
+                        LightMapConstants.getLogger().info("Saving region file for " + RegionCache.this.x + "," + RegionCache.this.z + " in " + RegionCache.this.worldNamePathPart + "/" + RegionCache.this.subworldNamePathPart + RegionCache.this.dimensionNamePathPart);
                     }
-                    CachedRegion.this.threadLock.lock();
+                    RegionCache.this.threadLock.lock();
 
                     try {
-                        CachedRegion.this.doSave();
+                        RegionCache.this.doSave();
                     } catch (Exception ex) {
-                        LightMapConstants.getLogger().error("Failed to save region file for " + CachedRegion.this.x + "," + CachedRegion.this.z + " in " + CachedRegion.this.worldNamePathPart + "/" + CachedRegion.this.subworldNamePathPart + CachedRegion.this.dimensionNamePathPart, ex);
+                        LightMapConstants.getLogger().error("Failed to save region file for " + RegionCache.this.x + "," + RegionCache.this.z + " in " + RegionCache.this.worldNamePathPart + "/" + RegionCache.this.subworldNamePathPart + RegionCache.this.dimensionNamePathPart, ex);
                     } finally {
-                        CachedRegion.this.threadLock.unlock();
+                        RegionCache.this.threadLock.unlock();
                     }
                     if (LightMapConstants.DEBUG) {
-                        LightMapConstants.getLogger().info("Finished saving region file for " + CachedRegion.this.x + "," + CachedRegion.this.z + " in " + CachedRegion.this.worldNamePathPart + "/" + CachedRegion.this.subworldNamePathPart + CachedRegion.this.dimensionNamePathPart + " ("
+                        LightMapConstants.getLogger().info("Finished saving region file for " + RegionCache.this.x + "," + RegionCache.this.z + " in " + RegionCache.this.worldNamePathPart + "/" + RegionCache.this.subworldNamePathPart + RegionCache.this.dimensionNamePathPart + " ("
                                 + ThreadManager.saveExecutorService.getQueue().size() + ")");
                     }
                 });
@@ -567,7 +567,7 @@ public class CachedRegion {
         BiMap<BlockState, Integer> stateToInt = this.data.getStateToInt();
         BiMap<Biome, Integer> biomeToInt = this.data.getBiomeToInt();
         byte[] byteArray = this.data.getData();
-        if (byteArray.length == this.data.getExpectedDataLength(CompressibleMapData.DATA_VERSION)) {
+        if (byteArray.length == this.data.getExpectedDataLength(CompressedMapData.DATA_VERSION)) {
             File cachedRegionFileDir = new File(LightMapConstants.getMinecraft().gameDirectory, "/lightmap/cache/" + this.worldNamePathPart + "/" + this.subworldNamePathPart + this.dimensionNamePathPart);
             cachedRegionFileDir.mkdirs();
             File cachedRegionFile = new File(cachedRegionFileDir, "/" + this.key + ".zip");
@@ -613,7 +613,7 @@ public class CachedRegion {
                 zos.closeEntry();
             }
 
-            String nextLine = "version:" + CompressibleMapData.DATA_VERSION + "\r\n";
+            String nextLine = "version:" + CompressedMapData.DATA_VERSION + "\r\n";
             byte[] keyByteArray = nextLine.getBytes();
             ze = new ZipEntry("control");
             ze.setSize(keyByteArray.length);
@@ -644,12 +644,12 @@ public class CachedRegion {
             final File imageFile = new File(imageFileDir, this.key + ".png");
             if (this.liveChunksUpdated || !imageFile.exists()) {
                 ThreadManager.executorService.execute(() -> {
-                    CachedRegion.this.threadLock.lock();
+                    RegionCache.this.threadLock.lock();
 
                     try {
                         BufferedImage realBufferedImage = new BufferedImage(this.width, this.width, 6);
                         byte[] dstArray = ((DataBufferByte) realBufferedImage.getRaster().getDataBuffer()).getData();
-                        System.arraycopy(CachedRegion.this.image.getData(), 0, dstArray, 0, this.image.getData().length);
+                        System.arraycopy(RegionCache.this.image.getData(), 0, dstArray, 0, this.image.getData().length);
                         ImageIO.write(realBufferedImage, "png", imageFile);
                     } catch (IOException var6) {
                         LightMapConstants.getLogger().error(var6);
@@ -704,7 +704,7 @@ public class CachedRegion {
         }
     }
 
-    public CompressibleMapData getMapData() {
+    public CompressedMapData getMapData() {
         return this.data;
     }
 
@@ -783,28 +783,28 @@ public class CachedRegion {
 
         private FillChunkRunnable(LevelChunk chunk) {
             this.chunk = chunk;
-            int chunkX = chunk.getPos().x - CachedRegion.this.x * 16;
-            int chunkZ = chunk.getPos().z - CachedRegion.this.z * 16;
+            int chunkX = chunk.getPos().x - RegionCache.this.x * 16;
+            int chunkZ = chunk.getPos().z - RegionCache.this.z * 16;
             this.index = chunkZ * 16 + chunkX;
         }
 
         @Override
         public void run() {
-            CachedRegion.this.threadLock.lock();
+            RegionCache.this.threadLock.lock();
 
             try {
-                if (!CachedRegion.this.loaded) {
-                    CachedRegion.this.load();
+                if (!RegionCache.this.loaded) {
+                    RegionCache.this.load();
                 }
 
-                int chunkX = this.chunk.getPos().x - CachedRegion.this.x * 16;
-                int chunkZ = this.chunk.getPos().z - CachedRegion.this.z * 16;
-                CachedRegion.this.loadChunkData(this.chunk, chunkX, chunkZ);
+                int chunkX = this.chunk.getPos().x - RegionCache.this.x * 16;
+                int chunkZ = this.chunk.getPos().z - RegionCache.this.z * 16;
+                RegionCache.this.loadChunkData(this.chunk, chunkX, chunkZ);
             } catch (Exception ex) {
                 LightMapConstants.getLogger().log(Level.ERROR, "Error in FillChunkRunnable", ex);
             } finally {
-                CachedRegion.this.threadLock.unlock();
-                CachedRegion.this.chunkUpdateQueued[this.index] = false;
+                RegionCache.this.threadLock.unlock();
+                RegionCache.this.chunkUpdateQueued[this.index] = false;
             }
 
         }
@@ -817,37 +817,37 @@ public class CachedRegion {
 
         @Override
         public void run() {
-            CachedRegion.this.mostRecentChange = System.currentTimeMillis();
-            CachedRegion.this.threadLock.lock();
+            RegionCache.this.mostRecentChange = System.currentTimeMillis();
+            RegionCache.this.threadLock.lock();
 
             try {
-                if (!CachedRegion.this.loaded) {
-                    CachedRegion.this.load();
+                if (!RegionCache.this.loaded) {
+                    RegionCache.this.load();
                 }
 
-                if (CachedRegion.this.dataUpdateQueued) {
-                    CachedRegion.this.loadModifiedData();
-                    CachedRegion.this.dataUpdateQueued = false;
+                if (RegionCache.this.dataUpdateQueued) {
+                    RegionCache.this.loadModifiedData();
+                    RegionCache.this.dataUpdateQueued = false;
                 }
 
-                for (; CachedRegion.this.dataUpdated || CachedRegion.this.displayOptionsChanged; CachedRegion.this.refreshingImage = false) {
-                    CachedRegion.this.dataUpdated = false;
-                    CachedRegion.this.displayOptionsChanged = false;
-                    CachedRegion.this.refreshingImage = true;
-                    synchronized (CachedRegion.this.image) {
-                        CachedRegion.this.fillImage();
-                        CachedRegion.this.imageChanged = true;
+                for (; RegionCache.this.dataUpdated || RegionCache.this.displayOptionsChanged; RegionCache.this.refreshingImage = false) {
+                    RegionCache.this.dataUpdated = false;
+                    RegionCache.this.displayOptionsChanged = false;
+                    RegionCache.this.refreshingImage = true;
+                    synchronized (RegionCache.this.image) {
+                        RegionCache.this.fillImage();
+                        RegionCache.this.imageChanged = true;
                     }
                 }
 
                 if (this.forceCompress) {
-                    CachedRegion.this.compressData();
+                    RegionCache.this.compressData();
                 }
             } catch (Exception var8) {
                 LightMapConstants.getLogger().error("Exception loading region: " + var8.getLocalizedMessage(), var8);
             } finally {
-                CachedRegion.this.threadLock.unlock();
-                CachedRegion.this.refreshQueued = false;
+                RegionCache.this.threadLock.unlock();
+                RegionCache.this.refreshQueued = false;
             }
 
         }

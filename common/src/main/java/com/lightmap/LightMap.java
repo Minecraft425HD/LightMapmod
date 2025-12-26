@@ -1,12 +1,12 @@
 package com.lightmap;
 
-import com.lightmap.persistent.PersistentMap;
-import com.lightmap.persistent.PersistentMapSettingsManager;
+import com.lightmap.persistent.WorldMapData;
+import com.lightmap.persistent.WorldMapSettings;
 import com.lightmap.persistent.ThreadManager;
-import com.lightmap.util.BiomeRepository;
+import com.lightmap.util.BiomeColors;
 import com.lightmap.util.DimensionManager;
 import com.lightmap.util.GameVariableAccessShim;
-import com.lightmap.util.MapUtils;
+import com.lightmap.util.MinimapHelper;
 import com.lightmap.util.TextUtils;
 import com.lightmap.util.WorldUpdateListener;
 import java.util.ArrayDeque;
@@ -22,13 +22,13 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Unit;
 
 public class LightMap implements PreparableReloadListener {
-    public static MapSettingsManager mapOptions;
-    private PersistentMapSettingsManager persistentMapOptions;
-    private Map map;
-    private PersistentMap persistentMap;
+    public static MinimapSettings mapOptions;
+    private WorldMapSettings persistentMapOptions;
+    private MinimapRenderer map;
+    private WorldMapData persistentMap;
     private SettingsAndLightingChangeNotifier settingsAndLightingChangeNotifier;
     private WorldUpdateListener worldUpdateListener;
-    private ColorManager colorManager;
+    private BlockColorCache colorManager;
     private DimensionManager dimensionManager;
     private ClientLevel world;
     private static String passMessage;
@@ -37,18 +37,18 @@ public class LightMap implements PreparableReloadListener {
     LightMap() {}
 
     public void lateInit(boolean showUnderMenus, boolean isFair) {
-        mapOptions = new MapSettingsManager();
+        mapOptions = new MinimapSettings();
         mapOptions.showUnderMenus = showUnderMenus;
-        this.persistentMapOptions = new PersistentMapSettingsManager();
+        this.persistentMapOptions = new WorldMapSettings();
         mapOptions.addSecondaryOptionsManager(this.persistentMapOptions);
-        BiomeRepository.loadBiomeColors();
-        this.colorManager = new ColorManager();
+        BiomeColors.loadBiomeColors();
+        this.colorManager = new BlockColorCache();
         this.dimensionManager = new DimensionManager();
-        this.persistentMap = new PersistentMap();
+        this.persistentMap = new WorldMapData();
         mapOptions.loadAll();
 
         // Event listeners are now registered separately during mod construction
-        this.map = new Map();
+        this.map = new MinimapRenderer();
         this.settingsAndLightingChangeNotifier = new SettingsAndLightingChangeNotifier();
         this.worldUpdateListener = new WorldUpdateListener();
         this.worldUpdateListener.addListener(this.map);
@@ -84,7 +84,7 @@ public class LightMap implements PreparableReloadListener {
             this.world = newWorld;
             this.persistentMap.newWorld(this.world);
             if (this.world != null) {
-                MapUtils.reset();
+                MinimapHelper.reset();
                 LightMapConstants.getPacketBridge().sendWorldIDPacket();
                 this.map.newWorld(this.world);
                 while (!runOnWorldSet.isEmpty()) {
@@ -101,15 +101,15 @@ public class LightMap implements PreparableReloadListener {
         // Cave mode removed - no permission messages to check
     }
 
-    public MapSettingsManager getMapOptions() {
+    public MinimapSettings getMapOptions() {
         return mapOptions;
     }
 
-    public PersistentMapSettingsManager getPersistentMapOptions() {
+    public WorldMapSettings getWorldMapDataOptions() {
         return this.persistentMapOptions;
     }
 
-    public Map getMap() {
+    public MinimapRenderer getMap() {
         return this.map;
     }
 
@@ -117,7 +117,7 @@ public class LightMap implements PreparableReloadListener {
         return this.settingsAndLightingChangeNotifier;
     }
 
-    public ColorManager getColorManager() {
+    public BlockColorCache getColorManager() {
         return this.colorManager;
     }
 
@@ -125,7 +125,7 @@ public class LightMap implements PreparableReloadListener {
         return this.dimensionManager;
     }
 
-    public PersistentMap getPersistentMap() {
+    public WorldMapData getWorldMapData() {
         return this.persistentMap;
     }
 

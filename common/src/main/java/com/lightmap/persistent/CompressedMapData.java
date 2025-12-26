@@ -13,7 +13,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CompressibleMapData extends AbstractMapData {
+public class CompressedMapData extends AbstractMapData {
     public final static int DATA_VERSION = 4;
     public final static int LAYERS = 22;
 
@@ -48,7 +48,7 @@ public class CompressibleMapData extends AbstractMapData {
 
     private final Minecraft MINECRAFT = Minecraft.getInstance();
 
-    public CompressibleMapData(ClientLevel world) {
+    public CompressedMapData(ClientLevel world) {
         this.width = REGION_SIZE;
         this.height = REGION_SIZE;
         this.data = compressedEmptyData;

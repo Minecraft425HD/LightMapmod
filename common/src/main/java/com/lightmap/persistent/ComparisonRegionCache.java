@@ -26,8 +26,8 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
 
-public class ComparisonCachedRegion {
-    private final PersistentMap persistentMap;
+public class ComparisonRegionCache {
+    private final WorldMapData persistentMap;
     private final String key;
     private final ClientLevel world;
     private final String subworldName;
@@ -37,14 +37,14 @@ public class ComparisonCachedRegion {
     private final boolean underground;
     private final int x;
     private final int z;
-    private final CompressibleMapData data;
+    private final CompressedMapData data;
     final MutableBlockPos blockPos = new MutableBlockPos(0, 0, 0);
     private int loadedChunks;
     private boolean loaded;
     private boolean empty = true;
 
-    public ComparisonCachedRegion(PersistentMap persistentMap, String key, ClientLevel world, String worldName, String subworldName, int x, int z) {
-        this.data = new CompressibleMapData(world);
+    public ComparisonRegionCache(WorldMapData persistentMap, String key, ClientLevel world, String worldName, String subworldName, int x, int z) {
+        this.data = new CompressedMapData(world);
         this.persistentMap = persistentMap;
         this.key = key;
         this.world = world;
@@ -163,7 +163,7 @@ public class ComparisonCachedRegion {
         return this.key;
     }
 
-    public CompressibleMapData getMapData() {
+    public CompressedMapData getMapData() {
         return this.data;
     }
 
@@ -194,10 +194,10 @@ public class ComparisonCachedRegion {
         return y;
     }
 
-    public int getSimilarityTo(ComparisonCachedRegion candidate) {
+    public int getSimilarityTo(ComparisonRegionCache candidate) {
         int compared = 0;
         int matched = 0;
-        CompressibleMapData candidateData = candidate.getMapData();
+        CompressedMapData candidateData = candidate.getMapData();
 
         for (int t = 0; t < 16; ++t) {
             for (int s = 0; s < 16; ++s) {

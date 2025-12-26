@@ -1,21 +1,21 @@
 package com.lightmap;
 
-import com.lightmap.persistent.CachedRegion;
+import com.lightmap.persistent.RegionCache;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class SettingsAndLightingChangeNotifier {
-    private final CopyOnWriteArraySet<CachedRegion> listeners = new CopyOnWriteArraySet<>();
+    private final CopyOnWriteArraySet<RegionCache> listeners = new CopyOnWriteArraySet<>();
 
-    public final void addObserver(CachedRegion listener) {
+    public final void addObserver(RegionCache listener) {
         listeners.add(listener);
     }
 
-    public final void removeObserver(CachedRegion listener) {
+    public final void removeObserver(RegionCache listener) {
         listeners.remove(listener);
     }
 
     public void notifyOfChanges() {
-        for (CachedRegion listener : listeners) {
+        for (RegionCache listener : listeners) {
             listener.notifyOfActionableChange(this);
         }
 

@@ -1,6 +1,6 @@
 package com.lightmap.gui;
 
-import com.lightmap.MapSettingsManager;
+import com.lightmap.MinimapSettings;
 import com.lightmap.LightMapConstants;
 import com.lightmap.gui.overridden.EnumOptionsMinimap;
 import com.lightmap.gui.overridden.GuiOptionButtonMinimap;
@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 
 public class GuiMinimapOptions extends GuiScreenMinimap {
     private final Screen parent;
-    private final MapSettingsManager options;
+    private final MinimapSettings options;
     protected String screenTitle = "Minimap Options";
 
     public GuiMinimapOptions(Screen parent) {

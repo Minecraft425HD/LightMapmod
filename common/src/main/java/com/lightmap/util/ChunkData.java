@@ -5,7 +5,7 @@ import com.lightmap.LightMapConstants;
 import com.lightmap.interfaces.IChangeObserver;
 import net.minecraft.world.level.chunk.LevelChunk;
 
-public class MapChunk {
+public class ChunkData {
     private final int x;
     private final int z;
     private LevelChunk chunk;
@@ -13,7 +13,7 @@ public class MapChunk {
     private boolean isLoaded;
     private boolean isSurroundedByLoaded;
 
-    public MapChunk(int x, int z) {
+    public ChunkData(int x, int z) {
         this.x = x;
         this.z = z;
         this.chunk = LightMapConstants.getPlayer().level().getChunk(x, z);

@@ -1,7 +1,7 @@
 package com.lightmap;
 
 import com.lightmap.persistent.ThreadManager;
-import com.lightmap.util.BiomeRepository;
+import com.lightmap.util.BiomeColors;
 import java.util.Optional;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
@@ -128,9 +128,9 @@ public final class LightMapConstants {
 
     public static void onShutDown() {
         LightMapConstants.getLogger().info("Saving all world maps");
-        LightMapConstants.getLightMapInstance().getPersistentMap().purgeCachedRegions();
+        LightMapConstants.getLightMapInstance().getWorldMapData().purgeRegionCaches();
         LightMapConstants.getLightMapInstance().getMapOptions().saveAll();
-        BiomeRepository.saveBiomeColors();
+        BiomeColors.saveBiomeColors();
         long shutdownTime = System.currentTimeMillis();
 
         while (ThreadManager.executorService.getQueue().size() + ThreadManager.executorService.getActiveCount() > 0 && System.currentTimeMillis() - shutdownTime < 10000L) {
@@ -139,14 +139,14 @@ public final class LightMapConstants {
     }
 
     public static void playerRunTeleportCommand(double x, double y, double z) {
-        MapSettingsManager mapSettingsManager = LightMapConstants.getLightMapInstance().getMapOptions();
+        MinimapSettings mapSettingsManager = LightMapConstants.getLightMapInstance().getMapOptions();
         String cmd = mapSettingsManager.serverTeleportCommand == null ? mapSettingsManager.teleportCommand : mapSettingsManager.serverTeleportCommand;
         cmd = cmd.replace("%p", LightMapConstants.getPlayer().getName().getString()).replace("%x", String.valueOf(x + 0.5)).replace("%y", String.valueOf(y)).replace("%z", String.valueOf(z + 0.5));
         LightMapConstants.getPlayer().connection.sendCommand(cmd);
     }
 
     public static int moveScoreboard(int bottomX, int entriesHeight) {
-        double unscaledHeight = Map.getMinTablistOffset(); // / scaleFactor;
+        double unscaledHeight = MinimapRenderer.getMinTablistOffset(); // / scaleFactor;
         if (!LightMap.mapOptions.minimapAllowed || LightMap.mapOptions.mapCorner != 1 || !LightMap.mapOptions.moveScoreBoardDown || !Double.isFinite(unscaledHeight)) {
             return bottomX;
         }
@@ -154,7 +154,7 @@ public final class LightMapConstants {
         double mapHeightScaled = unscaledHeight * 1.37 / scaleFactor; // * 1.37 because unscaledHeight is just the map without the text around it
 
         int fontHeight = Minecraft.getInstance().font.lineHeight; // height of the title line
-        float statusIconOffset = Map.getStatusIconOffset();
+        float statusIconOffset = MinimapRenderer.getStatusIconOffset();
         int statusIconOffsetInt = Float.isFinite(statusIconOffset) ? (int) statusIconOffset : 0;
         int minBottom = (int) (mapHeightScaled + entriesHeight + fontHeight + statusIconOffsetInt);
 

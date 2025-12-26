@@ -4,7 +4,7 @@ import com.lightmap.SettingsAndLightingChangeNotifier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.chunk.LevelChunk;
 
-public class EmptyCachedRegion extends CachedRegion {
+public class EmptyRegionCache extends RegionCache {
     @Override
     public void notifyOfActionableChange(SettingsAndLightingChangeNotifier notifier) {
     }
@@ -48,7 +48,7 @@ public class EmptyCachedRegion extends CachedRegion {
     }
 
     @Override
-    public CompressibleMapData getMapData() {
+    public CompressedMapData getMapData() {
         return null;
     }
 

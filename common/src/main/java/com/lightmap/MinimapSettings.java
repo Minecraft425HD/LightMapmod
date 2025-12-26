@@ -23,7 +23,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-public class MapSettingsManager implements ISettingsManager {
+public class MinimapSettings implements ISettingsManager {
     private File settingsFile;
     public boolean showUnderMenus;
     private final int availableProcessors = Runtime.getRuntime().availableProcessors();
@@ -57,13 +57,13 @@ public class MapSettingsManager implements ISettingsManager {
     public KeyMapping keyBindMenu;
     public final KeyMapping[] keyBindings;
     private boolean somethingChanged;
-    public static MapSettingsManager instance;
+    public static MinimapSettings instance;
     private final List<ISubSettingsManager> subSettingsManagers = new ArrayList<>();
 
     public String teleportCommand = "tp %p %x %y %z";
     public String serverTeleportCommand;
 
-    public MapSettingsManager() {
+    public MinimapSettings() {
         instance = this;
         String category = "key.categories.lightmap";
 
@@ -90,8 +90,8 @@ public class MapSettingsManager implements ISettingsManager {
                     switch (curLine[0]) {
                         case "Zoom Level" -> this.zoom = Math.max(0, Math.min(4, Integer.parseInt(curLine[1])));
                         case "Old North" -> this.oldNorth = Boolean.parseBoolean(curLine[1]);
-                        case "Map Corner" -> this.mapCorner = Math.max(0, Math.min(3, Integer.parseInt(curLine[1])));
-                        case "Map Size" -> this.sizeModifier = Math.max(-1, Math.min(4, Integer.parseInt(curLine[1])));
+                        case "MinimapRenderer Corner" -> this.mapCorner = Math.max(0, Math.min(3, Integer.parseInt(curLine[1])));
+                        case "MinimapRenderer Size" -> this.sizeModifier = Math.max(-1, Math.min(4, Integer.parseInt(curLine[1])));
                         case "Zoom Key" -> this.bindKey(this.keyBindZoom, curLine[1]);
                         case "Fullscreen Key" -> this.bindKey(this.keyBindFullscreen, curLine[1]);
                         case "Menu Key" -> this.bindKey(this.keyBindMenu, curLine[1]);
@@ -133,8 +133,8 @@ public class MapSettingsManager implements ISettingsManager {
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.settingsFile), StandardCharsets.UTF_8.newEncoder())));
             out.println("Zoom Level:" + this.zoom);
             out.println("Old North:" + this.oldNorth);
-            out.println("Map Corner:" + this.mapCorner);
-            out.println("Map Size:" + this.sizeModifier);
+            out.println("MinimapRenderer Corner:" + this.mapCorner);
+            out.println("MinimapRenderer Size:" + this.sizeModifier);
             out.println("Zoom Key:" + this.keyBindZoom.saveString());
             out.println("Fullscreen Key:" + this.keyBindFullscreen.saveString());
             out.println("Menu Key:" + this.keyBindMenu.saveString());

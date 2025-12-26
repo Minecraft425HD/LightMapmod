@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
-public class CompressibleGLBufferedImage {
+public class CompressedGLImage {
     private static final HashMap<Integer, ByteBuffer> byteBuffers = new HashMap<>(4);
     private static final int DEFAULT_SIZE = 256;
     private static final ByteBuffer defaultSizeBuffer = ByteBuffer.allocateDirect(DEFAULT_SIZE * DEFAULT_SIZE * 4).order(ByteOrder.nativeOrder());
@@ -34,11 +34,11 @@ public class CompressibleGLBufferedImage {
     private final ResourceLocation location = new ResourceLocation("lightmap", "mapimage/" + UUID.randomUUID());
     private DynamicTexture texture;
 
-    public CompressibleGLBufferedImage(int width, int height, int imageType) {
+    public CompressedGLImage(int width, int height, int imageType) {
         this.width = width;
         this.height = height;
         this.bytes = new byte[width * height * 4];
-        this.compressNotDelete = LightMapConstants.getLightMapInstance().getPersistentMapOptions().outputImages;
+        this.compressNotDelete = LightMapConstants.getLightMapInstance().getWorldMapDataOptions().outputImages;
     }
 
     public byte[] getData() {

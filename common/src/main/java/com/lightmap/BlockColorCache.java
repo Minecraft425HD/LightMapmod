@@ -3,7 +3,7 @@ package com.lightmap;
 import com.google.common.collect.UnmodifiableIterator;
 import com.lightmap.interfaces.AbstractMapData;
 import com.lightmap.util.BlockModel;
-import com.lightmap.util.BlockRepository;
+import com.lightmap.util.BlockDatabase;
 import com.lightmap.util.ColorUtils;
 import com.lightmap.util.GLUtils;
 import com.lightmap.util.MessageUtils;
@@ -72,7 +72,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class ColorManager {
+public class BlockColorCache {
     private boolean resourcePacksChanged;
     private ClientLevel world;
     private BufferedImage terrainBuff;
@@ -101,7 +101,7 @@ public class ColorManager {
     private final ColorResolver waterColorResolver = (blockState, biomex, blockPos) -> biomex.getWaterColor();
     private final ColorResolver redstoneColorResolver = (blockState, biomex, blockPos) -> RedStoneWireBlock.getColorForPower(blockState.getValue(RedStoneWireBlock.POWER));
 
-    public ColorManager() {
+    public BlockColorCache() {
         this.optifineInstalled = false;
         Field ofProfiler = null;
 
@@ -119,7 +119,7 @@ public class ColorManager {
     }
 
     public int getAirColor() {
-        return this.blockColors[BlockRepository.airID];
+        return this.blockColors[BlockDatabase.airID];
     }
 
     public BufferedImage getColorPicker() {
@@ -165,7 +165,7 @@ public class ColorManager {
         this.loadedTerrainImage = false;
         // TODO: SkinManager.get() doesn't exist in 1.20.1
         // LightMapConstants.getMinecraft().getSkinManager().get(LightMapConstants.getPlayer().getGameProfile());
-        BlockRepository.getBlocks();
+        BlockDatabase.getBlocks();
         this.loadColorPicker();
         this.loadTexturePackTerrainImage();
         TextureAtlasSprite missing = LightMapConstants.getMinecraft().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).getSprite(new ResourceLocation("missingno"));
@@ -208,7 +208,7 @@ public class ColorManager {
     // try {
     // BakedModel model = LightMapConstants.getMinecraft().getModelManager().getModel(stack, world, null, 0); //FIXME 1.21.4
     // this.drawModel(Direction.EAST, blockState, model, stack, iconScale, captureDepth);
-    // BufferedImage blockImage = ImageUtils.createBufferedImageFromGLID(OpenGL.Utils.fboTextureId);
+    // BufferedImage blockImage = ImageHelper.createBufferedImageFromGLID(OpenGL.Utils.fboTextureId);
     // if (LightMapConstants.DEBUG) {
     // ImageIO.write(blockImage, "png", new File(LightMapConstants.getMinecraft().gameDirectory, blockState.getBlock().getName().getString() + "-" + Block.getId(blockState) + ".png"));
     // }
@@ -302,9 +302,9 @@ public class ColorManager {
     }
 
     public void setSkyColor(int skyColor) {
-        this.blockColors[BlockRepository.airID] = skyColor;
-        this.blockColors[BlockRepository.voidAirID] = skyColor;
-        this.blockColors[BlockRepository.caveAirID] = skyColor;
+        this.blockColors[BlockDatabase.airID] = skyColor;
+        this.blockColors[BlockDatabase.voidAirID] = skyColor;
+        this.blockColors[BlockDatabase.caveAirID] = skyColor;
     }
 
     private void loadTexturePackTerrainImage() {
@@ -316,14 +316,14 @@ public class ColorManager {
 
     private void loadSpecialColors() {
         int blockStateID;
-        for (Iterator<BlockState> blockStateIterator = BlockRepository.pistonTechBlock.getStateDefinition().getPossibleStates().iterator(); blockStateIterator.hasNext(); this.blockColors[blockStateID] = 0) {
+        for (Iterator<BlockState> blockStateIterator = BlockDatabase.pistonTechBlock.getStateDefinition().getPossibleStates().iterator(); blockStateIterator.hasNext(); this.blockColors[blockStateID] = 0) {
             BlockState blockState = blockStateIterator.next();
-            blockStateID = BlockRepository.getStateId(blockState);
+            blockStateID = BlockDatabase.getStateId(blockState);
         }
 
-        for (Iterator<BlockState> var6 = BlockRepository.barrier.getStateDefinition().getPossibleStates().iterator(); var6.hasNext(); this.blockColors[blockStateID] = 0) {
+        for (Iterator<BlockState> var6 = BlockDatabase.barrier.getStateDefinition().getPossibleStates().iterator(); var6.hasNext(); this.blockColors[blockStateID] = 0) {
             BlockState blockState = var6.next();
-            blockStateID = BlockRepository.getStateId(blockState);
+            blockStateID = BlockDatabase.getStateId(blockState);
         }
 
     }
@@ -371,7 +371,7 @@ public class ColorManager {
         }
 
         if (col == 0xFEFF00FF || col == 0x1B000000) {
-            BlockState blockState = BlockRepository.getStateById(blockStateID);
+            BlockState blockState = BlockDatabase.getStateById(blockStateID);
             col = this.blockColors[blockStateID] = this.getColor(blockPos, blockState);
         }
 
@@ -401,21 +401,21 @@ public class ColorManager {
             }
 
             Block block = state.getBlock();
-            if (block == BlockRepository.cobweb) {
+            if (block == BlockDatabase.cobweb) {
                 color |= -16777216;
             }
 
-            if (block == BlockRepository.redstone) {
+            if (block == BlockDatabase.redstone) {
                 color = ColorUtils.colorMultiplier(color, LightMapConstants.getMinecraft().getBlockColors().getColor(state, null, null, 0) | 0xFF000000);
             }
 
-            if (BlockRepository.biomeBlocks.contains(block)) {
+            if (BlockDatabase.biomeBlocks.contains(block)) {
                 this.applyDefaultBuiltInShading(state, color);
             } else {
                 this.checkForBiomeTinting(blockPos, state, color);
             }
 
-            if (BlockRepository.shapedBlocks.contains(block)) {
+            if (BlockDatabase.shapedBlocks.contains(block)) {
                 color = this.applyShape(block, color);
             }
 
@@ -521,9 +521,9 @@ public class ColorManager {
 
     private void applyDefaultBuiltInShading(BlockState blockState, int color) {
         Block block = blockState.getBlock();
-        int blockStateID = BlockRepository.getStateId(blockState);
-        if (block != BlockRepository.largeFern && block != BlockRepository.tallGrass && block != BlockRepository.reeds) {
-            if (block == BlockRepository.water) {
+        int blockStateID = BlockDatabase.getStateId(blockState);
+        if (block != BlockDatabase.largeFern && block != BlockDatabase.tallGrass && block != BlockDatabase.reeds) {
+            if (block == BlockDatabase.water) {
                 this.blockColorsWithDefaultTint[blockStateID] = ColorUtils.colorMultiplier(color, 0xFF3F76E4);
             } else {
                 this.blockColorsWithDefaultTint[blockStateID] = ColorUtils.colorMultiplier(color, LightMapConstants.getMinecraft().getBlockColors().getColor(blockState, null, null, 0) | 0xFF000000);
@@ -538,7 +538,7 @@ public class ColorManager {
         try {
             Block block = blockState.getBlock();
             String blockName = String.valueOf(BuiltInRegistries.BLOCK.getKey(block));
-            if (BlockRepository.biomeBlocks.contains(block) || !blockName.startsWith("minecraft:")) {
+            if (BlockDatabase.biomeBlocks.contains(block) || !blockName.startsWith("minecraft:")) {
                 int tint;
                 MutableBlockPos tempBlockPos = new MutableBlockPos(0, 0, 0);
                 if (blockPos == this.dummyBlockPos) {
@@ -555,11 +555,11 @@ public class ColorManager {
                 }
 
                 if (tint != 16777215 && tint != -1) {
-                    int blockStateID = BlockRepository.getStateId(blockState);
+                    int blockStateID = BlockDatabase.getStateId(blockState);
                     this.biomeTintsAvailable.add(blockStateID);
                     this.blockColorsWithDefaultTint[blockStateID] = ColorUtils.colorMultiplier(color, tint);
                 } else {
-                    this.blockColorsWithDefaultTint[BlockRepository.getStateId(blockState)] = 0x1B000000;
+                    this.blockColorsWithDefaultTint[BlockDatabase.getStateId(blockState)] = 0x1B000000;
                 }
             }
         } catch (Exception ignored) {
@@ -625,7 +625,7 @@ public class ColorManager {
     private int getBuiltInBiomeTint(AbstractMapData mapData, Level world, BlockState blockState, int blockStateID, MutableBlockPos blockPos, MutableBlockPos loopBlockPos, int startX, int startZ, boolean live) {
         int tint = -1;
         Block block = blockState.getBlock();
-        if (BlockRepository.biomeBlocks.contains(block) || this.biomeTintsAvailable.contains(blockStateID)) {
+        if (BlockDatabase.biomeBlocks.contains(block) || this.biomeTintsAvailable.contains(blockStateID)) {
             if (live) {
                 try {
                     DebugRenderState.blockX = blockPos.x;
@@ -648,24 +648,24 @@ public class ColorManager {
         int tint = -1;
         Block block = blockState.getBlock();
         ColorResolver colorResolver = null;
-        if (block == BlockRepository.water) {
+        if (block == BlockDatabase.water) {
             colorResolver = this.waterColorResolver;
-        } else if (block == BlockRepository.spruceLeaves) {
+        } else if (block == BlockDatabase.spruceLeaves) {
             colorResolver = this.spruceColorResolver;
-        } else if (block == BlockRepository.birchLeaves) {
+        } else if (block == BlockDatabase.birchLeaves) {
             colorResolver = this.birchColorResolver;
-        } else if (block == BlockRepository.mangroveLeaves) {
+        } else if (block == BlockDatabase.mangroveLeaves) {
             colorResolver = this.mangroveColorResolver;
         } else {
-            boolean isFoliage = block == BlockRepository.oakLeaves || block == BlockRepository.jungleLeaves  || block == BlockRepository.acaciaLeaves || block == BlockRepository.darkOakLeaves || block == BlockRepository.vine;
-            boolean isDryFoliage = block == BlockRepository.leafLitter;
+            boolean isFoliage = block == BlockDatabase.oakLeaves || block == BlockDatabase.jungleLeaves  || block == BlockDatabase.acaciaLeaves || block == BlockDatabase.darkOakLeaves || block == BlockDatabase.vine;
+            boolean isDryFoliage = block == BlockDatabase.leafLitter;
             if (isFoliage) {
                 colorResolver = this.foliageColorResolver;
             } else if (isDryFoliage) {
                 colorResolver = this.dryFoliageColorResolver;
-            } else if (block == BlockRepository.redstone) {
+            } else if (block == BlockDatabase.redstone) {
                 colorResolver = this.redstoneColorResolver;
-            } else if (BlockRepository.biomeBlocks.contains(block)) {
+            } else if (BlockDatabase.biomeBlocks.contains(block)) {
                 colorResolver = this.grassColorResolver;
             }
         }
@@ -733,7 +733,7 @@ public class ColorManager {
             alpha = 31;
         } else if (block instanceof DoorBlock) {
             alpha = 47;
-        } else if (block == BlockRepository.ladder || block == BlockRepository.vine) {
+        } else if (block == BlockDatabase.ladder || block == BlockDatabase.vine) {
             alpha = 15;
         }
 
@@ -771,7 +771,7 @@ public class ColorManager {
                     this.blockColors[t] |= 0x1B000000;
                 }
 
-                this.checkForBiomeTinting(this.dummyBlockPos, BlockRepository.getStateById(t), this.blockColors[t]);
+                this.checkForBiomeTinting(this.dummyBlockPos, BlockDatabase.getStateById(t), this.blockColors[t]);
             }
         }
 
@@ -903,24 +903,24 @@ public class ColorManager {
 
                         for (BlockState blockState : blockStates) {
                             topRGB = topBuff.getRGB(0, 0);
-                            if (blockState.getBlock() == BlockRepository.cobweb) {
+                            if (blockState.getBlock() == BlockDatabase.cobweb) {
                                 topRGB |= 0xFF000000;
                             }
 
                             if (renderPass.equals("3")) {
                                 topRGB = this.processRenderPassThree(topRGB);
-                                int blockStateID = BlockRepository.getStateId(blockState);
+                                int blockStateID = BlockDatabase.getStateId(blockState);
                                 int baseRGB = this.blockColors[blockStateID];
                                 if (baseRGB != 0x1B000000 && baseRGB != 0xFEFF00FF) {
                                     topRGB = ColorUtils.colorMultiplier(baseRGB, topRGB);
                                 }
                             }
 
-                            if (BlockRepository.shapedBlocks.contains(blockState.getBlock())) {
+                            if (BlockDatabase.shapedBlocks.contains(blockState.getBlock())) {
                                 topRGB = this.applyShape(blockState.getBlock(), topRGB);
                             }
 
-                            int blockStateID = BlockRepository.getStateId(blockState);
+                            int blockStateID = BlockDatabase.getStateId(blockState);
                             if (!biomes.isEmpty()) {
                                 this.biomeTextureAvailable.add(blockStateID);
 
@@ -1095,7 +1095,7 @@ public class ColorManager {
         String suffix = suffixMaybeNull == null ? "" : suffixMaybeNull;
         ArrayList<ResourceLocation> resources;
 
-        Map<ResourceLocation, Resource> resourceMap = LightMapConstants.getMinecraft().getResourceManager().listResources(startingPath, asset -> asset.getPath().endsWith(suffix));
+        MinimapRenderer<ResourceLocation, Resource> resourceMap = LightMapConstants.getMinecraft().getResourceManager().listResources(startingPath, asset -> asset.getPath().endsWith(suffix));
         resources = resourceMap.keySet().stream().filter(candidate -> candidate.getNamespace().equals(namespace)).collect(Collectors.toCollection(ArrayList::new));
 
         if (sortByFilename) {
@@ -1125,8 +1125,8 @@ public class ColorManager {
             LightMapConstants.getLogger().error(exception);
         }
 
-        BlockState blockState = BlockRepository.lilypad.defaultBlockState();
-        int blockStateID = BlockRepository.getStateId(blockState);
+        BlockState blockState = BlockDatabase.lilypad.defaultBlockState();
+        int blockStateID = BlockDatabase.getStateId(blockState);
         int lilyRGB = this.getBlockColor(blockStateID);
         int lilypadMultiplier = 2129968;
         String lilypadMultiplierString = properties.getProperty("lilypad");
@@ -1134,9 +1134,9 @@ public class ColorManager {
             lilypadMultiplier = Integer.parseInt(lilypadMultiplierString, 16);
         }
 
-        for (UnmodifiableIterator<BlockState> defaultFormat = BlockRepository.lilypad.getStateDefinition().getPossibleStates().iterator(); defaultFormat.hasNext(); this.blockColorsWithDefaultTint[blockStateID] = this.blockColors[blockStateID]) {
+        for (UnmodifiableIterator<BlockState> defaultFormat = BlockDatabase.lilypad.getStateDefinition().getPossibleStates().iterator(); defaultFormat.hasNext(); this.blockColorsWithDefaultTint[blockStateID] = this.blockColors[blockStateID]) {
             BlockState padBlockState = defaultFormat.next();
-            blockStateID = BlockRepository.getStateId(padBlockState);
+            blockStateID = BlockDatabase.getStateId(padBlockState);
             this.blockColors[blockStateID] = ColorUtils.colorMultiplier(lilyRGB, lilypadMultiplier | 0xFF000000);
         }
 
@@ -1292,7 +1292,7 @@ public class ColorManager {
         Set<BlockState> blockStates = new HashSet<>(this.parseBlocksList(list, ""));
 
         for (BlockState blockState : blockStates) {
-            int blockStateID = BlockRepository.getStateId(blockState);
+            int blockStateID = BlockDatabase.getStateId(blockState);
             int[][] previousTints = this.blockTintTables.get(blockStateID);
             if (swamp && previousTints == null) {
                 ResourceLocation defaultResource;

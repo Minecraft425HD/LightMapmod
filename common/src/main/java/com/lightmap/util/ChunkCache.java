@@ -7,11 +7,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 
-public class MapChunkCache {
+public class ChunkCache {
     private final int width;
     private final int height;
     private LevelChunk lastCenterChunk;
-    private final MapChunk[] mapChunks;
+    private final ChunkData[] mapChunks;
     private int left;
     private int right;
     private int top;
@@ -19,10 +19,10 @@ public class MapChunkCache {
     private boolean loaded;
     private final IChangeObserver changeObserver;
 
-    public MapChunkCache(int width, int height, IChangeObserver changeObserver) {
+    public ChunkCache(int width, int height, IChangeObserver changeObserver) {
         this.width = width;
         this.height = height;
-        this.mapChunks = new MapChunk[width * height];
+        this.mapChunks = new ChunkData[width * height];
         this.changeObserver = changeObserver;
     }
 
@@ -45,13 +45,13 @@ public class MapChunkCache {
 
                 for (int z = movedZ > 0 ? this.height - movedZ : 0; z < (movedZ > 0 ? this.height : -movedZ); ++z) {
                     for (int x = 0; x < this.width; ++x) {
-                        this.mapChunks[x + z * this.width] = new MapChunk(currentChunk.getPos().x - (middleX - x), currentChunk.getPos().z - (middleZ - z));
+                        this.mapChunks[x + z * this.width] = new ChunkData(currentChunk.getPos().x - (middleX - x), currentChunk.getPos().z - (middleZ - z));
                     }
                 }
 
                 for (int z = 0; z < this.height; ++z) {
                     for (int x = movedX > 0 ? this.width - movedX : 0; x < (movedX > 0 ? this.width : -movedX); ++x) {
-                        this.mapChunks[x + z * this.width] = new MapChunk(currentChunk.getPos().x - (middleX - x), currentChunk.getPos().z - (middleZ - z));
+                        this.mapChunks[x + z * this.width] = new ChunkData(currentChunk.getPos().x - (middleX - x), currentChunk.getPos().z - (middleZ - z));
                     }
                 }
             } else {
@@ -74,7 +74,7 @@ public class MapChunkCache {
 
         for (int z = 0; z < this.height; ++z) {
             for (int x = 0; x < this.width; ++x) {
-                this.mapChunks[x + z * this.width] = new MapChunk(currentChunk.getPos().x - (middleX - x), currentChunk.getPos().z - (middleZ - z));
+                this.mapChunks[x + z * this.width] = new ChunkData(currentChunk.getPos().x - (middleX - x), currentChunk.getPos().z - (middleZ - z));
             }
         }
 
@@ -133,7 +133,7 @@ public class MapChunkCache {
             if (this.lastCenterChunk != null && chunkX >= this.left && chunkX <= this.right && chunkZ >= this.top && chunkZ <= this.bottom) {
                 int arrayX = chunkX - this.left;
                 int arrayZ = chunkZ - this.top;
-                MapChunk mapChunk = this.mapChunks[arrayX + arrayZ * this.width];
+                ChunkData mapChunk = this.mapChunks[arrayX + arrayZ * this.width];
                 mapChunk.setModified(true);
             }
         } catch (RuntimeException e) {
@@ -145,7 +145,7 @@ public class MapChunkCache {
         if (this.lastCenterChunk != null && chunkX >= this.left && chunkX <= this.right && chunkZ >= this.top && chunkZ <= this.bottom) {
             int arrayX = chunkX - this.left;
             int arrayZ = chunkZ - this.top;
-            MapChunk mapChunk = this.mapChunks[arrayX + arrayZ * this.width];
+            ChunkData mapChunk = this.mapChunks[arrayX + arrayZ * this.width];
             return mapChunk.isSurroundedByLoaded();
         } else {
             return false;
