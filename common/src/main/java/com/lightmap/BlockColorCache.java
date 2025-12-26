@@ -1095,7 +1095,7 @@ public class BlockColorCache {
         String suffix = suffixMaybeNull == null ? "" : suffixMaybeNull;
         ArrayList<ResourceLocation> resources;
 
-        MinimapRenderer<ResourceLocation, Resource> resourceMap = LightMapConstants.getMinecraft().getResourceManager().listResources(startingPath, asset -> asset.getPath().endsWith(suffix));
+        Map<ResourceLocation, Resource> resourceMap = LightMapConstants.getMinecraft().getResourceManager().listResources(startingPath, asset -> asset.getPath().endsWith(suffix));
         resources = resourceMap.keySet().stream().filter(candidate -> candidate.getNamespace().equals(namespace)).collect(Collectors.toCollection(ArrayList::new));
 
         if (sortByFilename) {

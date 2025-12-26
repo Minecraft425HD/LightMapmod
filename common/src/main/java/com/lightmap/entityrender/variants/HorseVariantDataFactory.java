@@ -17,7 +17,7 @@ import net.minecraft.world.entity.animal.horse.Variant;
 public class HorseVariantDataFactory extends DefaultEntityVariantDataFactory {
     private static final ResourceLocation INVISIBLE_TEXTURE = new ResourceLocation("minecraft", "invisible");
     // 1.20.1: Markings renamed to Variant in 1.20.1
-    private static final MinimapRenderer<Variant, ResourceLocation> LOCATION_BY_VARIANT = Maps.newEnumMap(
+    private static final Map<Variant, ResourceLocation> LOCATION_BY_VARIANT = Maps.newEnumMap(
             Map.of(
                     Variant.values()[0],
                     INVISIBLE_TEXTURE,
