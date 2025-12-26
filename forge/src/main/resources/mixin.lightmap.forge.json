@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "lightmap.refmap.json",
+  "package": "com.lightmap.forge.mixins",
+  "target": "@env(DEFAULT)",
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
